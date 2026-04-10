@@ -1,0 +1,487 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+const title = 'GHS Labels — Certified GHS Labels for Industrial Use'
+const description =
+  'Chemical labels for workplace safety, storage and transport compliance. BS5609 certified, CLP compliant. Request a quote for GHS workplace labels, transport placards and drum labels.'
+const canonical = 'https://ghslabels.com/'
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <style is:global>
+    .ghsl-btn-amber:hover {
+      background-color: #d97706 !important;
+    }
+    .ghsl-hero-outline:hover {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      border-color: rgba(255, 255, 255, 0.85) !important;
+    }
+    .ghsl-nav-link-hero:hover {
+      color: #ffffff !important;
+    }
+    .ghsl-input:focus {
+      border-color: #0e7490 !important;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(14, 116, 144, 0.2);
+    }
+    .ghsl-card:hover {
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+    }
+    .ghsl-tool:hover {
+      background-color: rgba(255, 255, 255, 0.15) !important;
+      border-color: rgba(255, 255, 255, 0.35) !important;
+    }
+    .ghsl-footer-a:hover {
+      color: rgba(255, 255, 255, 0.95) !important;
+    }
+  </style>
+
+  <!-- Navigation -->
+  <header class="sticky top-0 z-50" style="background-color:#0e7490;">
+    <nav
+      style="background-color:#0e7490; padding:16px 40px; display:flex; justify-content:space-between; align-items:center;"
+    >
+      <a href="/" class="no-underline" style="color:white; font-weight:700; font-size:1.25rem;">GHS Labels</a>
+      <div class="hidden items-center gap-8 md:flex">
+        <a
+          href="https://ghssymbols.com"
+          class="ghsl-nav-link-hero no-underline transition-colors"
+          style="color:rgba(255,255,255,0.8); font-size:0.9rem;"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GHS Symbols
+        </a>
+        <a
+          href="https://ghspictograms.com"
+          class="ghsl-nav-link-hero no-underline transition-colors"
+          style="color:rgba(255,255,255,0.8); font-size:0.9rem;"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GHS Pictograms
+        </a>
+        <a
+          href="#quote"
+          class="ghsl-btn-amber inline-block no-underline"
+          style="background:#f59e0b; color:white; padding:10px 20px; border-radius:6px; font-weight:700; text-decoration:none;"
+        >
+          Get a Quote →
+        </a>
+      </div>
+      <button
+        type="button"
+        id="ghsl-nav-toggle"
+        class="rounded-lg p-2 md:hidden"
+        style="color:white;"
+        aria-label="Open menu"
+        aria-expanded="false"
+      >
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </nav>
+    <div
+      id="ghsl-mobile-nav"
+      class="hidden md:hidden"
+      style="border-top:1px solid rgba(255,255,255,0.2); background-color:#042f3d; padding:16px 40px 24px;"
+    >
+      <div class="flex flex-col gap-3">
+        <a
+          href="https://ghssymbols.com"
+          class="block py-2 text-sm font-medium no-underline"
+          style="color:rgba(255,255,255,0.8);"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GHS Symbols
+        </a>
+        <a
+          href="https://ghspictograms.com"
+          class="block py-2 text-sm font-medium no-underline"
+          style="color:rgba(255,255,255,0.8);"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GHS Pictograms
+        </a>
+        <a
+          href="#quote"
+          class="ghsl-btn-amber mt-1 inline-block w-fit no-underline"
+          style="background:#f59e0b; color:white; padding:10px 20px; border-radius:6px; font-weight:700; text-decoration:none;"
+        >
+          Get a Quote →
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <script is:inline>
+    (function () {
+      var btn = document.getElementById('ghsl-nav-toggle')
+      var panel = document.getElementById('ghsl-mobile-nav')
+      if (!btn || !panel) return
+      btn.addEventListener('click', function () {
+        panel.classList.toggle('hidden')
+        btn.setAttribute('aria-expanded', panel.classList.contains('hidden') ? 'false' : 'true')
+      })
+    })()
+  </script>
+
+  <!-- Hero -->
+  <section style="background-color:#042f3d; padding:80px 40px; text-align:center;">
+    <div class="mx-auto max-w-4xl">
+      <div class="mb-6 flex flex-wrap items-center justify-center gap-2">
+        <span
+          style="background:#f59e0b; color:#042f3d; font-size:0.8125rem; font-weight:700; padding:6px 14px; border-radius:9999px; display:inline-block;"
+        >
+          BS5609 Certified
+        </span>
+        <span
+          style="background:rgba(255,255,255,0.12); color:white; font-size:0.8125rem; font-weight:600; padding:6px 14px; border-radius:9999px; display:inline-block;"
+        >
+          CLP Compliant
+        </span>
+        <span
+          style="background:rgba(255,255,255,0.12); color:white; font-size:0.8125rem; font-weight:600; padding:6px 14px; border-radius:9999px; display:inline-block;"
+        >
+          Ships to EU
+        </span>
+      </div>
+      <h1 style="color:white; font-size:3rem; font-weight:800; line-height:1.15; margin:0;">
+        Certified GHS Labels for Industrial Use
+      </h1>
+      <p class="mx-auto mt-6 max-w-2xl text-lg" style="color:rgba(255,255,255,0.8);">
+        Chemical labels for workplace safety, storage and transport compliance. Trusted by EHS engineers and logistics
+        teams across Europe.
+      </p>
+      <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a
+          href="#quote"
+          class="ghsl-btn-amber w-full text-center no-underline sm:w-auto"
+          style="background:#f59e0b; color:white; font-weight:700; padding:14px 32px; border-radius:8px; text-decoration:none; display:inline-block;"
+        >
+          Request a Quote →
+        </a>
+        <a
+          href="#products"
+          class="ghsl-hero-outline w-full text-center no-underline sm:w-auto"
+          style="background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.6); color:white; padding:14px 28px; border-radius:8px; font-weight:600; font-size:1rem; text-decoration:none; display:inline-block;"
+        >
+          Browse Label Types →
+        </a>
+      </div>
+      <div
+        class="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm font-medium"
+        style="color:rgba(255,255,255,0.9);"
+      >
+        <span>
+          <span style="color:#f59e0b; font-weight:800; margin-right:6px;">✦</span>Industrial Grade
+        </span>
+        <span class="hidden sm:inline" style="color:rgba(255,255,255,0.4);">|</span>
+        <span>
+          <span style="color:#f59e0b; font-weight:800; margin-right:6px;">✦</span>BS5609 Certified
+        </span>
+        <span class="hidden sm:inline" style="color:rgba(255,255,255,0.4);">|</span>
+        <span>
+          <span style="color:#f59e0b; font-weight:800; margin-right:6px;">✦</span>Fast Turnaround
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <div style="height:4px; background:#f59e0b;"></div>
+
+  <!-- Trust bar -->
+  <section style="background-color:#0e7490; color:white; padding:48px 40px;">
+    <div class="mx-auto grid max-w-6xl gap-10 md:grid-cols-3 md:gap-8">
+      <div class="text-center md:text-left">
+        <div
+          class="mb-3 inline-flex h-12 w-12 items-center justify-center text-2xl"
+          style="background:rgba(255,255,255,0.2); border-radius:8px;"
+          aria-hidden="true"
+        >
+          🏭
+        </div>
+        <h3 class="text-lg" style="color:white; font-weight:700;">Industrial Grade</h3>
+        <p class="mt-2 text-sm leading-relaxed" style="color:rgba(255,255,255,0.8);">
+          Vinyl and polyester materials resistant to chemicals, UV and abrasion
+        </p>
+      </div>
+      <div class="text-center md:text-left">
+        <div
+          class="mb-3 inline-flex h-12 w-12 items-center justify-center text-2xl"
+          style="background:rgba(255,255,255,0.2); border-radius:8px;"
+          aria-hidden="true"
+        >
+          🛳️
+        </div>
+        <h3 class="text-lg" style="color:white; font-weight:700;">BS5609 Certified</h3>
+        <p class="mt-2 text-sm leading-relaxed" style="color:rgba(255,255,255,0.8);">
+          Marine transport compliant labels for IMDG and ADR shipments
+        </p>
+      </div>
+      <div class="text-center md:text-left">
+        <div
+          class="mb-3 inline-flex h-12 w-12 items-center justify-center text-2xl"
+          style="background:rgba(255,255,255,0.2); border-radius:8px;"
+          aria-hidden="true"
+        >
+          ⚡
+        </div>
+        <h3 class="text-lg" style="color:white; font-weight:700;">Fast Turnaround</h3>
+        <p class="mt-2 text-sm leading-relaxed" style="color:rgba(255,255,255,0.8);">
+          Standard orders shipped within 5–7 business days
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section id="products" style="background:white; padding:64px 40px;">
+    <div class="mx-auto max-w-6xl">
+      <h2 class="text-center" style="color:#042f3d; font-size:2rem; font-weight:800;">Label Types</h2>
+      <p class="mx-auto mt-4 max-w-2xl text-center text-base" style="color:#475569;">
+        Industrial-grade materials. Compliant with EU and international standards.
+      </p>
+      <div class="mt-12 grid gap-8 md:grid-cols-3">
+        <article
+          class="ghsl-card flex flex-col rounded-xl p-6 shadow-sm transition-shadow"
+          style="border:1px solid #e2e8f0; border-left:4px solid #f59e0b; background-color:white;"
+        >
+          <span
+            class="mb-3"
+            style="background:#f59e0b; color:white; font-size:0.75rem; font-weight:600; padding:4px 12px; border-radius:9999px; display:inline-block;"
+          >
+            Workplace
+          </span>
+          <h3 class="text-xl font-bold" style="color:#0f172a;">GHS Workplace Labels</h3>
+          <p class="mt-3 flex-1 text-sm leading-relaxed" style="color:#475569;">
+            CLP/OSHA compliant. Signal word, pictograms, H and P statements. Required for all chemical containers in the
+            workplace.
+          </p>
+        </article>
+        <article
+          class="ghsl-card flex flex-col rounded-xl p-6 shadow-sm transition-shadow"
+          style="border:1px solid #e2e8f0; border-left:4px solid #f59e0b; background-color:white;"
+        >
+          <span
+            class="mb-3"
+            style="background:#f59e0b; color:white; font-size:0.75rem; font-weight:600; padding:4px 12px; border-radius:9999px; display:inline-block;"
+          >
+            Transport
+          </span>
+          <h3 class="text-xl font-bold" style="color:#0f172a;">Transport Placards</h3>
+          <p class="mt-3 flex-1 text-sm leading-relaxed" style="color:#475569;">
+            ADR/DOT/IMDG diamond placards for hazmat shipments. Class 1–9 available, UN number included.
+          </p>
+        </article>
+        <article
+          class="ghsl-card flex flex-col rounded-xl p-6 shadow-sm transition-shadow"
+          style="border:1px solid #e2e8f0; border-left:4px solid #f59e0b; background-color:white;"
+        >
+          <span
+            class="mb-3"
+            style="background:#f59e0b; color:white; font-size:0.75rem; font-weight:600; padding:4px 12px; border-radius:9999px; display:inline-block;"
+          >
+            Bulk
+          </span>
+          <h3 class="text-xl font-bold" style="color:#0f172a;">Drum &amp; IBC Labels</h3>
+          <p class="mt-3 flex-1 text-sm leading-relaxed" style="color:#475569;">
+            Large format labels for 200L drums and 1000L IBCs. Weather and chemical resistant materials.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote -->
+  <section id="quote" style="background:#f8fafc; padding:64px 40px;">
+    <div class="mx-auto max-w-xl">
+      <h2 class="text-center text-3xl font-bold" style="color:#042f3d;">Request a Quote</h2>
+      <p class="mt-3 text-center" style="color:#475569;">Fill in the form and we will respond within 1 business day.</p>
+      <form action="https://formspree.io/f/PLACEHOLDER" method="POST" class="mt-10 space-y-5">
+        <div>
+          <label for="fullName" class="mb-1 block text-sm font-medium" style="color:#0f172a;">Full Name</label>
+          <input
+            id="fullName"
+            name="fullName"
+            type="text"
+            required
+            class="ghsl-input w-full rounded-md px-[14px] py-2.5"
+            style="border:1px solid #e2e8f0; color:#0f172a;"
+          />
+        </div>
+        <div>
+          <label for="company" class="mb-1 block text-sm font-medium" style="color:#0f172a;">Company Name</label>
+          <input
+            id="company"
+            name="company"
+            type="text"
+            required
+            class="ghsl-input w-full rounded-md px-[14px] py-2.5"
+            style="border:1px solid #e2e8f0; color:#0f172a;"
+          />
+        </div>
+        <div>
+          <label for="email" class="mb-1 block text-sm font-medium" style="color:#0f172a;">Work Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            class="ghsl-input w-full rounded-md px-[14px] py-2.5"
+            style="border:1px solid #e2e8f0; color:#0f172a;"
+          />
+        </div>
+        <div>
+          <label for="phone" class="mb-1 block text-sm font-medium" style="color:#0f172a;">Phone</label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            class="ghsl-input w-full rounded-md px-[14px] py-2.5"
+            style="border:1px solid #e2e8f0; color:#0f172a;"
+          />
+        </div>
+        <div>
+          <label for="labelType" class="mb-1 block text-sm font-medium" style="color:#0f172a;">Label Type</label>
+          <select
+            id="labelType"
+            name="labelType"
+            required
+            class="ghsl-input w-full rounded-md px-[14px] py-2.5"
+            style="border:1px solid #e2e8f0; color:#0f172a;"
+          >
+            <option value="workplace">Workplace GHS Label</option>
+            <option value="placard">Transport Placard</option>
+            <option value="drum">Drum &amp; IBC Label</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div>
+          <label for="quantity" class="mb-1 block text-sm font-medium" style="color:#0f172a;">Quantity</label>
+          <select
+            id="quantity"
+            name="quantity"
+            required
+            class="ghsl-input w-full rounded-md px-[14px] py-2.5"
+            style="border:1px solid #e2e8f0; color:#0f172a;"
+          >
+            <option value="under500">Under 500</option>
+            <option value="500-2000">500–2,000</option>
+            <option value="2000-10000">2,000–10,000</option>
+            <option value="10000plus">10,000+</option>
+          </select>
+        </div>
+        <div class="flex items-start gap-3">
+          <input
+            id="bs5609"
+            name="bs5609"
+            type="checkbox"
+            value="yes"
+            class="mt-1 h-4 w-4 rounded"
+            style="border:1px solid #e2e8f0; accent-color:#0e7490;"
+          />
+          <label for="bs5609" class="text-sm" style="color:#475569;">BS5609 certification required?</label>
+        </div>
+        <div>
+          <label for="requirements" class="mb-1 block text-sm font-medium" style="color:#0f172a;"
+            >Additional requirements</label
+          >
+          <textarea
+            id="requirements"
+            name="requirements"
+            rows="4"
+            class="ghsl-input w-full rounded-md px-[14px] py-2.5"
+            style="border:1px solid #e2e8f0; color:#0f172a;"
+          ></textarea>
+        </div>
+        <button
+          type="submit"
+          class="ghsl-btn-amber"
+          style="background:#f59e0b; color:white; font-weight:700; padding:14px 32px; border-radius:8px; width:100%; border:none; cursor:pointer; font-size:1rem;"
+        >
+          Send Request →
+        </button>
+      </form>
+      <p class="mt-4 text-center text-xs" style="color:#475569;">
+        Corporate email required. We do not respond to Gmail/Yahoo addresses.
+      </p>
+    </div>
+  </section>
+
+  <!-- Free tools -->
+  <section style="background:#042f3d; color:white; padding:64px 40px;">
+    <div class="mx-auto max-w-6xl">
+      <h2 class="text-center text-3xl font-bold" style="color:white;">Free GHS Tools</h2>
+      <p class="mx-auto mt-3 max-w-2xl text-center" style="color:rgba(255,255,255,0.85);">
+        Part of the GHS Ecosystem — free tools used by 10,000+ EHS professionals
+      </p>
+      <div class="mt-12 grid gap-6 md:grid-cols-2">
+        <a
+          href="https://ghssymbols.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="ghsl-tool block p-6 no-underline transition-all"
+          style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:white;"
+        >
+          <h3 class="text-lg font-bold" style="color:white;">GHS Hazard Classification</h3>
+          <p class="mt-2 text-sm leading-relaxed" style="color:rgba(255,255,255,0.85);">
+            Search 4,178 classified substances. Calculate acute toxicity for mixtures. H and P statements reference.
+          </p>
+          <span class="mt-4 inline-block text-sm" style="color:#f59e0b; font-weight:700;">Visit →</span>
+        </a>
+        <a
+          href="https://ghspictograms.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="ghsl-tool block p-6 no-underline transition-all"
+          style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:white;"
+        >
+          <h3 class="text-lg font-bold" style="color:white;">GHS Label Constructor</h3>
+          <p class="mt-2 text-sm leading-relaxed" style="color:rgba(255,255,255,0.85);">
+            Build and preview GHS-compliant labels online. Download SVG pictograms. Free, no registration.
+          </p>
+          <span class="mt-4 inline-block text-sm" style="color:#f59e0b; font-weight:700;">Visit →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="background:#021f29; color:white; padding:48px 40px 32px;">
+    <div class="mx-auto flex max-w-6xl flex-col gap-8 md:flex-row md:items-start md:justify-between">
+      <div>
+        <p class="text-lg font-bold" style="color:white;">GHS Labels</p>
+        <p class="mt-4 max-w-md text-xs" style="color:rgba(255,255,255,0.65);">
+          GHS Labels is an independent platform for chemical labeling compliance.
+        </p>
+      </div>
+      <nav class="flex flex-col gap-3 text-sm sm:flex-row sm:gap-8">
+        <a
+          href="https://ghssymbols.com"
+          class="ghsl-footer-a no-underline"
+          style="color:rgba(255,255,255,0.7);"
+          target="_blank"
+          rel="noopener noreferrer">GHS Symbols</a
+        >
+        <a
+          href="https://ghspictograms.com"
+          class="ghsl-footer-a no-underline"
+          style="color:rgba(255,255,255,0.7);"
+          target="_blank"
+          rel="noopener noreferrer">GHS Pictograms</a
+        >
+        <a href="/" class="ghsl-footer-a no-underline" style="color:rgba(255,255,255,0.7);">GHS Labels</a>
+      </nav>
+    </div>
+    <p
+      class="mx-auto mt-10 max-w-6xl border-t pt-8 text-center text-sm"
+      style="border-color:rgba(255,255,255,0.15); color:rgba(255,255,255,0.5);"
+    >
+      © 2026 GHS Labels. Part of the GHS Ecosystem.
+    </p>
+  </footer>
+</Layout>
