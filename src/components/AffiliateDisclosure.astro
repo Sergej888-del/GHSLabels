@@ -1,0 +1,40 @@
+---
+// Affiliate disclosure component — FTC + EU CAP Code compliance.
+// MUST appear on every page containing affiliate links.
+// See ghslabels-design-system.md §9.7 and ghslabels-architecture.md §7.
+
+export interface Props {
+  /**
+   * 'top' — full banner shown above the fold on comparison pages
+   *         and supplier profiles with active affiliate programs
+   * 'inline' — compact italic note placed below sections containing
+   *            affiliate cards or buttons
+   */
+  variant?: 'top' | 'inline';
+}
+
+const { variant = 'inline' } = Astro.props;
+---
+
+{variant === 'top' && (
+  <div class="bg-orange-50 border-l-4 border-orange-500 px-4 py-3 mb-6 text-sm text-zinc-700">
+    <strong class="font-semibold text-zinc-900">Affiliate disclosure:</strong>
+    {' '}
+    This page contains affiliate links. If you purchase through these links,
+    we may earn a commission at no extra cost to you.
+    {' '}
+    <a href="/affiliate-disclosure/" class="underline text-orange-900 hover:text-orange-700 font-medium">
+      Learn more
+    </a>.
+  </div>
+)}
+
+{variant === 'inline' && (
+  <p class="text-xs text-zinc-500 italic mt-4">
+    Disclosure: Links to suppliers marked with † are affiliate links.
+    {' '}
+    <a href="/affiliate-disclosure/" class="underline hover:text-zinc-700">
+      Full disclosure
+    </a>.
+  </p>
+)}
