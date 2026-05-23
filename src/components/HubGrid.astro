@@ -1,0 +1,50 @@
+---
+// src/components/HubGrid.astro
+//
+// Renders a responsive grid of HubCard components, one per enabled hub.
+// Counts items per content collection automatically (excluding drafts).
+//
+// Usage:
+//   <HubGrid />                    → all enabled hubs, 3-column desktop grid
+//   <HubGrid columns={2} />        → 2-column grid (e.g. for sidebar contexts)
+//
+// No props are required. Hub registry is read at build time from src/lib/hubs.ts.
+
+import { getCollection, type CollectionKey } from 'astro:content';
+import { getEnabledHubs } from '../lib/hubs';
+import HubCard from './HubCard.astro';
+
+interface Props {
+  columns?: 2 | 3;
+}
+
+const { columns = 3 } = Astro.props;
+const hubs = getEnabledHubs();
+
+// Count non-draft items per collection. Empty/missing folders → 0 (Astro
+// returns [] gracefully). Wrapped in try/catch for defensive handling
+// in case a collection key in HUBS doesn't match an actual collection.
+const counts: Record<string, number> = {};
+for (const hub of hubs) {
+  try {
+    const items = await getCollection(
+      hub.collection as CollectionKey,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ({ data }: any) => !data.draft,
+    );
+    counts[hub.slug] = items.length;
+  } catch {
+    counts[hub.slug] = 0;
+  }
+}
+
+const gridClass = columns === 2
+  ? 'grid grid-cols-1 gap-4 sm:grid-cols-2'
+  : 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3';
+---
+
+<div class={gridClass}>
+  {hubs.map((hub) => (
+    <HubCard hub={hub} count={counts[hub.slug]} />
+  ))}
+</div>

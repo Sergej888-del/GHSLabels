@@ -12,6 +12,7 @@ import Layout from '../../layouts/Layout.astro';
 import Callout from '../../components/Callout.astro';
 import Chip from '../../components/Chip.astro';
 import SupplierCard from '../../components/SupplierCard.astro';
+import HubGrid from '../../components/HubGrid.astro';
 
 const title = 'Sandbox · Components';
 const description = 'Design system kitchen sink for ghslabels.com. Not indexed.';
@@ -303,6 +304,24 @@ const description = 'Design system kitchen sink for ghslabels.com. Not indexed.'
         </div>
       </div>
     </div>
+  </section>
+
+  <section class="mt-16 border-t border-zinc-800 pt-12">
+    <div class="mb-6">
+      <span class="font-mono text-xs uppercase tracking-wider text-sky-400">
+        Component · HubGrid
+      </span>
+      <h2 class="mt-2 text-2xl font-bold tracking-tight text-zinc-50">
+        Hub Grid (auto-rendered from registry)
+      </h2>
+      <p class="mt-2 max-w-2xl text-sm text-zinc-400">
+        Renders all enabled hubs from <code class="font-mono text-sky-400">src/lib/hubs.ts</code>
+        with counts from <code class="font-mono text-sky-400">getCollection()</code> per hub.
+        Empty collections show "Coming soon" badge and disable the link.
+        Intent variants: phthalo (directory/comparison/reference), brass (commerce), neutral (editorial).
+      </p>
+    </div>
+    <HubGrid />
   </section>
 
   <!-- ============================================================

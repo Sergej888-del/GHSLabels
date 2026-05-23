@@ -1,0 +1,103 @@
+---
+// src/components/HubCard.astro
+//
+// One hub card. Variants depend on `intent` field of the Hub (set in src/lib/hubs.ts).
+//
+// States:
+//   count > 0       → populated, fully clickable, hover-glow, count label
+//   count === 0     → coming-soon, dimmed, NOT clickable, "Coming soon" badge
+//   count undefined → treated as populated without count label (graceful fallback)
+//
+// Used by HubGrid (which computes counts per collection) and any page that wants
+// to feature a single hub card.
+
+import type { Hub } from '../lib/hubs';
+import { getHubUrl } from '../lib/hubs';
+
+interface Props {
+  hub: Hub;
+  count?: number;
+}
+
+const { hub, count } = Astro.props;
+const url = getHubUrl(hub);
+const isPopulated = count === undefined || count > 0;
+const showComingSoon = count === 0;
+
+// intent → abbr-square palette
+const abbrPalette: Record<Hub['intent'], string> = {
+  directory:  'bg-sky-950 text-sky-400',     // phthalo
+  comparison: 'bg-sky-950 text-sky-400',     // phthalo
+  reference:  'bg-sky-950 text-sky-400',     // phthalo
+  commerce:   'bg-amber-950 text-amber-300', // brass
+  editorial:  'bg-zinc-800 text-zinc-300',   // neutral
+};
+
+// intent → hover glow color (matches abbr palette)
+const hoverGlow: Record<Hub['intent'], string> = {
+  directory:  'group-hover:shadow-[0_0_24px_rgba(56,189,248,0.25)]',
+  comparison: 'group-hover:shadow-[0_0_24px_rgba(56,189,248,0.25)]',
+  reference:  'group-hover:shadow-[0_0_24px_rgba(56,189,248,0.25)]',
+  commerce:   'group-hover:shadow-[0_0_24px_rgba(252,211,77,0.25)]',
+  editorial:  'group-hover:shadow-[0_0_16px_rgba(161,161,170,0.20)]',
+};
+
+// Render as <a> if clickable, <div> if coming-soon (no link to 404)
+const Tag = isPopulated ? 'a' : 'div';
+const linkProps = isPopulated ? { href: url } : {};
+---
+
+<Tag
+  {...linkProps}
+  class:list={[
+    'group block rounded-lg border bg-zinc-900 p-6',
+    'transition-all duration-200',
+    isPopulated && 'border-zinc-800 hover:border-zinc-700 hover:-translate-y-0.5',
+    !isPopulated && 'border-zinc-800/60 cursor-default opacity-60',
+  ]}
+>
+  <div class="flex items-start justify-between gap-4">
+    <!-- Mono 3-letter abbr square -->
+    <div
+      class:list={[
+        'flex h-10 w-10 items-center justify-center rounded-md',
+        'font-mono text-sm font-medium tracking-tight',
+        'transition-shadow duration-200',
+        abbrPalette[hub.intent],
+        isPopulated && hoverGlow[hub.intent],
+      ]}
+    >
+      {hub.abbr}
+    </div>
+
+    <!-- Count caption OR Coming soon badge -->
+    {count !== undefined && count > 0 && (
+      <span class="font-mono text-xs uppercase tracking-wider text-zinc-500">
+        {count} {hub.countLabel}
+      </span>
+    )}
+    {showComingSoon && (
+      <span class="font-mono text-xs uppercase tracking-wider text-zinc-600">
+        Coming soon
+      </span>
+    )}
+  </div>
+
+  <h3 class="mt-4 text-xl font-semibold tracking-tight text-zinc-50">
+    {hub.label}
+  </h3>
+
+  <p class="mt-2 text-sm leading-relaxed text-zinc-400">
+    {hub.description}
+  </p>
+
+  {isPopulated && (
+    <span
+      class="mt-4 inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider
+             text-sky-400 transition-colors duration-150
+             group-hover:text-sky-300"
+    >
+      Explore <span aria-hidden="true">→</span>
+    </span>
+  )}
+</Tag>
