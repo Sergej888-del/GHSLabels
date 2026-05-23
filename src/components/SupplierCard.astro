@@ -1,8 +1,14 @@
 ---
 // Supplier card — THE signature component of ghslabels.com.
-// Featured (brass) = top-tier, gradient fade + brass border + glowing badge.
-// Recommended (phthalo) = editorial pick, phthalo border + phthalo badge.
+// Featured (brass) = top-tier, gradient fade + brass border + brass glow halo.
+// Recommended (phthalo) = editorial pick, phthalo border + phthalo glow halo.
 // Neutral = generic listing, zinc border only.
+//
+// Glow halos are semantic, not decorative:
+//   - Brass glow signals "premium / certified" (warm coal-glow)
+//   - Phthalo glow signals "editorial recommendation" (cool brand-glow)
+//   - Hover intensifies the glow to invite interaction
+//
 // Usage:
 //   <SupplierCard
 //     name="DuraLabel"
@@ -23,13 +29,13 @@ export interface Props {
 const { name, tagline, href, marker = null, tags = [] } = Astro.props;
 
 // Card container styles per marker variant.
-// Featured uses a vertical brass gradient that fades into the card surface —
-// the signature visual effect.
+// Featured uses a vertical brass gradient that fades into the card surface
+// plus a brass glow halo — the signature visual effect.
 const cardClasses =
   marker === 'featured'
-    ? 'border border-amber-900 bg-gradient-to-b from-amber-950/70 from-0% via-zinc-900 via-40% to-zinc-900 to-100% hover:border-amber-800'
+    ? 'border border-amber-900 bg-gradient-to-b from-amber-950/70 from-0% via-zinc-900 via-40% to-zinc-900 to-100% hover:border-amber-700 glow-brass hover:glow-brass-strong'
     : marker === 'recommended'
-    ? 'border border-sky-800 bg-zinc-900 hover:border-sky-700'
+    ? 'border border-sky-800 bg-zinc-900 hover:border-sky-600 glow-phthalo hover:glow-phthalo-strong'
     : 'border border-zinc-800 bg-zinc-900 hover:border-zinc-700';
 
 const markerLabel =

@@ -1,0 +1,319 @@
+---
+// /sandbox/components/ — design system kitchen sink.
+//
+// noindex'd, not in sitemap, not in nav. Direct-URL access only.
+// Used to QA components in production environment with real Tailwind compilation,
+// real fonts, real glow halos. Add new components here as they are built.
+//
+// To remove from search engines and AI crawlers: noindex prop on Layout
+// + Disallow: /sandbox/ in robots.txt (add when ready to lock down).
+
+import Layout from '../../layouts/Layout.astro';
+import Callout from '../../components/Callout.astro';
+import Chip from '../../components/Chip.astro';
+import SupplierCard from '../../components/SupplierCard.astro';
+
+const title = 'Sandbox · Components';
+const description = 'Design system kitchen sink for ghslabels.com. Not indexed.';
+---
+
+<Layout title={title} description={description} noindex={true}>
+  <!-- Page header -->
+  <section class="bg-zinc-900 border-b border-zinc-800">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+      <p class="text-xs font-mono uppercase tracking-wider text-sky-400 mb-4 font-medium">Sandbox &middot; Internal</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-50 mb-6 leading-tight">
+        Component kitchen sink
+      </h1>
+      <p class="text-lg text-zinc-300 leading-relaxed max-w-2xl">
+        Live reference for every deployed component variant. Used to QA design system changes against production fonts, colors, and glow halos.
+      </p>
+      <p class="text-sm text-zinc-500 mt-6 font-mono">noindex &middot; not in sitemap &middot; direct URL only</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 1: SupplierCard — the signature component
+       ============================================================ -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <header class="mb-10">
+      <p class="text-xs font-mono uppercase tracking-wider text-sky-400 mb-3 font-medium">01 &middot; SupplierCard</p>
+      <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mb-3">
+        Three tier variants with semantic glow
+      </h2>
+      <p class="text-base text-zinc-400 leading-relaxed max-w-2xl">
+        Featured tier carries the brass glow halo (warm coal-glow signaling premium / certified). Recommended carries the phthalo glow (cool brand-glow signaling editorial pick). Neutral has no glow &mdash; correct visual hierarchy. Hover any card to see the glow intensify.
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <SupplierCard
+        name="DuraLabel"
+        tagline="BS5609-certified marine-grade specialists. Industrial print-on-demand with the deepest chemical-resistance materials library."
+        href="#featured-demo"
+        marker="featured"
+        tags={['EU/US', 'BS5609', 'Enterprise']}
+      />
+      <SupplierCard
+        name="Avery"
+        tagline="Widest template library and strongest retail availability. The right starting point for DIY and SME labelling."
+        href="#recommended-demo"
+        marker="recommended"
+        tags={['Global', 'Retail', 'DIY']}
+      />
+      <SupplierCard
+        name="OnlineLabels"
+        tagline="Mid-range custom printing with fast turnaround. Strong fit for small-batch industrial work and trial runs."
+        href="#neutral-demo"
+        tags={['US', 'Custom', 'SMB']}
+      />
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 2: Chip — 4 variants
+       ============================================================ -->
+  <section class="bg-zinc-900 border-y border-zinc-800">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <header class="mb-10">
+        <p class="text-xs font-mono uppercase tracking-wider text-sky-400 mb-3 font-medium">02 &middot; Chip</p>
+        <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mb-3">
+          Status badges, 4 semantic variants
+        </h2>
+        <p class="text-base text-zinc-400 leading-relaxed max-w-2xl">
+          Phthalo for brand / family / regulatory references. Brass for premium / certified. Neutral for generic properties. Hazard for substance warnings. Each variant optionally takes a <code class="text-xs bg-zinc-800 text-sky-300 px-1.5 py-0.5 rounded">dot</code> prop for "primary / active" emphasis.
+        </p>
+      </header>
+
+      <div class="space-y-8">
+        <div>
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Phthalo &mdash; brand / regulatory</p>
+          <div class="flex flex-wrap gap-2">
+            <Chip variant="phthalo" dot>GDPR compliant</Chip>
+            <Chip variant="phthalo" dot>CCPA aware</Chip>
+            <Chip variant="phthalo">CLP</Chip>
+            <Chip variant="phthalo">ADR</Chip>
+            <Chip variant="phthalo">IMDG</Chip>
+            <Chip variant="phthalo">OSHA HCS</Chip>
+            <Chip variant="phthalo">REACH</Chip>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Brass &mdash; premium / certified</p>
+          <div class="flex flex-wrap gap-2">
+            <Chip variant="brass" dot>BS5609</Chip>
+            <Chip variant="brass">ISO 9001</Chip>
+            <Chip variant="brass">FDA</Chip>
+            <Chip variant="brass">Editor&apos;s pick</Chip>
+            <Chip variant="brass">Featured</Chip>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Neutral &mdash; generic properties</p>
+          <div class="flex flex-wrap gap-2">
+            <Chip variant="neutral">Polypropylene</Chip>
+            <Chip variant="neutral">Paper</Chip>
+            <Chip variant="neutral">Retail pricing</Chip>
+            <Chip variant="neutral">US/EU/UK shipping</Chip>
+            <Chip variant="neutral">5-day lead time</Chip>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Hazard &mdash; substance warnings</p>
+          <div class="flex flex-wrap gap-2">
+            <Chip variant="hazard" dot>CMR substance</Chip>
+            <Chip variant="hazard">Acute toxicity</Chip>
+            <Chip variant="hazard">PBT/vPvB</Chip>
+            <Chip variant="hazard">Skin sensitiser</Chip>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 3: Callout — 2 variants
+       ============================================================ -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <header class="mb-10">
+      <p class="text-xs font-mono uppercase tracking-wider text-sky-400 mb-3 font-medium">03 &middot; Callout</p>
+      <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mb-3">
+        Inline emphasis blocks, 2 variants
+      </h2>
+      <p class="text-base text-zinc-400 leading-relaxed max-w-2xl">
+        Phthalo for regulatory notes, supervisory authority info, technical clarifications. Brass for editor&apos;s notes, premium recommendations, editorial commitments.
+      </p>
+    </header>
+
+    <Callout variant="phthalo" title="Cross-border data transfers">
+      Transfers of personal data outside the European Economic Area are protected by Standard Contractual Clauses (SCCs) approved by the European Commission, or by adequacy decisions where applicable.
+    </Callout>
+
+    <Callout variant="brass" title="Editor's commitment">
+      If an affiliate partner&apos;s product no longer meets our editorial standard, we remove the affiliate placement before we change the recommendation. Commission never overrides accuracy.
+    </Callout>
+
+    <Callout variant="phthalo" title="Regulatory note">
+      BS5609 Section 2 covers adhesive performance after seawater immersion. Section 3 covers print durability. Both are required for IMDG-compliant marine transport.
+    </Callout>
+
+    <Callout variant="brass" title="Editor's pick">
+      When sourcing for export to multiple jurisdictions, prioritise suppliers that hold both BS5609 and FDA certifications. This is rarer than vendors claim.
+    </Callout>
+  </section>
+
+  <!-- ============================================================
+       SECTION 4: Tonal surface reference
+       ============================================================ -->
+  <section class="bg-zinc-900 border-y border-zinc-800">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <header class="mb-10">
+        <p class="text-xs font-mono uppercase tracking-wider text-sky-400 mb-3 font-medium">04 &middot; Tonal surfaces</p>
+        <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mb-3">
+          Elevation through tone, not shadow
+        </h2>
+        <p class="text-base text-zinc-400 leading-relaxed max-w-2xl">
+          Material Design 3 principle: dark surface hierarchy uses progressively lighter tones for elevated elements. Borders reinforce the edge subtly. Drop shadows are forbidden; coloured glow halos (see section 01) are the only allowed shadow type.
+        </p>
+      </header>
+
+      <div class="space-y-3">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-lg p-5">
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">Tier 0 &middot; <code class="text-sky-400">bg-zinc-950</code> &middot; #09090b</p>
+          <p class="text-sm text-zinc-300">Page background, footer, body. The deepest surface, used as canvas.</p>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">Tier 1 &middot; <code class="text-sky-400">bg-zinc-900</code> &middot; #18181b</p>
+          <p class="text-sm text-zinc-300">Elevated sections, page headers, content blocks needing separation from page bg.</p>
+        </div>
+        <div style="background:#1f1f22" class="border border-zinc-800 rounded-lg p-5">
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">Tier 2 &middot; <code class="text-sky-400">surface-card</code> &middot; #1f1f22</p>
+          <p class="text-sm text-zinc-300">Default card surface. Between zinc-900 and zinc-800. Custom token in CSS variables.</p>
+        </div>
+        <div class="bg-zinc-800 border border-zinc-700 rounded-lg p-5">
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">Tier 3 &middot; <code class="text-sky-400">bg-zinc-800</code> &middot; #27272a</p>
+          <p class="text-sm text-zinc-300">Card hover state. Most elevated standard surface.</p>
+        </div>
+        <div class="bg-zinc-700 border border-zinc-600 rounded-lg p-5">
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">Tier 4 (rare) &middot; <code class="text-sky-300">bg-zinc-700</code> &middot; #3f3f46</p>
+          <p class="text-sm text-zinc-200">Borders, occasional separator surfaces. Avoid as a primary surface.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 5: Typography reference
+       ============================================================ -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <header class="mb-10">
+      <p class="text-xs font-mono uppercase tracking-wider text-sky-400 mb-3 font-medium">05 &middot; Typography</p>
+      <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mb-3">
+        Inter Variable &amp; JetBrains Mono Variable
+      </h2>
+      <p class="text-base text-zinc-400 leading-relaxed max-w-2xl">
+        Full type scale from commerce hero (84px) down to mono eyebrow (11px). Drama is created through scale and weight, not decoration or color.
+      </p>
+    </header>
+
+    <div class="space-y-8">
+      <div class="border-l-2 border-zinc-800 pl-6">
+        <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-2">Commerce hero H1 &middot; 84px / 800 / -0.04em</p>
+        <p class="text-7xl md:text-8xl font-extrabold tracking-[-0.04em] text-zinc-50 leading-[0.98]">
+          Certified GHS labels.
+        </p>
+      </div>
+
+      <div class="border-l-2 border-zinc-800 pl-6">
+        <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-2">Page header H1 &middot; 48px / 800 / -0.025em</p>
+        <p class="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-50 leading-tight">
+          An independent procurement reference for GHS labels.
+        </p>
+      </div>
+
+      <div class="border-l-2 border-zinc-800 pl-6">
+        <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-2">Section H2 &middot; 30px / 700 / -0.025em</p>
+        <p class="text-3xl font-bold tracking-tight text-zinc-50">
+          How we evaluate suppliers
+        </p>
+      </div>
+
+      <div class="border-l-2 border-zinc-800 pl-6">
+        <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-2">Card title &middot; 20px / 600 / -0.015em</p>
+        <p class="text-xl font-semibold tracking-tight text-zinc-50">
+          DuraLabel
+        </p>
+      </div>
+
+      <div class="border-l-2 border-zinc-800 pl-6">
+        <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-2">Body &middot; 17px / 400 / 1.65 line-height</p>
+        <p class="text-[17px] text-zinc-300 leading-relaxed max-w-2xl">
+          Sourcing GHS-compliant chemical labels is harder than it should be. Catalogues are dense, certifications overlap, materials sound interchangeable but behave differently, and pricing is rarely transparent until you talk to a sales representative.
+        </p>
+      </div>
+
+      <div class="border-l-2 border-zinc-800 pl-6">
+        <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-2">Body small &middot; 15px / 400</p>
+        <p class="text-[15px] text-zinc-400 leading-relaxed max-w-2xl">
+          BS5609-certified marine-grade specialists. Industrial print-on-demand with the deepest chemical-resistance materials library.
+        </p>
+      </div>
+
+      <div class="border-l-2 border-zinc-800 pl-6">
+        <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-2">Mono eyebrow &middot; 11px / 500 / uppercase / +0.08em</p>
+        <p class="text-xs font-mono uppercase tracking-wider text-sky-400 font-medium">
+          B2B Procurement &middot; Independent reference
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 6: Spectrum Mark variants
+       ============================================================ -->
+  <section class="bg-zinc-900 border-y border-zinc-800">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <header class="mb-10">
+        <p class="text-xs font-mono uppercase tracking-wider text-sky-400 mb-3 font-medium">06 &middot; The Spectrum Mark</p>
+        <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mb-3">
+          Signature gradient strip with dual-layer glow
+        </h2>
+        <p class="text-base text-zinc-400 leading-relaxed max-w-2xl">
+          Default 3px height. Used at exactly two locations in Layout.astro: under EcosystemBanner and above the footer. Gradient passes through #3b82f6 at midpoint &mdash; the family-navy bridge.
+        </p>
+      </header>
+
+      <div class="space-y-10">
+        <div>
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Standard &middot; 3px (deployed in Layout)</p>
+          <div class="spectrum-mark"></div>
+        </div>
+
+        <div>
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Subtle &middot; 2px (rare use)</p>
+          <div class="spectrum-mark" style="height:2px"></div>
+        </div>
+
+        <div>
+          <p class="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-3">Emphasis &middot; 8px (hero moments only)</p>
+          <div class="spectrum-mark" style="height:8px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER NOTE
+       ============================================================ -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+      <p class="text-xs font-mono uppercase tracking-wider text-amber-300 mb-2 font-semibold">Maintenance note</p>
+      <p class="text-sm text-zinc-300 leading-relaxed">
+        When adding a new component to <code class="text-xs bg-zinc-800 text-sky-300 px-1.5 py-0.5 rounded">src/components/</code>, add a section to this sandbox with all variants on the same page. Future contributors and Sergej should be able to see every deployed pattern in one URL.
+      </p>
+    </div>
+  </section>
+</Layout>
