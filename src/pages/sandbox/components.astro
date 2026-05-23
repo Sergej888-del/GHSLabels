@@ -13,6 +13,8 @@ import Callout from '../../components/Callout.astro';
 import Chip from '../../components/Chip.astro';
 import SupplierCard from '../../components/SupplierCard.astro';
 import HubGrid from '../../components/HubGrid.astro';
+import HubCard from '../../components/HubCard.astro';
+import { HUBS } from '../../lib/hubs';
 
 const title = 'Sandbox · Components';
 const description = 'Design system kitchen sink for ghslabels.com. Not indexed.';
@@ -322,6 +324,31 @@ const description = 'Design system kitchen sink for ghslabels.com. Not indexed.'
       </p>
     </div>
     <HubGrid />
+  </section>
+
+  <section class="mt-16 border-t border-zinc-800 pt-12">
+    <div class="mb-6">
+      <span class="font-mono text-xs uppercase tracking-wider text-sky-400">
+        Component · HubCard states
+      </span>
+      <h2 class="mt-2 text-2xl font-bold tracking-tight text-zinc-50">
+        HubCard — populated states (manual counts for QA)
+      </h2>
+      <p class="mt-2 max-w-2xl text-sm text-zinc-400">
+        Hover any card to see the glow halo. Phthalo (sky) on directory/comparison/reference.
+        Brass (amber) on commerce. No glow on editorial — creates 3-tier hierarchy.
+        Last card shows the "Coming soon" state for comparison.
+      </p>
+    </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <HubCard hub={HUBS[0]} count={12} />
+      <HubCard hub={HUBS[1]} count={5} />
+      <HubCard hub={HUBS[2]} count={8} />
+      <HubCard hub={HUBS[4]} count={6} />
+      <HubCard hub={HUBS[5]} count={3} />
+      <HubCard hub={HUBS[6]} count={9} />
+      <HubCard hub={HUBS[3]} count={0} />
+    </div>
   </section>
 
   <!-- ============================================================
