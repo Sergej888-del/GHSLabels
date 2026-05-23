@@ -1,0 +1,122 @@
+---
+// /about/ — site mission, methodology, editorial independence, ecosystem context.
+
+import Layout from '../layouts/Layout.astro';
+import Callout from '../components/Callout.astro';
+import Chip from '../components/Chip.astro';
+
+const title = 'About GHS Labels';
+const description =
+  'GHS Labels is an independent procurement reference for EHS professionals — comparing suppliers, materials, and printing services for chemical labelling compliance.';
+---
+
+<Layout title={title} description={description}>
+  <!-- Page header -->
+  <section class="bg-zinc-900 border-b border-zinc-800">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
+      <p class="text-xs font-mono uppercase tracking-wider text-sky-400 mb-4 font-medium">About</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-50 mb-6 leading-[1.05]">
+        An independent procurement reference for GHS labels.
+      </h1>
+      <p class="text-lg text-zinc-300 leading-relaxed">
+        Built for EHS professionals, procurement teams, and anyone tasked with sourcing compliant chemical labels &mdash; without sales pitches or paid placements.
+      </p>
+    </div>
+  </section>
+
+  <!-- Body -->
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-zinc-300 leading-relaxed">
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-0 mb-4">
+      What we do
+    </h2>
+    <p class="mb-4">
+      Sourcing GHS-compliant chemical labels is harder than it should be. Catalogues are dense, certifications overlap, materials sound interchangeable but behave differently, and pricing is rarely transparent until you talk to a sales representative.
+    </p>
+    <p class="mb-10">
+      We compare suppliers, materials, and printing services side by side &mdash; in plain English, with citations, and without commission incentives shaping the recommendation. Where useful, we also offer custom services such as label compliance audits and custom printing referrals through our
+      <a href="/quote/" class="text-sky-400 hover:text-sky-300 underline underline-offset-2 transition-colors">request for quote</a>
+      form.
+    </p>
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-12 mb-4">
+      How we evaluate suppliers
+    </h2>
+    <p class="mb-6">
+      Every supplier profile is built from the same evaluation framework, so comparisons are like-for-like:
+    </p>
+
+    <div class="flex flex-wrap gap-2 mb-6">
+      <Chip variant="brass" dot>BS5609</Chip>
+      <Chip variant="brass">ISO 9001</Chip>
+      <Chip variant="brass">FDA</Chip>
+      <Chip variant="phthalo">CLP</Chip>
+      <Chip variant="phthalo">ADR</Chip>
+      <Chip variant="phthalo">IMDG</Chip>
+      <Chip variant="phthalo">OSHA HCS</Chip>
+    </div>
+
+    <ul class="list-disc pl-6 space-y-3 mb-10 marker:text-zinc-600">
+      <li><span class="font-semibold text-zinc-100">Certifications:</span> BS5609 (marine durability), IMDG / ADR compliance, FDA where relevant, ISO quality management.</li>
+      <li><span class="font-semibold text-zinc-100">Material range:</span> chemical resistance, temperature range, substrate options.</li>
+      <li><span class="font-semibold text-zinc-100">GHS template support:</span> CLP-compliant layouts, language coverage, pictogram libraries.</li>
+      <li><span class="font-semibold text-zinc-100">Regional availability:</span> EU, UK, US, global shipping and lead times.</li>
+      <li><span class="font-semibold text-zinc-100">Pricing model:</span> retail catalogue, enterprise quote, subscription, or hybrid.</li>
+      <li><span class="font-semibold text-zinc-100">Customer support:</span> documentation, technical pre-sales, post-sales responsiveness.</li>
+    </ul>
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-12 mb-4">
+      Editorial independence
+    </h2>
+    <p class="mb-4">
+      We participate in affiliate programs with some of the suppliers we cover. We do not let commission rates determine which suppliers we feature or how we rank them. Our
+      <a href="/affiliate-disclosure/" class="text-sky-400 hover:text-sky-300 underline underline-offset-2 transition-colors">Affiliate Disclosure</a>
+      describes exactly how affiliate relationships work and where they appear.
+    </p>
+    <p class="mb-6">
+      We frequently recommend suppliers for which we receive no commission. We decline affiliate partnerships when the product is not a fit for our readers. Sponsored placements, if any, are labelled <span class="font-semibold text-zinc-100">Sponsored</span> and segregated from editorial content &mdash; there is no sponsored content on the site at present.
+    </p>
+
+    <Callout variant="brass" title="Our commitment">
+      Editorial recommendations are written before any affiliate decision is made. If an affiliate partner&apos;s product no longer meets our standard, we remove the affiliate placement before we change the recommendation.
+    </Callout>
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-12 mb-4">
+      Part of the GHS Ecosystem
+    </h2>
+    <p class="mb-6">
+      GHS Labels is one of three connected sites focused on different stages of chemical labelling compliance:
+    </p>
+    <ul class="list-disc pl-6 space-y-3 mb-10 marker:text-zinc-600">
+      <li>
+        <a href="https://ghssymbols.com/" class="text-sky-400 hover:text-sky-300 underline underline-offset-2 transition-colors font-semibold">GHS Symbols</a>
+        &mdash; hazard classification reference, H- and P-statement library, ATE calculator, storage segregation guidance.
+      </li>
+      <li>
+        <a href="https://ghspictograms.com/" class="text-sky-400 hover:text-sky-300 underline underline-offset-2 transition-colors font-semibold">GHS Pictograms</a>
+        &mdash; pictogram library, free Label Constructor tool, Compliance Hub covering CLP, OSHA HCS, REACH, and UN GHS.
+      </li>
+      <li>
+        <span class="font-semibold text-zinc-100">GHS Labels</span> (this site)
+        &mdash; supplier comparisons, materials, and procurement guides.
+      </li>
+    </ul>
+    <p class="mb-10">
+      Each site is free to use. Together, they cover the journey from classifying a hazardous substance, to designing the label, to sourcing certified printing.
+    </p>
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-12 mb-4">
+      Contact
+    </h2>
+    <p class="mb-4">
+      For editorial questions, supplier inclusion requests, or general feedback, email
+      <a href="mailto:sergejssevcenko@ghslabels.com" class="text-sky-400 hover:text-sky-300 underline underline-offset-2 transition-colors">sergejssevcenko@ghslabels.com</a>.
+    </p>
+    <p class="mb-4">
+      For label quotes or compliance audits, use the
+      <a href="/quote/" class="text-sky-400 hover:text-sky-300 underline underline-offset-2 transition-colors">request for quote</a>
+      form &mdash; we typically respond within one business day.
+    </p>
+
+  </article>
+</Layout>

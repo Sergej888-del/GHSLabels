@@ -1,12 +1,19 @@
 @import "tailwindcss";
 
+/* ============================================================
+   ghslabels.com — Phthalo Night design tokens
+   Direction: committed dark + light as precious accent.
+   Reference: Refactoring UI (Wathan/Schoger), Material Design 3
+   dark theme, Linear marketing, Albers' "Interaction of Color".
+   ============================================================ */
+
 @theme {
   /* Font families */
   --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
 
-  /* Foundation — warm zinc */
-  --color-zinc-50: #fafafa;
+  /* Zinc — foundation, tonal surfaces for dark elevation */
+  --color-zinc-50:  #fafafa;
   --color-zinc-100: #f4f4f5;
   --color-zinc-200: #e4e4e7;
   --color-zinc-300: #d4d4d8;
@@ -18,81 +25,111 @@
   --color-zinc-900: #18181b;
   --color-zinc-950: #09090b;
 
-  /* Ecosystem navy */
+  /* Navy — family ecosystem signal (matches siblings exactly) */
   --color-blue-100: #dbeafe;
   --color-blue-300: #93c5fd;
+  --color-blue-500: #3b82f6;
   --color-blue-700: #1d4ed8;
   --color-blue-800: #1e3a8a;
   --color-blue-950: #172554;
 
-  /* CTA orange */
-  --color-orange-100: #ffedd5;
+  /* Phthalo (sky family) — brand identity.
+     On dark we use 300/400 for visibility; deep 950 for tinted bg blocks. */
+  --color-sky-50:  #f0f9ff;
+  --color-sky-100: #e0f2fe;
+  --color-sky-200: #bae6fd;
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-sky-700: #0369a1;
+  --color-sky-800: #075985;
+  --color-sky-900: #0c4a6e;
+  --color-sky-950: #082f49;
+
+  /* Brass (amber family) — premium / certified semantic accent.
+     amber-300 glows on dark; amber-950 is subtle gold-tinted bg. */
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
+  --color-amber-950: #451a03;
+
+  /* Commerce — orange CTA, stays vibrant on dark */
   --color-orange-200: #fed7aa;
+  --color-orange-400: #fb923c;
   --color-orange-500: #f97316;
   --color-orange-600: #ea580c;
   --color-orange-900: #9a3412;
 
-  /* Hazard red */
-  --color-red-50: #fef2f2;
+  /* Hazard — red for substance warnings, danger states */
+  --color-red-50:  #fef2f2;
   --color-red-300: #fca5a5;
+  --color-red-400: #f87171;
   --color-red-600: #dc2626;
   --color-red-800: #991b1b;
-
-  /* Single-use highlight amber */
-  --color-amber-300: #fcd34d;
-
-  /* Shadow tokens — restrained, neutral */
-  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
-  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.10), 0 4px 6px -4px rgb(0 0 0 / 0.08);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.12), 0 8px 10px -6px rgb(0 0 0 / 0.10);
+  --color-red-900: #7f1d1d;
+  --color-red-950: #450a0a;
 }
 
-/* Base body styles */
+/* ============================================================
+   Semantic surface tokens (Material Design 3 tonal elevation)
+   ============================================================ */
+:root {
+  --surface-page:       var(--color-zinc-950);  /* #09090b — base layer */
+  --surface-section:    var(--color-zinc-900);  /* #18181b — content sections */
+  --surface-card:       #1f1f22;                /* between zinc-900/800 */
+  --surface-card-hover: var(--color-zinc-800);  /* #27272a */
+  --surface-elevated:   var(--color-zinc-700);  /* #3f3f46, rare */
+
+  /* The Spectrum Mark — signature gradient.
+     Passes through #3b82f6 (bright navy) at midpoint for family bridge. */
+  --spectrum-mark: linear-gradient(
+    90deg,
+    var(--color-blue-800)  0%,    /* navy — family kinship */
+    var(--color-blue-500)  50%,   /* bright bridge */
+    var(--color-sky-500)   100%   /* phthalo industrial — ghslabels own */
+  );
+}
+
+/* ============================================================
+   Base typography & body
+   ============================================================ */
 html {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-zinc-50);
-  color: var(--color-zinc-900);
-  font-size: 1.0625rem;
-  line-height: 1.65;
+  background: var(--surface-page);
+  color: var(--color-zinc-50);
   font-variant-numeric: tabular-nums;
+  line-height: 1.6;
 }
 
-/* Selection styling */
 ::selection {
-  background: var(--color-orange-200);
-  color: var(--color-orange-900);
+  background: var(--color-sky-950);
+  color: var(--color-sky-200);
 }
 
-/* Focus visible default */
 :focus-visible {
-  outline: 2px solid var(--color-orange-500);
+  outline: 2px solid var(--color-sky-400);
   outline-offset: 2px;
   border-radius: 2px;
 }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-  html {
-    scroll-behavior: auto;
-  }
-}
-
-/* Utility: tight letter-spacing for headlines */
-.tracking-tightest {
-  letter-spacing: -0.035em;
+/* ============================================================
+   Spectrum Mark — used in Layout.astro under EcosystemBanner
+   and above the footer. Subtle glow on dark.
+   ============================================================ */
+.spectrum-mark {
+  height: 3px;
+  background: var(--spectrum-mark);
+  box-shadow:
+    0 0 12px rgba(56, 189, 248, 0.45),
+    0 0 24px rgba(56, 189, 248, 0.18);
 }

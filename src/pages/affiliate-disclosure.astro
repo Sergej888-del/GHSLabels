@@ -1,0 +1,113 @@
+---
+// /affiliate-disclosure/ — required before any affiliate link goes live.
+// Complies with US FTC 16 CFR Part 255 and UK CAP Code Rule 2.4.
+
+import Layout from '../layouts/Layout.astro';
+import Callout from '../components/Callout.astro';
+
+const title = 'Affiliate Disclosure';
+const description =
+  'How GHS Labels participates in affiliate programs, how affiliate links are marked, and our editorial independence policy.';
+const lastUpdated = '22 May 2026';
+---
+
+<Layout title={title} description={description}>
+  <!-- Page header — elevated dark surface (zinc-900) vs page (zinc-950) -->
+  <section class="bg-zinc-900 border-b border-zinc-800">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
+      <p class="text-xs font-mono uppercase tracking-wider text-sky-400 mb-4 font-medium">Legal</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-50 mb-6 leading-tight">
+        Affiliate Disclosure
+      </h1>
+      <p class="text-lg text-zinc-300 leading-relaxed">
+        How we participate in affiliate programs, how we mark affiliate links, and why our editorial recommendations remain independent of commission rates.
+      </p>
+      <p class="text-sm text-zinc-500 mt-6 font-mono">Last updated: {lastUpdated}</p>
+    </div>
+  </section>
+
+  <!-- Body -->
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-zinc-300 leading-relaxed">
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-0 mb-4">
+      How affiliate relationships work
+    </h2>
+    <p class="mb-4">
+      GHS Labels (ghslabels.com) participates in affiliate programs with selected suppliers of GHS chemical labels, label printers, label materials, and compliance services. When a reader clicks an affiliate link from our pages and subsequently makes a purchase, we may earn a commission at no additional cost to the reader.
+    </p>
+    <p class="mb-10">
+      We treat these commissions as one revenue source among several, alongside our own custom printing and label audit services. Affiliate revenue does not determine which suppliers we cover, how we rank them, or what we recommend.
+    </p>
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-12 mb-4">
+      How affiliate links are marked
+    </h2>
+    <p class="mb-4">
+      Every outbound affiliate link on this site carries two visible signals plus two technical signals:
+    </p>
+    <ul class="list-disc pl-6 space-y-2 mb-4 marker:text-zinc-600">
+      <li>A dagger symbol (<span class="font-mono text-zinc-100">&dagger;</span>) appears immediately next to the link text.</li>
+      <li>Pages containing affiliate links display an affiliate disclosure banner above the fold.</li>
+      <li>The HTML attribute <code class="text-xs bg-zinc-800 text-sky-300 px-1.5 py-0.5 rounded">rel="sponsored nofollow noopener"</code> is applied to every affiliate link, in line with Google&apos;s webmaster guidelines.</li>
+      <li>Affiliate links open in a new tab via <code class="text-xs bg-zinc-800 text-sky-300 px-1.5 py-0.5 rounded">target="_blank"</code>.</li>
+    </ul>
+    <p class="mb-10">
+      If a link does not show a dagger and is not on a page with an affiliate disclosure banner, it is not an affiliate link.
+    </p>
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-12 mb-4">
+      Active affiliate programs
+    </h2>
+    <p class="mb-6">
+      We are in the process of establishing affiliate partnerships with selected GHS label suppliers and adjacent service providers. This section will list every active partnership as it goes live, along with the date the partnership began.
+    </p>
+
+    <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6 mb-10">
+      <p class="text-sm font-semibold text-zinc-100 mb-2 font-mono uppercase tracking-wider">Currently active</p>
+      <p class="text-sm text-zinc-500 italic">
+        No active affiliate programs at this time. This list will be updated when our first partnership goes live.
+      </p>
+    </div>
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-12 mb-4">
+      Editorial independence
+    </h2>
+    <p class="mb-4">
+      Our comparisons and supplier profiles are written before any affiliate decision is made. We frequently recommend suppliers and products for which we receive no commission, when they are the right fit for the reader.
+    </p>
+    <p class="mb-4">
+      We do not write comparison articles or supplier profiles in exchange for commission, payment, or product. Where a supplier has paid for a featured listing or sponsored placement, that listing is clearly labelled <span class="font-semibold text-zinc-100">Sponsored</span> and segregated from editorial content. There is no sponsored content on this site at present.
+    </p>
+    <p class="mb-6">
+      We may decline to recommend an affiliate partner if our editorial evaluation finds the product unsuitable for our readers, regardless of commission terms.
+    </p>
+
+    <Callout variant="brass" title="Editor's commitment">
+      If an affiliate partner&apos;s product no longer meets our editorial standard, we remove the affiliate placement before we change the recommendation. Commission never overrides accuracy.
+    </Callout>
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-12 mb-4">
+      Compliance with disclosure laws
+    </h2>
+    <p class="mb-4">
+      This disclosure is intended to satisfy material connection requirements under:
+    </p>
+    <ul class="list-disc pl-6 space-y-2 mb-10 marker:text-zinc-600">
+      <li>United States: <span class="font-semibold text-zinc-100">FTC 16 CFR Part 255</span> &mdash; Guides Concerning the Use of Endorsements and Testimonials in Advertising.</li>
+      <li>United Kingdom: <span class="font-semibold text-zinc-100">CAP Code Rule 2.4</span> &mdash; commercial intent must be obvious.</li>
+      <li>European Union: <span class="font-semibold text-zinc-100">Unfair Commercial Practices Directive 2005/29/EC, Article 7(2)</span> &mdash; hidden commercial intent is a misleading practice.</li>
+    </ul>
+
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-zinc-50 mt-12 mb-4">
+      Questions
+    </h2>
+    <p class="mb-4">
+      If you have questions about our affiliate relationships or editorial process, contact us at
+      <a href="mailto:sergejssevcenko@ghslabels.com" class="text-sky-400 hover:text-sky-300 underline underline-offset-2 transition-colors">sergejssevcenko@ghslabels.com</a>.
+    </p>
+    <p class="text-sm text-zinc-500 italic mt-10">
+      This disclosure was last updated on {lastUpdated} and may be revised as our affiliate programs change.
+    </p>
+
+  </article>
+</Layout>

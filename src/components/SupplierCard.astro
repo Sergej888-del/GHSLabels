@@ -1,0 +1,76 @@
+---
+// Supplier card — THE signature component of ghslabels.com.
+// Featured (brass) = top-tier, gradient fade + brass border + glowing badge.
+// Recommended (phthalo) = editorial pick, phthalo border + phthalo badge.
+// Neutral = generic listing, zinc border only.
+// Usage:
+//   <SupplierCard
+//     name="DuraLabel"
+//     tagline="BS5609-certified marine-grade specialists."
+//     href="/suppliers/duralabel/"
+//     marker="featured"
+//     tags={['EU/US', 'BS5609', 'Enterprise']}
+//   />
+
+export interface Props {
+  name: string;
+  tagline: string;
+  href: string;
+  marker?: 'featured' | 'recommended' | null;
+  tags?: string[];
+}
+
+const { name, tagline, href, marker = null, tags = [] } = Astro.props;
+
+// Card container styles per marker variant.
+// Featured uses a vertical brass gradient that fades into the card surface —
+// the signature visual effect.
+const cardClasses =
+  marker === 'featured'
+    ? 'border border-amber-900 bg-gradient-to-b from-amber-950/70 from-0% via-zinc-900 via-40% to-zinc-900 to-100% hover:border-amber-800'
+    : marker === 'recommended'
+    ? 'border border-sky-800 bg-zinc-900 hover:border-sky-700'
+    : 'border border-zinc-800 bg-zinc-900 hover:border-zinc-700';
+
+const markerLabel =
+  marker === 'featured' ? 'Featured' : marker === 'recommended' ? 'Recommended' : null;
+
+const markerClasses =
+  marker === 'featured'
+    ? 'bg-amber-950/80 text-amber-300 border-amber-900'
+    : marker === 'recommended'
+    ? 'bg-sky-950/80 text-sky-300 border-sky-900'
+    : '';
+
+const linkColor =
+  marker === 'featured'
+    ? 'text-amber-300 group-hover:text-amber-200'
+    : 'text-sky-400 group-hover:text-sky-300';
+---
+
+<a
+  href={href}
+  class={`group block rounded-xl p-7 transition-all duration-200 ${cardClasses}`}
+>
+  {(markerLabel || tags.length > 0) && (
+    <div class="flex flex-wrap gap-2 mb-5">
+      {markerLabel && (
+        <span class={`inline-block px-2.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider font-semibold border ${markerClasses}`}>
+          {markerLabel}
+        </span>
+      )}
+      {tags.map((tag) => (
+        <span class="inline-block px-2.5 py-0.5 rounded bg-zinc-800/80 text-zinc-400 text-[10px] font-mono uppercase tracking-wider border border-zinc-700">
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
+
+  <h3 class="text-xl font-semibold text-zinc-50 mb-2 tracking-tight">{name}</h3>
+  <p class="text-sm text-zinc-400 leading-relaxed mb-6">{tagline}</p>
+
+  <span class={`inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider font-medium transition-colors ${linkColor}`}>
+    View profile <span aria-hidden="true">&rarr;</span>
+  </span>
+</a>

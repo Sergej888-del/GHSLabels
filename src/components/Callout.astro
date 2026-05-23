@@ -1,0 +1,36 @@
+---
+// Inline callout block — Phthalo (regulatory/info) or Brass (editor's note/premium).
+// Usage:
+//   <Callout variant="phthalo" title="Regulatory note">
+//     BS5609 covers seawater immersion testing.
+//   </Callout>
+//   <Callout variant="brass" title="Editor's note">
+//     We recommend cross-certified suppliers for multi-jurisdiction shipments.
+//   </Callout>
+
+export interface Props {
+  variant?: 'phthalo' | 'brass';
+  title?: string;
+}
+
+const { variant = 'phthalo', title } = Astro.props;
+
+const containerClasses = variant === 'brass'
+  ? 'bg-amber-950/30 border-l-2 border-amber-700'
+  : 'bg-sky-950/30 border-l-2 border-sky-700';
+
+const titleClasses = variant === 'brass'
+  ? 'text-amber-300'
+  : 'text-sky-300';
+---
+
+<div class={`${containerClasses} rounded-r-lg px-5 py-4 my-6`}>
+  {title && (
+    <p class={`text-xs font-mono uppercase tracking-wider font-semibold mb-2 ${titleClasses}`}>
+      {title}
+    </p>
+  )}
+  <div class="text-sm text-zinc-300 leading-relaxed">
+    <slot />
+  </div>
+</div>

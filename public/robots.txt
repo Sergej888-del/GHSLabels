@@ -1,0 +1,15 @@
+# robots.txt for ghslabels.com
+# Allows all crawlers (including AI bots) by default.
+# Cloudflare "Managed robots.txt" MUST be DISABLED in the dashboard,
+# otherwise Cloudflare prepends its own rules and overrides this file.
+# AI Audit MUST also be DISABLED for the zone, otherwise AI crawlers
+# are silently blocked at the edge.
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /functions/
+Disallow: /_astro/
+Disallow: /admin/
+
+Sitemap: https://ghslabels.com/sitemap-index.xml

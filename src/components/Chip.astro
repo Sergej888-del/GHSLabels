@@ -1,0 +1,39 @@
+---
+// Inline chip badge — used for properties, filters, status markers.
+// Variants encode semantic: phthalo=brand/family, brass=premium/certified,
+// neutral=generic property, hazard=danger.
+// Usage:
+//   <Chip variant="phthalo" dot>EU/UK shipping</Chip>
+//   <Chip variant="brass">BS5609 certified</Chip>
+//   <Chip variant="neutral">Polypropylene</Chip>
+//   <Chip variant="hazard">CMR substance</Chip>
+
+export interface Props {
+  variant?: 'phthalo' | 'brass' | 'neutral' | 'hazard';
+  dot?: boolean;
+}
+
+const { variant = 'neutral', dot = false } = Astro.props;
+
+const containerMap = {
+  phthalo: 'bg-sky-950/60 text-sky-300 border-sky-900',
+  brass:   'bg-amber-950/50 text-amber-300 border-amber-900',
+  neutral: 'bg-zinc-800/80 text-zinc-300 border-zinc-700',
+  hazard:  'bg-red-950/50 text-red-300 border-red-900',
+};
+
+const dotMap = {
+  phthalo: 'bg-sky-400',
+  brass:   'bg-amber-400',
+  neutral: 'bg-zinc-400',
+  hazard:  'bg-red-400',
+};
+
+const containerClasses = containerMap[variant];
+const dotClasses = dotMap[variant];
+---
+
+<span class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${containerClasses}`}>
+  {dot && <span class={`w-1.5 h-1.5 rounded-full ${dotClasses}`}></span>}
+  <slot />
+</span>
