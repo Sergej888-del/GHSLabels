@@ -3,9 +3,10 @@
 // Home page for ghslabels.com.
 //
 // P1-B progress:
-//   Section 1 (Hero)            — commit 3361041
-//   Section 2 (Pillar grid)     — this commit
-//   Sections 3-10               — to be added in subsequent commits
+//   Section 1 (Hero)                        — commit 3361041
+//   Section 2 (Pillar grid)                 — commit (Section 2 initial)
+//   Section 1↔2 transition refinement       — this commit (Spectrum Mark + reduced padding)
+//   Sections 3-10                           — to be added in subsequent commits
 //
 // Design language: Phthalo Night, commerce-genre intensity.
 // CTA model: pure affiliate referral — NO Request-a-quote / RFQ / lead routing.
@@ -22,7 +23,9 @@ const pageDescription =
   <!-- ───────────────────────────────────────────────────────────────────── -->
   <!-- Section 1 — Hero                                                       -->
   <!-- ───────────────────────────────────────────────────────────────────── -->
-  <section class="relative overflow-hidden bg-zinc-950 py-24 sm:py-32 lg:py-40">
+  <!-- Asymmetric padding: generous top (pt-24/32/40), shorter bottom (pb-16/20/24) -->
+  <!-- because the next section is separated by a Spectrum Mark anchor.            -->
+  <section class="relative overflow-hidden bg-zinc-950 pt-24 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-24">
     <!-- Subtle phthalo radial gradient backdrop, top-right -->
     <div
       aria-hidden="true"
@@ -121,9 +124,16 @@ const pageDescription =
   </section>
 
   <!-- ───────────────────────────────────────────────────────────────────── -->
+  <!-- Spectrum Mark — separator between Hero (zinc-950) and Section 2 (zinc-900) -->
+  <!-- ───────────────────────────────────────────────────────────────────── -->
+  <div class="spectrum-mark"></div>
+
+  <!-- ───────────────────────────────────────────────────────────────────── -->
   <!-- Section 2 — Pillar grid · bento                                        -->
   <!-- ───────────────────────────────────────────────────────────────────── -->
-  <section class="bg-zinc-900 py-24 sm:py-32">
+  <!-- Reduced top padding (pt-16/20) because Spectrum Mark already creates a   -->
+  <!-- visual anchor — no need for additional vertical separation from Hero.  -->
+  <section class="bg-zinc-900 pt-16 pb-24 sm:pt-20 sm:pb-32">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Section header -->
       <div class="max-w-3xl">
