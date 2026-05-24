@@ -1,49 +1,49 @@
 ---
 // src/components/HubCard.astro
 //
-// One hub card. Variants depend on `intent` field of the Hub (set in src/lib/hubs.ts).
+// One hub card. Variants depend on `intent` field of the Hub (set in src/lib/hubs.ts)
+// AND on the `size` prop set at the call site.
 //
-// === Design v3 (permanent visual character, like SupplierCard) ===
+// === size prop ===
+//   'standard' (default) — vertical card with full description. For lists, listings, hub home pages.
+//   'featured'           — horizontal CTA card with brass treatment override. For Section 2 of home page.
+//   'compact'            — vertical card with line-clamped description. For grids next to featured.
 //
-// Populated states (count > 0 or undefined):
-//   phthalo (directory/comparison/reference):
-//     • permanent sky-400 glow halo (2-layer box-shadow)
-//     • inner radial gradient top-right (sky-400 @ 10% → transparent)
-//     • border sky-400 @ 20% → @ 40% on hover
-//     • halo intensifies on hover
+// === featured override ===
+// When size='featured', the card ALWAYS uses brass (amber) treatment regardless of hub.intent.
+// This implements design system rule: "Featured" = brass markers (premium/featured signaling),
+// matching SupplierCard's featured tier convention.
 //
-//   brass (commerce):
-//     • permanent amber-500 glow halo (2-layer box-shadow)
-//     • inner radial gradient top-right (amber-500 @ 10% → transparent)
-//     • border amber-500 @ 20% → @ 40% on hover
-//     • halo intensifies on hover
+// === Permanent glow halo + inner radial gradient ===
+// Populated cards have permanent visual character (not hover-only):
+//   phthalo intents → sky-400 halo + gradient
+//   commerce intent → amber-500 halo + gradient
+//   featured (any intent) → STRONGER amber-500 halo + gradient
+//   editorial intent → no glow (intentional neutral)
+//   coming-soon → all glow/gradient overridden via !important
 //
-//   neutral (editorial):
-//     • no glow, no gradient
-//     • plain zinc-800 border → zinc-700 on hover
-//     • creates intentional visual hierarchy: 4 phthalo + 2 brass + 1 neutral
-//
-// Coming-soon state (count === 0):
-//   • dimmed (opacity 60%), not clickable, no link
-//   • glow + gradient overridden via !important
-//   • "Coming soon" badge instead of count
-//
-// Self-contained: does not depend on .glow-* utilities from global.css.
+// Self-contained — does not depend on .glow-* utilities from global.css.
 
 import type { Hub } from '../lib/hubs';
 import { getHubUrl } from '../lib/hubs';
 
+type Size = 'standard' | 'featured' | 'compact';
+
 interface Props {
   hub: Hub;
   count?: number;
+  size?: Size;
 }
 
-const { hub, count } = Astro.props;
+const { hub, count, size = 'standard' } = Astro.props;
 const url = getHubUrl(hub);
 const isPopulated = count === undefined || count > 0;
 const showComingSoon = count === 0;
 
-// intent → abbr-square palette
+// Featured ALWAYS uses brass treatment (commerce intent), regardless of actual hub.intent.
+const effectiveIntent: Hub['intent'] =
+  size === 'featured' ? 'commerce' : hub.intent;
+
 const abbrPalette: Record<Hub['intent'], string> = {
   directory:  'bg-sky-950 text-sky-400',
   comparison: 'bg-sky-950 text-sky-400',
@@ -52,7 +52,6 @@ const abbrPalette: Record<Hub['intent'], string> = {
   editorial:  'bg-zinc-800 text-zinc-300',
 };
 
-// intent → "Explore →" link color (matches abbr-square family for internal consistency)
 const explorePalette: Record<Hub['intent'], string> = {
   directory:  'text-sky-400 group-hover:text-sky-300',
   comparison: 'text-sky-400 group-hover:text-sky-300',
@@ -67,69 +66,130 @@ const linkProps = isPopulated ? { href: url } : {};
 
 <Tag
   {...linkProps}
-  data-intent={hub.intent}
+  data-intent={effectiveIntent}
+  data-size={size}
   class:list={[
-    'hub-card group block rounded-lg p-6',
-    'transition-all duration-200',
+    'hub-card group block rounded-lg transition-all duration-200',
     isPopulated && 'hub-card-populated hover:-translate-y-0.5',
     !isPopulated && 'hub-card-coming-soon cursor-default opacity-60',
+    size === 'standard' && 'p-6',
+    size === 'featured' && 'p-6 sm:p-8',
+    size === 'compact' && 'p-5',
   ]}
 >
-  <div class="flex items-start justify-between gap-4">
-    <!-- Mono 3-letter abbr square -->
-    <div
-      class:list={[
-        'flex h-10 w-10 items-center justify-center rounded-md',
-        'font-mono text-sm font-medium tracking-tight',
-        abbrPalette[hub.intent],
-      ]}
-    >
-      {hub.abbr}
+  {size === 'featured' && (
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
+      <div
+        class:list={[
+          'flex h-14 w-14 shrink-0 items-center justify-center rounded-md',
+          'font-mono text-base font-semibold tracking-tight',
+          abbrPalette[effectiveIntent],
+        ]}
+      >
+        {hub.abbr}
+      </div>
+
+      <div class="flex-1">
+        <div class="flex items-start justify-between gap-4">
+          <h3 class="text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">
+            {hub.label}
+          </h3>
+          {count !== undefined && count > 0 && (
+            <span class="shrink-0 font-mono text-xs uppercase tracking-wider text-zinc-400">
+              {count} {hub.countLabel}
+            </span>
+          )}
+          {showComingSoon && (
+            <span class="shrink-0 font-mono text-xs uppercase tracking-wider text-zinc-600">
+              Coming soon
+            </span>
+          )}
+        </div>
+
+        <p class="mt-3 max-w-2xl text-base leading-relaxed text-zinc-300">
+          {hub.description}
+        </p>
+
+        {isPopulated && (
+          <span
+            class="mt-5 inline-flex items-center gap-2 rounded-md
+                   border border-amber-500/30 bg-amber-500/10
+                   px-4 py-2 font-mono text-xs uppercase tracking-wider text-amber-300
+                   transition-all duration-150
+                   group-hover:border-amber-400/50 group-hover:bg-amber-500/20 group-hover:text-amber-200"
+          >
+            Browse {hub.label.toLowerCase()} <span aria-hidden="true">→</span>
+          </span>
+        )}
+      </div>
     </div>
+  )}
 
-    <!-- Count caption OR Coming soon badge -->
-    {count !== undefined && count > 0 && (
-      <span class="font-mono text-xs uppercase tracking-wider text-zinc-500">
-        {count} {hub.countLabel}
-      </span>
-    )}
-    {showComingSoon && (
-      <span class="font-mono text-xs uppercase tracking-wider text-zinc-600">
-        Coming soon
-      </span>
-    )}
-  </div>
+  {size !== 'featured' && (
+    <Fragment>
+      <div class="flex items-start justify-between gap-4">
+        <div
+          class:list={[
+            'flex items-center justify-center rounded-md font-mono font-medium tracking-tight',
+            size === 'compact' ? 'h-9 w-9 text-xs' : 'h-10 w-10 text-sm',
+            abbrPalette[effectiveIntent],
+          ]}
+        >
+          {hub.abbr}
+        </div>
 
-  <h3 class="mt-4 text-xl font-semibold tracking-tight text-zinc-50">
-    {hub.label}
-  </h3>
+        {count !== undefined && count > 0 && (
+          <span class="font-mono text-xs uppercase tracking-wider text-zinc-500">
+            {count} {hub.countLabel}
+          </span>
+        )}
+        {showComingSoon && (
+          <span class="font-mono text-xs uppercase tracking-wider text-zinc-600">
+            Coming soon
+          </span>
+        )}
+      </div>
 
-  <p class="mt-2 text-sm leading-relaxed text-zinc-400">
-    {hub.description}
-  </p>
+      <h3
+        class:list={[
+          'mt-4 font-semibold tracking-tight text-zinc-50',
+          size === 'compact' ? 'text-lg' : 'text-xl',
+        ]}
+      >
+        {hub.label}
+      </h3>
 
-  {isPopulated && (
-    <span
-      class:list={[
-        'mt-4 inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider',
-        'transition-colors duration-150',
-        explorePalette[hub.intent],
-      ]}
-    >
-      Explore <span aria-hidden="true">→</span>
-    </span>
+      <p
+        class:list={[
+          'mt-2 text-sm leading-relaxed text-zinc-400',
+          size === 'compact' && 'line-clamp-2',
+        ]}
+      >
+        {hub.description}
+      </p>
+
+      {isPopulated && (
+        <span
+          class:list={[
+            'mt-4 inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider',
+            'transition-colors duration-150',
+            explorePalette[effectiveIntent],
+          ]}
+        >
+          Explore <span aria-hidden="true">→</span>
+        </span>
+      )}
+    </Fragment>
   )}
 </Tag>
 
 <style>
-  /* === Base card === */
   .hub-card {
     position: relative;
-    background-color: #18181b; /* zinc-900 */
-    border: 1px solid #27272a; /* zinc-800 */
+    background-color: #18181b;
+    border: 1px solid #27272a;
   }
 
-  /* === Phthalo (sky) — directory / comparison / reference === */
   .hub-card-populated[data-intent='directory'],
   .hub-card-populated[data-intent='comparison'],
   .hub-card-populated[data-intent='reference'] {
@@ -154,7 +214,6 @@ const linkProps = isPopulated ? { href: url } : {};
       0 0 64px -12px rgba(56, 189, 248, 0.24);
   }
 
-  /* === Brass (amber) — commerce === */
   .hub-card-populated[data-intent='commerce'] {
     background-color: #18181b;
     background-image: radial-gradient(
@@ -175,16 +234,32 @@ const linkProps = isPopulated ? { href: url } : {};
       0 0 64px -12px rgba(245, 158, 11, 0.24);
   }
 
-  /* === Neutral (zinc) — editorial === */
-  /* No glow, no gradient — intentional hierarchy: 4 phthalo + 2 brass + 1 neutral */
-  .hub-card-populated[data-intent='editorial']:hover {
-    border-color: #3f3f46; /* zinc-700 */
+  .hub-card-populated[data-size='featured'] {
+    background-image: radial-gradient(
+      ellipse 60% 80% at top right,
+      rgba(245, 158, 11, 0.14) 0%,
+      transparent 65%
+    );
+    border-color: rgba(245, 158, 11, 0.28);
+    box-shadow:
+      0 0 24px -3px rgba(245, 158, 11, 0.28),
+      0 0 56px -12px rgba(245, 158, 11, 0.18);
   }
 
-  /* === Coming-soon override — kills all intent-specific styling === */
+  .hub-card-populated[data-size='featured']:hover {
+    border-color: rgba(245, 158, 11, 0.50);
+    box-shadow:
+      0 0 36px -3px rgba(245, 158, 11, 0.48),
+      0 0 80px -12px rgba(245, 158, 11, 0.30);
+  }
+
+  .hub-card-populated[data-intent='editorial']:hover {
+    border-color: #3f3f46;
+  }
+
   .hub-card-coming-soon {
     background-image: none !important;
     box-shadow: none !important;
-    border-color: rgba(39, 39, 42, 0.60) !important; /* zinc-800/60 */
+    border-color: rgba(39, 39, 42, 0.60) !important;
   }
 </style>

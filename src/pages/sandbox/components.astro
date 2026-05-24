@@ -323,7 +323,7 @@ const description = 'Design system kitchen sink for ghslabels.com. Not indexed.'
         Intent variants: phthalo (directory/comparison/reference), brass (commerce), neutral (editorial).
       </p>
     </div>
-    <HubGrid />
+    <HubGrid featuredSlug="suppliers" />
   </section>
 
   <section class="mt-16 border-t border-zinc-800 pt-12">
@@ -348,6 +348,35 @@ const description = 'Design system kitchen sink for ghslabels.com. Not indexed.'
       <HubCard hub={HUBS[5]} count={3} />
       <HubCard hub={HUBS[6]} count={9} />
       <HubCard hub={HUBS[3]} count={0} />
+    </div>
+  </section>
+
+  <section class="mt-16 border-t border-zinc-800 pt-12">
+    <div class="mb-6">
+      <span class="font-mono text-xs uppercase tracking-wider text-amber-300">
+        Component · Hub Grid · bento layout
+      </span>
+      <h2 class="mt-2 text-2xl font-bold tracking-tight text-zinc-50">
+        Bento layout — featured + compact tiles (manual counts)
+      </h2>
+      <p class="mt-2 max-w-2xl text-sm text-zinc-400">
+        Production layout for the home page Section 2. Suppliers as featured (brass treatment, full width).
+        Six other hubs as compact tiles in 3-col grid. Hover any card to see glow intensify.
+        Last tile (industries) deliberately shows Coming soon state inside the bento for contrast.
+      </p>
+    </div>
+
+    <div class="mb-4">
+      <HubCard hub={HUBS[0]} count={12} size="featured" />
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <HubCard hub={HUBS[1]} count={5} size="compact" />
+      <HubCard hub={HUBS[2]} count={8} size="compact" />
+      <HubCard hub={HUBS[4]} count={6} size="compact" />
+      <HubCard hub={HUBS[5]} count={3} size="compact" />
+      <HubCard hub={HUBS[6]} count={9} size="compact" />
+      <HubCard hub={HUBS[3]} count={0} size="compact" />
     </div>
   </section>
 

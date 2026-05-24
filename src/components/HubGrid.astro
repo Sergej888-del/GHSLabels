@@ -1,29 +1,40 @@
 ---
 // src/components/HubGrid.astro
 //
-// Renders a responsive grid of HubCard components, one per enabled hub.
-// Counts items per content collection automatically (excluding drafts).
+// Renders all enabled hubs from src/lib/hubs.ts as a responsive grid.
+// Counts items per content collection at build time (excluding drafts).
 //
-// Usage:
-//   <HubGrid />                    → all enabled hubs, 3-column desktop grid
-//   <HubGrid columns={2} />        → 2-column grid (e.g. for sidebar contexts)
+// === Usage ===
 //
-// No props are required. Hub registry is read at build time from src/lib/hubs.ts.
+// Equal layout (all 7 hubs as standard cards):
+//   <HubGrid />
+//
+// Bento layout (one featured + rest as compact tiles — production layout for home page):
+//   <HubGrid featuredSlug="suppliers" />
+//
+// 2-column compact (e.g. for sidebar contexts):
+//   <HubGrid columns={2} />
+//
+// === Behavior ===
+//   featuredSlug given     → matching hub renders as size='featured' (full width, brass);
+//                            other hubs render as size='compact' in the grid below.
+//   featuredSlug not given → all hubs render as size='standard' in the grid.
+//
+// Featured card sits above the grid with `mb-4` spacing. Grid below is responsive:
+// 1 col (mobile) → 2 cols (sm) → 3 cols (lg) — unless `columns={2}` is passed.
 
 import { getCollection, type CollectionKey } from 'astro:content';
 import { getEnabledHubs } from '../lib/hubs';
 import HubCard from './HubCard.astro';
 
 interface Props {
+  featuredSlug?: string;
   columns?: 2 | 3;
 }
 
-const { columns = 3 } = Astro.props;
+const { featuredSlug, columns = 3 } = Astro.props;
 const hubs = getEnabledHubs();
 
-// Count non-draft items per collection. Empty/missing folders → 0 (Astro
-// returns [] gracefully). Wrapped in try/catch for defensive handling
-// in case a collection key in HUBS doesn't match an actual collection.
 const counts: Record<string, number> = {};
 for (const hub of hubs) {
   try {
@@ -38,13 +49,30 @@ for (const hub of hubs) {
   }
 }
 
+const featured = featuredSlug
+  ? hubs.find((h) => h.slug === featuredSlug)
+  : undefined;
+const restHubs = featured
+  ? hubs.filter((h) => h.slug !== featuredSlug)
+  : hubs;
+
 const gridClass = columns === 2
   ? 'grid grid-cols-1 gap-4 sm:grid-cols-2'
   : 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3';
 ---
 
+{featured && (
+  <div class="mb-4">
+    <HubCard hub={featured} count={counts[featured.slug]} size="featured" />
+  </div>
+)}
+
 <div class={gridClass}>
-  {hubs.map((hub) => (
-    <HubCard hub={hub} count={counts[hub.slug]} />
+  {restHubs.map((hub) => (
+    <HubCard
+      hub={hub}
+      count={counts[hub.slug]}
+      size={featured ? 'compact' : 'standard'}
+    />
   ))}
 </div>
