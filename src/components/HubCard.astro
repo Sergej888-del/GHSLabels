@@ -3,13 +3,32 @@
 //
 // One hub card. Variants depend on `intent` field of the Hub (set in src/lib/hubs.ts).
 //
-// States:
-//   count > 0       → populated, fully clickable, hover-glow, count label
-//   count === 0     → coming-soon, dimmed, NOT clickable, "Coming soon" badge
-//   count undefined → treated as populated without count label (graceful fallback)
+// === Design v3 (permanent visual character, like SupplierCard) ===
 //
-// Used by HubGrid (which computes counts per collection) and any page that wants
-// to feature a single hub card.
+// Populated states (count > 0 or undefined):
+//   phthalo (directory/comparison/reference):
+//     • permanent sky-400 glow halo (2-layer box-shadow)
+//     • inner radial gradient top-right (sky-400 @ 10% → transparent)
+//     • border sky-400 @ 20% → @ 40% on hover
+//     • halo intensifies on hover
+//
+//   brass (commerce):
+//     • permanent amber-500 glow halo (2-layer box-shadow)
+//     • inner radial gradient top-right (amber-500 @ 10% → transparent)
+//     • border amber-500 @ 20% → @ 40% on hover
+//     • halo intensifies on hover
+//
+//   neutral (editorial):
+//     • no glow, no gradient
+//     • plain zinc-800 border → zinc-700 on hover
+//     • creates intentional visual hierarchy: 4 phthalo + 2 brass + 1 neutral
+//
+// Coming-soon state (count === 0):
+//   • dimmed (opacity 60%), not clickable, no link
+//   • glow + gradient overridden via !important
+//   • "Coming soon" badge instead of count
+//
+// Self-contained: does not depend on .glow-* utilities from global.css.
 
 import type { Hub } from '../lib/hubs';
 import { getHubUrl } from '../lib/hubs';
@@ -26,34 +45,34 @@ const showComingSoon = count === 0;
 
 // intent → abbr-square palette
 const abbrPalette: Record<Hub['intent'], string> = {
-  directory:  'bg-sky-950 text-sky-400',     // phthalo
-  comparison: 'bg-sky-950 text-sky-400',     // phthalo
-  reference:  'bg-sky-950 text-sky-400',     // phthalo
-  commerce:   'bg-amber-950 text-amber-300', // brass
-  editorial:  'bg-zinc-800 text-zinc-300',   // neutral
+  directory:  'bg-sky-950 text-sky-400',
+  comparison: 'bg-sky-950 text-sky-400',
+  reference:  'bg-sky-950 text-sky-400',
+  commerce:   'bg-amber-950 text-amber-300',
+  editorial:  'bg-zinc-800 text-zinc-300',
 };
 
-// intent → hover glow color (matches abbr palette)
-const hoverGlow: Record<Hub['intent'], string> = {
-  directory:  'group-hover:shadow-[0_0_24px_rgba(56,189,248,0.25)]',
-  comparison: 'group-hover:shadow-[0_0_24px_rgba(56,189,248,0.25)]',
-  reference:  'group-hover:shadow-[0_0_24px_rgba(56,189,248,0.25)]',
-  commerce:   'group-hover:shadow-[0_0_24px_rgba(252,211,77,0.25)]',
-  editorial:  'group-hover:shadow-[0_0_16px_rgba(161,161,170,0.20)]',
+// intent → "Explore →" link color (matches abbr-square family for internal consistency)
+const explorePalette: Record<Hub['intent'], string> = {
+  directory:  'text-sky-400 group-hover:text-sky-300',
+  comparison: 'text-sky-400 group-hover:text-sky-300',
+  reference:  'text-sky-400 group-hover:text-sky-300',
+  commerce:   'text-amber-300 group-hover:text-amber-200',
+  editorial:  'text-zinc-400 group-hover:text-zinc-300',
 };
 
-// Render as <a> if clickable, <div> if coming-soon (no link to 404)
 const Tag = isPopulated ? 'a' : 'div';
 const linkProps = isPopulated ? { href: url } : {};
 ---
 
 <Tag
   {...linkProps}
+  data-intent={hub.intent}
   class:list={[
-    'group block rounded-lg border bg-zinc-900 p-6',
+    'hub-card group block rounded-lg p-6',
     'transition-all duration-200',
-    isPopulated && 'border-zinc-800 hover:border-zinc-700 hover:-translate-y-0.5',
-    !isPopulated && 'border-zinc-800/60 cursor-default opacity-60',
+    isPopulated && 'hub-card-populated hover:-translate-y-0.5',
+    !isPopulated && 'hub-card-coming-soon cursor-default opacity-60',
   ]}
 >
   <div class="flex items-start justify-between gap-4">
@@ -62,9 +81,7 @@ const linkProps = isPopulated ? { href: url } : {};
       class:list={[
         'flex h-10 w-10 items-center justify-center rounded-md',
         'font-mono text-sm font-medium tracking-tight',
-        'transition-shadow duration-200',
         abbrPalette[hub.intent],
-        isPopulated && hoverGlow[hub.intent],
       ]}
     >
       {hub.abbr}
@@ -93,11 +110,81 @@ const linkProps = isPopulated ? { href: url } : {};
 
   {isPopulated && (
     <span
-      class="mt-4 inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider
-             text-sky-400 transition-colors duration-150
-             group-hover:text-sky-300"
+      class:list={[
+        'mt-4 inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider',
+        'transition-colors duration-150',
+        explorePalette[hub.intent],
+      ]}
     >
       Explore <span aria-hidden="true">→</span>
     </span>
   )}
 </Tag>
+
+<style>
+  /* === Base card === */
+  .hub-card {
+    position: relative;
+    background-color: #18181b; /* zinc-900 */
+    border: 1px solid #27272a; /* zinc-800 */
+  }
+
+  /* === Phthalo (sky) — directory / comparison / reference === */
+  .hub-card-populated[data-intent='directory'],
+  .hub-card-populated[data-intent='comparison'],
+  .hub-card-populated[data-intent='reference'] {
+    background-color: #18181b;
+    background-image: radial-gradient(
+      ellipse 80% 60% at top right,
+      rgba(56, 189, 248, 0.10) 0%,
+      transparent 60%
+    );
+    border-color: rgba(56, 189, 248, 0.20);
+    box-shadow:
+      0 0 18px -3px rgba(56, 189, 248, 0.22),
+      0 0 44px -12px rgba(56, 189, 248, 0.14);
+  }
+
+  .hub-card-populated[data-intent='directory']:hover,
+  .hub-card-populated[data-intent='comparison']:hover,
+  .hub-card-populated[data-intent='reference']:hover {
+    border-color: rgba(56, 189, 248, 0.42);
+    box-shadow:
+      0 0 28px -3px rgba(56, 189, 248, 0.40),
+      0 0 64px -12px rgba(56, 189, 248, 0.24);
+  }
+
+  /* === Brass (amber) — commerce === */
+  .hub-card-populated[data-intent='commerce'] {
+    background-color: #18181b;
+    background-image: radial-gradient(
+      ellipse 80% 60% at top right,
+      rgba(245, 158, 11, 0.10) 0%,
+      transparent 60%
+    );
+    border-color: rgba(245, 158, 11, 0.20);
+    box-shadow:
+      0 0 18px -3px rgba(245, 158, 11, 0.22),
+      0 0 44px -12px rgba(245, 158, 11, 0.14);
+  }
+
+  .hub-card-populated[data-intent='commerce']:hover {
+    border-color: rgba(245, 158, 11, 0.42);
+    box-shadow:
+      0 0 28px -3px rgba(245, 158, 11, 0.40),
+      0 0 64px -12px rgba(245, 158, 11, 0.24);
+  }
+
+  /* === Neutral (zinc) — editorial === */
+  /* No glow, no gradient — intentional hierarchy: 4 phthalo + 2 brass + 1 neutral */
+  .hub-card-populated[data-intent='editorial']:hover {
+    border-color: #3f3f46; /* zinc-700 */
+  }
+
+  /* === Coming-soon override — kills all intent-specific styling === */
+  .hub-card-coming-soon {
+    background-image: none !important;
+    box-shadow: none !important;
+    border-color: rgba(39, 39, 42, 0.60) !important; /* zinc-800/60 */
+  }
+</style>
