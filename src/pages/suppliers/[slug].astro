@@ -5,36 +5,48 @@
 // Activates: Layout → Breadcrumbs → SchemaOrg(Organization) chain.
 //
 // Sections (per ghslabels-architecture.md §5.3):
-//   1. Breadcrumbs (Home › Suppliers › [name])
-//   2. AffiliateDisclosure top banner (only if affiliateProgram='active')
-//   3. Hero — name, tagline, region/GHS/founded chips
-//   4. Quick facts (HQ, founded, pricing, categories)
-//   5. MDX body (<Content />)
-//   6. Strengths / Limitations two-column block
-//   7. Best for list
-//   8. Primary CTA — affiliate URL with rel="sponsored nofollow" if active,
+//   1. Hero (full-width, zinc-950 + phthalo radial backdrop)
+//      └─ Breadcrumbs + optional AffiliateDisclosure + name/tagline/chips
+//   2. Quick facts (elevated card on body)
+//   3. MDX body (<Content />)
+//   4. Strengths / Limitations two-column block
+//   5. Best for list
+//   6. Primary CTA — affiliate URL with rel="sponsored nofollow" if active,
 //      else plain websiteUrl. target="_blank" + noopener always.
-//   9. Related suppliers
-//   10. Related comparisons
-//   11. AffiliateDisclosure inline footer (if active)
+//   7. Related suppliers
+//   8. Related comparisons
+//   9. AffiliateDisclosure inline footer (if active)
 //
-// === Routing note ===
-// Astro 6 Content Layer API exposes `entry.id` (filename-stem) at the top
-// level; the legacy `entry.slug` is no longer auto-populated. The Zod schema
-// still requires a `slug` frontmatter field for SEO / canonical purposes,
-// but routing must use `entry.id` to match the dynamic route file name.
+// === v3 visual hierarchy (26 May 2026) ===
+// - Hero broken out of narrow container into full-width section with
+//   bg-zinc-950 + phthalo radial gradient backdrop (focal depth).
+// - Rest of content lives in narrow max-w-4xl on body bg-zinc-900.
+// - All elevated panels (Quick facts, Strengths, Limitations, Related cards,
+//   CTA divider) shift from bg-zinc-900/border-zinc-800 to
+//   bg-zinc-800/60 + border-zinc-700 — visible on the new body bg.
+// - prose-supplier headings soften from #fafafa to #f4f4f5 (zinc-50 → zinc-100).
 //
-// TODO (post-P1-E): AffiliateDisclosure top variant uses light bg-orange-50
-// from v1 H-eco palette. On Phthalo Night dark surfaces it stands out — which
-// is actually correct for FTC prominence — but a dark-theme variant could be
-// added to the AffiliateDisclosure component itself if visual harmony wins.
+// === Astro 6 Content Layer API notes ===
+// - entry.id (filename-stem) is used for routing params, not entry.slug.
+// - render() is imported from astro:content and called as render(entry);
+//   the legacy entry.render() method is removed in Astro 6.
+//
+// === TODO (post-P1-E) ===
+// AffiliateDisclosure top variant uses light bg-orange-50 from v1 H-eco
+// palette. On Phthalo Night dark surfaces it stands out — which is correct
+// for FTC prominence — but a dark-theme variant could be added later.
 
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import SchemaOrg from '../../components/SchemaOrg.astro';
 import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
 import Chip from '../../components/Chip.astro';
-import { getCollection, getEntry, render, type CollectionEntry } from 'astro:content';
+import {
+  getCollection,
+  getEntry,
+  render,
+  type CollectionEntry,
+} from 'astro:content';
 
 export async function getStaticPaths() {
   const items = await getCollection('suppliers', ({ data }) => !data.draft);
@@ -110,41 +122,53 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     }}
   />
 
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <Breadcrumbs
-      items={[
-        { label: 'Home', href: '/' },
-        { label: 'Suppliers', href: '/suppliers/' },
-        { label: data.name },
-      ]}
-    />
+  <!-- Hero: full-width, bg-zinc-950, phthalo radial backdrop -->
+  <section class="relative bg-zinc-950 overflow-hidden">
+    <div
+      class="absolute inset-0 pointer-events-none"
+      style="background: radial-gradient(ellipse at top right, rgba(56, 189, 248, 0.10) 0%, transparent 60%);"
+      aria-hidden="true"
+    ></div>
 
-    {hasActiveAffiliate && <AffiliateDisclosure variant="top" />}
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Suppliers', href: '/suppliers/' },
+          { label: data.name },
+        ]}
+      />
 
-    <!-- Hero -->
-    <header class="pt-4 pb-10">
-      <div class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
-        Supplier profile
-      </div>
-      <h1 class="text-4xl sm:text-5xl font-medium text-zinc-50 tracking-tight mb-4 leading-tight">
-        {data.name}
-      </h1>
-      <p class="text-lg text-zinc-400 leading-relaxed max-w-3xl mb-6">
-        {data.tagline}
-      </p>
-      <div class="flex flex-wrap gap-2">
-        {data.servesRegions.map((region) => (
-          <Chip variant="phthalo" dot>{region}</Chip>
-        ))}
-        {data.ghsSpecialist && <Chip variant="brass">GHS specialist</Chip>}
-        {data.foundedYear && (
-          <Chip variant="neutral">Since {data.foundedYear}</Chip>
-        )}
-      </div>
-    </header>
+      {hasActiveAffiliate && <AffiliateDisclosure variant="top" />}
 
-    <!-- Quick facts -->
-    <section class="bg-zinc-900 border border-zinc-800 rounded-lg p-6 mb-10">
+      <header class="pt-4">
+        <div class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
+          Supplier profile
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-medium text-zinc-50 tracking-tight mb-4 leading-tight">
+          {data.name}
+        </h1>
+        <p class="text-lg text-zinc-300 leading-relaxed max-w-3xl mb-6">
+          {data.tagline}
+        </p>
+        <div class="flex flex-wrap gap-2">
+          {data.servesRegions.map((region) => (
+            <Chip variant="phthalo" dot>{region}</Chip>
+          ))}
+          {data.ghsSpecialist && <Chip variant="brass">GHS specialist</Chip>}
+          {data.foundedYear && (
+            <Chip variant="neutral">Since {data.foundedYear}</Chip>
+          )}
+        </div>
+      </header>
+    </div>
+  </section>
+
+  <!-- Body content: inherits body bg-zinc-900 -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Quick facts (elevated panel on body) -->
+    <section class="bg-zinc-800/60 border border-zinc-700 rounded-lg p-6 mb-10">
       <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-4">
         Quick facts
       </h2>
@@ -177,9 +201,9 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
       <Content />
     </div>
 
-    <!-- Strengths / Limitations -->
+    <!-- Strengths / Limitations (elevated panels) -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
-      <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+      <div class="bg-zinc-800/60 border border-zinc-700 rounded-lg p-6">
         <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
           Strengths
         </h2>
@@ -192,7 +216,7 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
           ))}
         </ul>
       </div>
-      <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+      <div class="bg-zinc-800/60 border border-zinc-700 rounded-lg p-6">
         <h2 class="text-xs text-amber-300 font-mono uppercase tracking-wider mb-3">
           Limitations
         </h2>
@@ -223,7 +247,7 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     </section>
 
     <!-- Primary CTA -->
-    <section class="mb-10 text-center py-8 border-y border-zinc-800">
+    <section class="mb-10 text-center py-8 border-y border-zinc-700">
       <a
         href={ctaUrl}
         rel={ctaRel}
@@ -250,7 +274,7 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
             <li>
               <a
                 href={`/suppliers/${rel.id}/`}
-                class="flex items-center justify-between gap-3 p-4 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-sky-600 transition-colors"
+                class="flex items-center justify-between gap-3 p-4 bg-zinc-800/60 border border-zinc-700 rounded-lg hover:border-sky-600 transition-colors"
               >
                 <div class="min-w-0">
                   <div class="text-zinc-100 font-medium truncate">{rel.data.name}</div>
@@ -274,7 +298,7 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
             <li>
               <a
                 href={`/compare/${rel.id}/`}
-                class="block p-4 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-sky-600 transition-colors"
+                class="block p-4 bg-zinc-800/60 border border-zinc-700 rounded-lg hover:border-sky-600 transition-colors"
               >
                 <div class="text-zinc-100 font-medium">{rel.data.title}</div>
                 <div class="text-xs text-zinc-500 mt-1">{rel.data.verdict}</div>
@@ -290,11 +314,13 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
 </Layout>
 
 <style>
-  /* MDX body typography — Phthalo Night palette.
+  /* MDX body typography — Phthalo Night v2 palette.
      Uses :global() because <Content /> renders user MDX which isn't
-     reachable by scoped class selectors. */
+     reachable by scoped class selectors.
+     Softened headings from zinc-50 (#fafafa) to zinc-100 (#f4f4f5) to
+     reduce harshness on long-form reading. */
   .prose-supplier :global(h2) {
-    color: #fafafa;
+    color: #f4f4f5;
     font-size: 1.5rem;
     font-weight: 500;
     letter-spacing: -0.01em;
@@ -340,7 +366,7 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     margin-bottom: 0.5rem;
   }
   .prose-supplier :global(strong) {
-    color: #fafafa;
+    color: #f4f4f5;
     font-weight: 500;
   }
   .prose-supplier :global(code) {

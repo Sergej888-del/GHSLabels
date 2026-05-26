@@ -5,27 +5,18 @@
 // /industries/, /kits/, /services/, /guides/). Wraps the base Layout.astro
 // with a hero section, optional filter chips, and a slot for the items grid.
 //
+// === v2 visual hierarchy (26 May 2026) ===
+// Hero now uses bg-zinc-950 (deeper than body zinc-900) + subtle Phthalo
+// radial gradient at top-right for focal anchoring. Filter chips bar uses
+// zinc-800 instead of zinc-900 (which now equals body). Items section drops
+// explicit bg-zinc-950 — naturally inherits zinc-900 from body.
+//
 // Cards are rendered by the consumer via the default <slot />. This keeps
 // HubPageLayout decoupled from each collection's shape — suppliers/index.astro
 // renders SupplierCards, compare/index.astro renders ComparisonCards, etc.
 //
 // Empty state is handled automatically: if itemCount === 0, the slot is
 // hidden and a "Coming soon" placeholder shows the hub's 3-letter abbr.
-//
-// Example usage in src/pages/suppliers/index.astro:
-//   ---
-//   import HubPageLayout from '../../layouts/HubPageLayout.astro';
-//   import { getHubBySlug } from '../../lib/hubs';
-//   import { getCollection } from 'astro:content';
-//
-//   const hub = getHubBySlug('suppliers')!;
-//   const items = await getCollection('suppliers', ({ data }) => !data.draft);
-//   ---
-//   <HubPageLayout hub={hub} itemCount={items.length}>
-//     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-//       {items.map(item => <SupplierCard supplier={item} />)}
-//     </div>
-//   </HubPageLayout>
 
 import Layout from './Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
@@ -57,9 +48,15 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
   pathname={`/${hub.slug}/`}
   noindex={noindex}
 >
-  <!-- Hero -->
-  <section class="bg-zinc-950 pt-10 sm:pt-14 lg:pt-16 pb-8 sm:pb-12">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Hero — deeper than body, with phthalo radial backdrop -->
+  <section class="relative bg-zinc-950 overflow-hidden pt-10 sm:pt-14 lg:pt-16 pb-10 sm:pb-14">
+    <div
+      class="absolute inset-0 pointer-events-none"
+      style="background: radial-gradient(ellipse at top right, rgba(56, 189, 248, 0.10) 0%, transparent 60%);"
+      aria-hidden="true"
+    ></div>
+
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <Breadcrumbs items={[
         { label: 'Home', href: '/' },
         { label: hub.label }
@@ -85,7 +82,7 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
   </section>
 
   {filterChips && filterChips.length > 0 && (
-    <section class="bg-zinc-900/50 border-t border-zinc-800 py-4">
+    <section class="bg-zinc-800/50 border-y border-zinc-700 py-4">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-wrap gap-2">
           {filterChips.map((chip) =>
@@ -123,15 +120,15 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
     </section>
   )}
 
-  <!-- Items grid (slot) or empty state -->
-  <section class="bg-zinc-950 py-12 sm:py-16">
+  <!-- Items grid (slot) or empty state — inherits body zinc-900 -->
+  <section class="py-12 sm:py-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       {itemCount === 0 ? (
         <div class="text-center py-12 sm:py-16">
-          <div class="text-5xl sm:text-6xl font-mono text-zinc-800 mb-4 tracking-wider select-none">
+          <div class="text-5xl sm:text-6xl font-mono text-zinc-700 mb-4 tracking-wider select-none">
             {hub.abbr}
           </div>
-          <h2 class="text-2xl font-medium text-zinc-300 mb-3">
+          <h2 class="text-2xl font-medium text-zinc-200 mb-3">
             Coming soon
           </h2>
           <p class="text-sm text-zinc-500 max-w-md mx-auto leading-relaxed">

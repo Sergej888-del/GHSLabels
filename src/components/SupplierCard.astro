@@ -1,8 +1,19 @@
 ---
 // Supplier card — THE signature component of ghslabels.com.
-// Featured (brass) = top-tier, gradient fade + brass border + brass glow halo.
+//
+// === v2 visual hierarchy (26 May 2026) ===
+// All three variants now use zinc-800 as their base (was zinc-900) — this
+// gives elevation contrast against the new body bg of zinc-900. Without this,
+// neutral cards would visually disappear into the background.
+//
+// Neutral variant gains a subtle Phthalo gradient fade at the top, giving
+// even unmarked suppliers a sense of life and depth. It's quieter than
+// featured (brass) or recommended (phthalo with glow) — but no longer flat.
+//
+// === Variant semantics ===
+// Featured (brass) = top-tier with active affiliate, brass gradient + brass glow halo.
 // Recommended (phthalo) = editorial pick, phthalo border + phthalo glow halo.
-// Neutral = generic listing, zinc border only.
+// Neutral = generic listing, subtle phthalo fade + zinc border, no glow.
 //
 // Glow halos are semantic, not decorative:
 //   - Brass glow signals "premium / certified" (warm coal-glow)
@@ -29,14 +40,13 @@ export interface Props {
 const { name, tagline, href, marker = null, tags = [] } = Astro.props;
 
 // Card container styles per marker variant.
-// Featured uses a vertical brass gradient that fades into the card surface
-// plus a brass glow halo — the signature visual effect.
+// All variants base on zinc-800 (elevated above body zinc-900).
 const cardClasses =
   marker === 'featured'
-    ? 'border border-amber-900 bg-gradient-to-b from-amber-950/70 from-0% via-zinc-900 via-40% to-zinc-900 to-100% hover:border-amber-700 glow-brass hover:glow-brass-strong'
+    ? 'border border-amber-900 bg-gradient-to-b from-amber-950/70 from-0% via-zinc-800 via-40% to-zinc-800 to-100% hover:border-amber-700 glow-brass hover:glow-brass-strong'
     : marker === 'recommended'
-    ? 'border border-sky-800 bg-zinc-900 hover:border-sky-600 glow-phthalo hover:glow-phthalo-strong'
-    : 'border border-zinc-800 bg-zinc-900 hover:border-zinc-700';
+    ? 'border border-sky-800 bg-zinc-800 hover:border-sky-600 glow-phthalo hover:glow-phthalo-strong'
+    : 'border border-zinc-700 bg-gradient-to-b from-sky-950/40 from-0% via-zinc-800 via-35% to-zinc-800 to-100% hover:border-sky-800';
 
 const markerLabel =
   marker === 'featured' ? 'Featured' : marker === 'recommended' ? 'Recommended' : null;
@@ -72,10 +82,8 @@ const linkColor =
       ))}
     </div>
   )}
-
   <h3 class="text-xl font-semibold text-zinc-50 mb-2 tracking-tight">{name}</h3>
   <p class="text-sm text-zinc-400 leading-relaxed mb-6">{tagline}</p>
-
   <span class={`inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider font-medium transition-colors ${linkColor}`}>
     View profile <span aria-hidden="true">&rarr;</span>
   </span>

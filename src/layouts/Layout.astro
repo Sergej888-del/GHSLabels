@@ -1,8 +1,15 @@
 ---
-// Base layout for ghslabels.com — Phthalo Night direction.
+// Base layout for ghslabels.com - Phthalo Night direction.
 // SEO meta, fonts, ecosystem banner, Spectrum Mark, footer.
 // All pages MUST use this layout (or an extension of it).
 // See ghslabels-architecture.md §5 for per-page SEO requirements.
+//
+// === v2 visual hierarchy (26 May 2026) ===
+// Body bg softened from zinc-950 to zinc-900 to reduce text contrast harshness
+// on long-form content. Hero sections in child layouts still use zinc-950
+// (deeper than body) for focal anchoring — they appear darker than the page.
+// Footer remains zinc-950 by explicit request — keeps the bottom edge anchored
+// at the deepest tone while content surfaces breathe slightly lighter.
 
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
@@ -54,8 +61,8 @@ const fullTitle = title.includes('GHS Labels') ? title : `${title} | GHS Labels`
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
-    <!-- Mobile browser chrome — matches dark theme -->
-    <meta name="theme-color" content="#09090b" />
+    <!-- Mobile browser chrome - matches dark theme -->
+    <meta name="theme-color" content="#18181b" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -77,18 +84,15 @@ const fullTitle = title.includes('GHS Labels') ? title : `${title} | GHS Labels`
       '@type': 'WebSite',
       'name': 'GHS Labels',
       'url': siteUrl,
-      'description': 'Independent procurement reference for GHS chemical labels — compare suppliers, materials, and printing services.',
+      'description': 'Independent procurement reference for GHS chemical labels - compare suppliers, materials, and printing services.',
     })} />
   </head>
-
-  <body class="min-h-screen flex flex-col bg-zinc-950 text-zinc-50">
+  <body class="min-h-screen flex flex-col bg-zinc-900 text-zinc-100">
     <EcosystemBanner currentSite="labels" />
     <div class="spectrum-mark"></div>
-
     <main class="flex-1">
       <slot />
     </main>
-
     <div class="spectrum-mark"></div>
     <footer class="bg-zinc-950 text-zinc-400 py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -101,7 +105,6 @@ const fullTitle = title.includes('GHS Labels') ? title : `${title} | GHS Labels`
               Independent procurement reference for GHS chemical labels. Compare suppliers, materials, and certified printing services.
             </p>
           </div>
-
           <div>
             <p class="text-zinc-50 font-mono text-xs mb-4 uppercase tracking-wider font-semibold">Procurement</p>
             <ul class="space-y-2.5 text-sm">
@@ -111,7 +114,6 @@ const fullTitle = title.includes('GHS Labels') ? title : `${title} | GHS Labels`
               <li><a href="/industries/" class="hover:text-zinc-50 transition-colors">Industries</a></li>
             </ul>
           </div>
-
           <div>
             <p class="text-zinc-50 font-mono text-xs mb-4 uppercase tracking-wider font-semibold">Resources</p>
             <ul class="space-y-2.5 text-sm">
@@ -121,7 +123,6 @@ const fullTitle = title.includes('GHS Labels') ? title : `${title} | GHS Labels`
               <li><a href="/contact/" class="hover:text-zinc-50 transition-colors">Contact</a></li>
             </ul>
           </div>
-
           <div>
             <p class="text-zinc-50 font-mono text-xs mb-4 uppercase tracking-wider font-semibold">Legal</p>
             <ul class="space-y-2.5 text-sm">
@@ -131,9 +132,8 @@ const fullTitle = title.includes('GHS Labels') ? title : `${title} | GHS Labels`
             </ul>
           </div>
         </div>
-
         <div class="border-t border-zinc-800 pt-8 flex flex-col sm:flex-row justify-between gap-4 text-xs text-zinc-500 font-mono">
-          <p>© 2026 GHS Labels &middot; Part of the GHS Ecosystem</p>
+          <p>&copy; 2026 GHS Labels &middot; Part of the GHS Ecosystem</p>
           <div class="flex gap-5">
             <a href="https://ghssymbols.com/" class="hover:text-sky-300 transition-colors">GHS Symbols</a>
             <a href="https://ghspictograms.com/" class="hover:text-sky-300 transition-colors">GHS Pictograms</a>
