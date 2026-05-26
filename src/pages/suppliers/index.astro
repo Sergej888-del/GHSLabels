@@ -1,0 +1,82 @@
+---
+// src/pages/suppliers/index.astro
+//
+// Suppliers hub index page.
+// First page in P1-E to activate the Layout → HubPageLayout → Breadcrumbs chain.
+// Lists all non-draft supplier MDX entries; falls back to Coming Soon empty
+// state (handled by HubPageLayout) when no MDX exists yet.
+//
+// === Marker derivation ===
+// `marker` is not a field in the current Zod schema for suppliers.
+// Derived from affiliateProgram:
+//   - 'active'  → 'featured'  (signals trusted/premium tier)
+//   - 'pending' → null         (neutral; affiliate negotiations in progress)
+//   - 'none'    → null         (neutral; no affiliate relationship)
+//
+// To support editorial 'recommended' marker (independent of affiliate
+// status), extend src/content.config.ts suppliers schema with:
+//   marker: z.enum(['featured', 'recommended']).optional()
+// and replace deriveMarker() to return supplier.data.marker ?? derived.
+//
+// === Tags derivation ===
+// Tags are derived from existing schema fields. To customize per-supplier,
+// the schema would need an explicit `tags` field.
+
+import HubPageLayout from '../../layouts/HubPageLayout.astro';
+import SupplierCard from '../../components/SupplierCard.astro';
+import { getHubBySlug } from '../../lib/hubs';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+const hub = getHubBySlug('suppliers')!;
+const items = await getCollection('suppliers', ({ data }) => !data.draft);
+
+type SupplierEntry = CollectionEntry<'suppliers'>;
+
+function deriveMarker(
+  supplier: SupplierEntry
+): 'featured' | 'recommended' | null {
+  if (supplier.data.affiliateProgram === 'active') return 'featured';
+  return null;
+}
+
+function deriveTags(supplier: SupplierEntry): string[] {
+  const tags: string[] = [];
+  const regions = supplier.data.servesRegions ?? [];
+
+  if (regions.length >= 3) {
+    tags.push('Global');
+  } else if (regions.length > 0) {
+    tags.push(regions.join('/'));
+  }
+
+  if (supplier.data.ghsSpecialist) {
+    tags.push('GHS specialist');
+  }
+
+  return tags;
+}
+
+// Sort order: featured first, then recommended, then alphabetical by name.
+const markerRank = (m: 'featured' | 'recommended' | null): number =>
+  m === 'featured' ? 0 : m === 'recommended' ? 1 : 2;
+
+const sortedItems = items.sort((a, b) => {
+  const rankDiff = markerRank(deriveMarker(a)) - markerRank(deriveMarker(b));
+  if (rankDiff !== 0) return rankDiff;
+  return a.data.name.localeCompare(b.data.name);
+});
+---
+
+<HubPageLayout hub={hub} itemCount={sortedItems.length}>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    {sortedItems.map((supplier) => (
+      <SupplierCard
+        name={supplier.data.name}
+        tagline={supplier.data.tagline}
+        href={`/suppliers/${supplier.slug}/`}
+        marker={deriveMarker(supplier)}
+        tags={deriveTags(supplier)}
+      />
+    ))}
+  </div>
+</HubPageLayout>
