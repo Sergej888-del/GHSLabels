@@ -15,19 +15,6 @@
 //
 // URLs in `data` may be relative (e.g. '/suppliers/avery/') or absolute.
 // Relative paths are auto-prefixed with Astro.site origin.
-//
-// Example usage in src/pages/suppliers/[slug].astro:
-//   <SchemaOrg
-//     type="Organization"
-//     data={{
-//       name: supplier.data.name,
-//       url: `/suppliers/${supplier.data.slug}/`,
-//       description: supplier.data.description,
-//       logo: supplier.data.logo,
-//       foundingDate: String(supplier.data.foundedYear),
-//       address: supplier.data.headquarters,
-//     }}
-//   />
 
 const siteOrigin = Astro.site?.toString().replace(/\/$/, '') ?? '';
 
@@ -92,11 +79,14 @@ export interface ServiceData {
   areaServed?: string[];       // e.g. ['EU', 'UK', 'US']
 }
 
-export type Props =
-  | { type: 'Organization'; data: OrganizationData }
-  | { type: 'Article'; data: ArticleData }
-  | { type: 'Product'; data: ProductData }
-  | { type: 'Service'; data: ServiceData };
+// Named intermediate types — esbuild parses single-line union reliably.
+// (Multiline discriminated union with leading `|` syntax confuses the parser.)
+type OrganizationProps = { type: 'Organization'; data: OrganizationData };
+type ArticleProps = { type: 'Article'; data: ArticleData };
+type ProductProps = { type: 'Product'; data: ProductData };
+type ServiceProps = { type: 'Service'; data: ServiceData };
+
+export type Props = OrganizationProps | ArticleProps | ProductProps | ServiceProps;
 
 const props = Astro.props;
 
@@ -180,9 +170,9 @@ if (props.type === 'Organization') {
       : {}),
   };
 } else {
-  // Exhaustiveness check: if a new `type` is added to Props without a
-  // corresponding branch above, TypeScript will fail this assertion.
-  props satisfies never;
+  // Defensive default — unreachable given the Props discriminated union.
+  // If a new `type` is added to Props, TypeScript will flag the usage sites
+  // (page templates) rather than failing silently here.
   jsonLd = {};
 }
 

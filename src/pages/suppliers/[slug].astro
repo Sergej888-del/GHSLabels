@@ -1,0 +1,354 @@
+---
+// src/pages/suppliers/[slug].astro
+//
+// Supplier profile detail page.
+// Activates: Layout → Breadcrumbs → SchemaOrg(Organization) chain.
+//
+// Sections (per ghslabels-architecture.md §5.3):
+//   1. Breadcrumbs (Home › Suppliers › [name])
+//   2. AffiliateDisclosure top banner (only if affiliateProgram='active')
+//   3. Hero — name, tagline, region/GHS/founded chips
+//   4. Quick facts (HQ, founded, pricing, categories)
+//   5. MDX body (<Content />)
+//   6. Strengths / Limitations two-column block
+//   7. Best for list
+//   8. Primary CTA — affiliate URL with rel="sponsored nofollow" if active,
+//      else plain websiteUrl. target="_blank" + noopener always.
+//   9. Related suppliers
+//   10. Related comparisons
+//   11. AffiliateDisclosure inline footer (if active)
+//
+// TODO (post-P1-E): AffiliateDisclosure top variant uses light bg-orange-50
+// from v1 H-eco palette. On Phthalo Night dark surfaces it stands out — which
+// is actually correct for FTC prominence — but a dark-theme variant could be
+// added to the AffiliateDisclosure component itself if visual harmony wins.
+
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import SchemaOrg from '../../components/SchemaOrg.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import Chip from '../../components/Chip.astro';
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const items = await getCollection('suppliers', ({ data }) => !data.draft);
+  return items.map((item) => ({
+    params: { slug: item.slug },
+    props: { supplier: item },
+  }));
+}
+
+interface Props {
+  supplier: CollectionEntry<'suppliers'>;
+}
+
+const { supplier } = Astro.props;
+const { Content } = await supplier.render();
+
+const data = supplier.data;
+const hasActiveAffiliate = data.affiliateProgram === 'active';
+
+// CTA URL: affiliate link if active and present, otherwise plain website.
+// rel attribute: 'sponsored nofollow noopener' satisfies FTC + Google guidance
+// for paid links; 'noopener' alone for editorial outbound.
+const ctaUrl =
+  hasActiveAffiliate && data.affiliateUrl ? data.affiliateUrl : data.websiteUrl;
+const ctaRel = hasActiveAffiliate
+  ? 'sponsored nofollow noopener'
+  : 'noopener';
+
+// Resolve related entries with draft + missing filtering.
+async function resolveRelated<C extends 'suppliers' | 'comparisons'>(
+  collection: C,
+  slugs: string[] | undefined
+) {
+  if (!slugs?.length) return [];
+  const resolved = await Promise.all(
+    slugs.map((slug) => getEntry(collection, slug))
+  );
+  return resolved.filter(
+    (r): r is NonNullable<typeof r> => !!r && !r.data.draft
+  );
+}
+
+const relatedSuppliers = await resolveRelated('suppliers', data.relatedSuppliers);
+const relatedComparisons = await resolveRelated(
+  'comparisons',
+  data.relatedComparisons
+);
+
+// Human-readable pricing label.
+const pricingLabel: Record<typeof data.pricingModel, string> = {
+  retail: 'Retail / online catalog',
+  enterprise: 'Enterprise / contract pricing',
+  quote: 'Quote-based',
+  mixed: 'Retail + enterprise',
+};
+---
+
+<Layout
+  title={data.name}
+  description={data.tagline}
+  pathname={`/suppliers/${supplier.slug}/`}
+>
+  <SchemaOrg
+    type="Organization"
+    data={{
+      name: data.name,
+      url: `/suppliers/${supplier.slug}/`,
+      description: data.description,
+      logo: data.logo,
+      foundingDate: data.foundedYear ? String(data.foundedYear) : undefined,
+      address: data.headquarters,
+      sameAs: [data.websiteUrl],
+    }}
+  />
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <Breadcrumbs
+      items={[
+        { label: 'Home', href: '/' },
+        { label: 'Suppliers', href: '/suppliers/' },
+        { label: data.name },
+      ]}
+    />
+
+    {hasActiveAffiliate && <AffiliateDisclosure variant="top" />}
+
+    <!-- Hero -->
+    <header class="pt-4 pb-10">
+      <div class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
+        Supplier profile
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-medium text-zinc-50 tracking-tight mb-4 leading-tight">
+        {data.name}
+      </h1>
+      <p class="text-lg text-zinc-400 leading-relaxed max-w-3xl mb-6">
+        {data.tagline}
+      </p>
+      <div class="flex flex-wrap gap-2">
+        {data.servesRegions.map((region) => (
+          <Chip variant="phthalo" dot>{region}</Chip>
+        ))}
+        {data.ghsSpecialist && <Chip variant="brass">GHS specialist</Chip>}
+        {data.foundedYear && (
+          <Chip variant="neutral">Since {data.foundedYear}</Chip>
+        )}
+      </div>
+    </header>
+
+    <!-- Quick facts -->
+    <section class="bg-zinc-900 border border-zinc-800 rounded-lg p-6 mb-10">
+      <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-4">
+        Quick facts
+      </h2>
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+        {data.headquarters && (
+          <div>
+            <dt class="text-zinc-500 mb-1">Headquarters</dt>
+            <dd class="text-zinc-200">{data.headquarters}</dd>
+          </div>
+        )}
+        {data.foundedYear && (
+          <div>
+            <dt class="text-zinc-500 mb-1">Founded</dt>
+            <dd class="text-zinc-200">{data.foundedYear}</dd>
+          </div>
+        )}
+        <div>
+          <dt class="text-zinc-500 mb-1">Pricing model</dt>
+          <dd class="text-zinc-200">{pricingLabel[data.pricingModel]}</dd>
+        </div>
+        <div>
+          <dt class="text-zinc-500 mb-1">Product categories</dt>
+          <dd class="text-zinc-200">{data.productCategories.join(', ')}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- MDX body -->
+    <div class="prose-supplier mb-10">
+      <Content />
+    </div>
+
+    <!-- Strengths / Limitations -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+        <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
+          Strengths
+        </h2>
+        <ul class="space-y-2 text-sm text-zinc-300">
+          {data.strengths.map((item) => (
+            <li class="flex gap-2">
+              <span class="text-sky-400 shrink-0 font-mono">+</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+        <h2 class="text-xs text-amber-300 font-mono uppercase tracking-wider mb-3">
+          Limitations
+        </h2>
+        <ul class="space-y-2 text-sm text-zinc-300">
+          {data.weaknesses.map((item) => (
+            <li class="flex gap-2">
+              <span class="text-amber-400 shrink-0 font-mono">−</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Best for -->
+    <section class="mb-10">
+      <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
+        Best for
+      </h2>
+      <ul class="space-y-1.5 text-zinc-300 text-sm">
+        {data.bestFor.map((item) => (
+          <li class="flex gap-2">
+            <span class="text-sky-400 shrink-0">→</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- Primary CTA -->
+    <section class="mb-10 text-center py-8 border-y border-zinc-800">
+      <a
+        href={ctaUrl}
+        rel={ctaRel}
+        target="_blank"
+        class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-7 py-3 rounded-lg font-medium transition-colors"
+      >
+        Visit {data.name}
+        <span aria-hidden="true">↗</span>
+      </a>
+      <p class="text-xs text-zinc-500 mt-3">
+        {hasActiveAffiliate
+          ? 'Opens supplier website · affiliate link'
+          : 'Opens supplier website'}
+      </p>
+    </section>
+
+    {relatedSuppliers.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-4">
+          Related suppliers
+        </h2>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {relatedSuppliers.map((rel) => (
+            <li>
+              <a
+                href={`/suppliers/${rel.slug}/`}
+                class="flex items-center justify-between gap-3 p-4 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-sky-600 transition-colors"
+              >
+                <div class="min-w-0">
+                  <div class="text-zinc-100 font-medium truncate">{rel.data.name}</div>
+                  <div class="text-xs text-zinc-500 mt-1 line-clamp-2">{rel.data.tagline}</div>
+                </div>
+                <span class="text-sky-400 text-sm shrink-0" aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {relatedComparisons.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-4">
+          Comparisons
+        </h2>
+        <ul class="space-y-2">
+          {relatedComparisons.map((rel) => (
+            <li>
+              <a
+                href={`/compare/${rel.slug}/`}
+                class="block p-4 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-sky-600 transition-colors"
+              >
+                <div class="text-zinc-100 font-medium">{rel.data.title}</div>
+                <div class="text-xs text-zinc-500 mt-1">{rel.data.verdict}</div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {hasActiveAffiliate && <AffiliateDisclosure variant="inline" />}
+  </div>
+</Layout>
+
+<style>
+  /* MDX body typography — Phthalo Night palette.
+     Uses :global() because <Content /> renders user MDX which isn't
+     reachable by scoped class selectors. */
+  .prose-supplier :global(h2) {
+    color: #fafafa;
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  .prose-supplier :global(h3) {
+    color: #e4e4e7;
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .prose-supplier :global(p) {
+    color: #d4d4d8;
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+  .prose-supplier :global(a) {
+    color: #38bdf8;
+    text-decoration: underline;
+    text-decoration-color: #0c4a6e;
+    text-underline-offset: 3px;
+    transition: color 150ms, text-decoration-color 150ms;
+  }
+  .prose-supplier :global(a:hover) {
+    color: #7dd3fc;
+    text-decoration-color: #38bdf8;
+  }
+  .prose-supplier :global(ul) {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+    color: #d4d4d8;
+    margin-bottom: 1rem;
+  }
+  .prose-supplier :global(ol) {
+    list-style-type: decimal;
+    margin-left: 1.5rem;
+    color: #d4d4d8;
+    margin-bottom: 1rem;
+  }
+  .prose-supplier :global(li) {
+    margin-bottom: 0.5rem;
+  }
+  .prose-supplier :global(strong) {
+    color: #fafafa;
+    font-weight: 500;
+  }
+  .prose-supplier :global(code) {
+    background: #27272a;
+    color: #fcd34d;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+  }
+  .prose-supplier :global(blockquote) {
+    border-left: 2px solid #0369a1;
+    padding-left: 1rem;
+    color: #a1a1aa;
+    font-style: italic;
+    margin: 1.5rem 0;
+  }
+</style>
