@@ -1,0 +1,115 @@
+---
+// src/components/Breadcrumbs.astro
+//
+// Breadcrumb navigation with BreadcrumbList JSON-LD.
+// Used at the top of hub detail pages (/suppliers/[slug]/, /compare/[slug]/, etc).
+//
+// Behaviour rules:
+// - The last item is always rendered as the current page (non-clickable span
+//   with aria-current="page"), regardless of whether `href` was provided.
+// - Intermediate items render as links if `href` is given, else as plain text.
+// - JSON-LD BreadcrumbList is emitted inline. Schema.org allows BreadcrumbList
+//   in either <head> or <body>; Google parses both. Self-contained component,
+//   no Layout slot coupling.
+// - Mobile: horizontal overflow scroll with no visible scrollbar.
+//
+// Example usage:
+//   <Breadcrumbs items={[
+//     { label: 'Home', href: '/' },
+//     { label: 'Suppliers', href: '/suppliers/' },
+//     { label: 'Avery' }
+//   ]} />
+
+export interface BreadcrumbItem {
+  label: string;
+  href?: string; // omit for the current page (last item)
+}
+
+export interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+
+// Absolute URLs for JSON-LD. Astro.site is set to 'https://ghslabels.com'
+// in astro.config.mjs and arrives here as a URL object (toString -> trailing slash).
+const siteOrigin = Astro.site?.toString().replace(/\/$/, '') ?? '';
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => {
+    const entry: Record<string, unknown> = {
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+    };
+    if (item.href) {
+      entry.item = item.href.startsWith('http')
+        ? item.href
+        : `${siteOrigin}${item.href}`;
+    }
+    return entry;
+  }),
+};
+
+// Escape `</` in JSON values to defend against script-tag injection inside
+// item labels or URLs. Standard JSON-LD-in-HTML hardening.
+const jsonLdSafe = JSON.stringify(breadcrumbJsonLd).replace(/</g, '\\u003c');
+---
+
+<nav
+  aria-label="Breadcrumb"
+  class="breadcrumbs-nav max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4"
+>
+  <ol class="flex items-center gap-2 text-sm overflow-x-auto whitespace-nowrap">
+    {items.map((item, index) => {
+      const isLast = index === items.length - 1;
+      const isLink = !!item.href && !isLast;
+      return (
+        <li class="flex items-center gap-2">
+          {isLink ? (
+            <a
+              href={item.href}
+              class="text-zinc-400 hover:text-sky-400 transition-colors duration-150"
+            >
+              {item.label}
+            </a>
+          ) : (
+            <span
+              class={isLast ? 'text-zinc-300' : 'text-zinc-400'}
+              aria-current={isLast ? 'page' : undefined}
+            >
+              {item.label}
+            </span>
+          )}
+          {!isLast && (
+            <svg
+              class="w-3.5 h-3.5 text-zinc-600 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+</nav>
+
+<script type="application/ld+json" set:html={jsonLdSafe} />
+
+<style>
+  /* Hide horizontal scrollbar on mobile overflow while keeping scroll behaviour */
+  .breadcrumbs-nav ol {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .breadcrumbs-nav ol::-webkit-scrollbar {
+    display: none;
+  }
+</style>
