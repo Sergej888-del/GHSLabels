@@ -1,0 +1,146 @@
+---
+// src/layouts/HubPageLayout.astro
+//
+// Generic layout for hub INDEX pages (/suppliers/, /compare/, /materials/,
+// /industries/, /kits/, /services/, /guides/). Wraps the base Layout.astro
+// with a hero section, optional filter chips, and a slot for the items grid.
+//
+// Cards are rendered by the consumer via the default <slot />. This keeps
+// HubPageLayout decoupled from each collection's shape — suppliers/index.astro
+// renders SupplierCards, compare/index.astro renders ComparisonCards, etc.
+//
+// Empty state is handled automatically: if itemCount === 0, the slot is
+// hidden and a "Coming soon" placeholder shows the hub's 3-letter abbr.
+//
+// Example usage in src/pages/suppliers/index.astro:
+//   ---
+//   import HubPageLayout from '../../layouts/HubPageLayout.astro';
+//   import { getHubBySlug } from '../../lib/hubs';
+//   import { getCollection } from 'astro:content';
+//
+//   const hub = getHubBySlug('suppliers')!;
+//   const items = await getCollection('suppliers', ({ data }) => !data.draft);
+//   ---
+//   <HubPageLayout hub={hub} itemCount={items.length}>
+//     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+//       {items.map(item => <SupplierCard supplier={item} />)}
+//     </div>
+//   </HubPageLayout>
+
+import Layout from './Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import type { Hub } from '../lib/hubs';
+
+export interface FilterChip {
+  label: string;
+  href?: string;     // omit for static (non-clickable) chips
+  count?: number;
+  active?: boolean;
+}
+
+export interface Props {
+  hub: Hub;
+  itemCount: number;            // typically items.length from the consumer
+  filterChips?: FilterChip[];   // optional facet filters under the hero
+  noindex?: boolean;            // forwards to Layout
+}
+
+const { hub, itemCount, filterChips, noindex = false } = Astro.props;
+
+// Padded eyebrow number: order=1 → "01", order=7 → "07".
+const eyebrowNumber = String(hub.order).padStart(2, '0');
+---
+
+<Layout
+  title={hub.label}
+  description={hub.description}
+  pathname={`/${hub.slug}/`}
+  noindex={noindex}
+>
+  <!-- Hero -->
+  <section class="bg-zinc-950 pt-10 sm:pt-14 lg:pt-16 pb-8 sm:pb-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs items={[
+        { label: 'Home', href: '/' },
+        { label: hub.label }
+      ]} />
+
+      <div class="mt-2 mb-4 text-xs text-sky-400 font-mono uppercase tracking-wider">
+        {eyebrowNumber} · {hub.label}
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-medium text-zinc-50 tracking-tight mb-4 leading-tight">
+        {hub.label}
+      </h1>
+
+      <p class="text-lg text-zinc-400 max-w-2xl leading-relaxed">
+        {hub.description}
+      </p>
+
+      <div class="mt-6 flex items-center gap-2 text-sm">
+        <span class="font-mono text-sky-400 tabular-nums">{itemCount}</span>
+        <span class="text-zinc-500">{hub.countLabel}</span>
+      </div>
+    </div>
+  </section>
+
+  {filterChips && filterChips.length > 0 && (
+    <section class="bg-zinc-900/50 border-t border-zinc-800 py-4">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap gap-2">
+          {filterChips.map((chip) =>
+            chip.href ? (
+              <a
+                href={chip.href}
+                class={
+                  chip.active
+                    ? 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-950 border border-sky-400 text-sky-200 text-xs rounded transition-colors'
+                    : 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs rounded hover:bg-zinc-700 hover:text-zinc-200 transition-colors'
+                }
+              >
+                <span>{chip.label}</span>
+                {chip.count !== undefined && (
+                  <span class="opacity-60 font-mono tabular-nums">{chip.count}</span>
+                )}
+              </a>
+            ) : (
+              <span
+                class={
+                  chip.active
+                    ? 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-950 border border-sky-400 text-sky-200 text-xs rounded'
+                    : 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs rounded'
+                }
+              >
+                <span>{chip.label}</span>
+                {chip.count !== undefined && (
+                  <span class="opacity-60 font-mono tabular-nums">{chip.count}</span>
+                )}
+              </span>
+            )
+          )}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Items grid (slot) or empty state -->
+  <section class="bg-zinc-950 py-12 sm:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {itemCount === 0 ? (
+        <div class="text-center py-12 sm:py-16">
+          <div class="text-5xl sm:text-6xl font-mono text-zinc-800 mb-4 tracking-wider select-none">
+            {hub.abbr}
+          </div>
+          <h2 class="text-2xl font-medium text-zinc-300 mb-3">
+            Coming soon
+          </h2>
+          <p class="text-sm text-zinc-500 max-w-md mx-auto leading-relaxed">
+            We are curating the first {hub.countLabel} for this hub. Check back shortly.
+          </p>
+        </div>
+      ) : (
+        <slot />
+      )}
+    </div>
+  </section>
+</Layout>
