@@ -18,6 +18,12 @@
 //   10. Related comparisons
 //   11. AffiliateDisclosure inline footer (if active)
 //
+// === Routing note ===
+// Astro 6 Content Layer API exposes `entry.id` (filename-stem) at the top
+// level; the legacy `entry.slug` is no longer auto-populated. The Zod schema
+// still requires a `slug` frontmatter field for SEO / canonical purposes,
+// but routing must use `entry.id` to match the dynamic route file name.
+//
 // TODO (post-P1-E): AffiliateDisclosure top variant uses light bg-orange-50
 // from v1 H-eco palette. On Phthalo Night dark surfaces it stands out — which
 // is actually correct for FTC prominence — but a dark-theme variant could be
@@ -28,12 +34,12 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import SchemaOrg from '../../components/SchemaOrg.astro';
 import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
 import Chip from '../../components/Chip.astro';
-import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import { getCollection, getEntry, render, type CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
   const items = await getCollection('suppliers', ({ data }) => !data.draft);
   return items.map((item) => ({
-    params: { slug: item.slug },
+    params: { slug: item.id },
     props: { supplier: item },
   }));
 }
@@ -43,7 +49,7 @@ interface Props {
 }
 
 const { supplier } = Astro.props;
-const { Content } = await supplier.render();
+const { Content } = await render(supplier);
 
 const data = supplier.data;
 const hasActiveAffiliate = data.affiliateProgram === 'active';
@@ -89,13 +95,13 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
 <Layout
   title={data.name}
   description={data.tagline}
-  pathname={`/suppliers/${supplier.slug}/`}
+  pathname={`/suppliers/${supplier.id}/`}
 >
   <SchemaOrg
     type="Organization"
     data={{
       name: data.name,
-      url: `/suppliers/${supplier.slug}/`,
+      url: `/suppliers/${supplier.id}/`,
       description: data.description,
       logo: data.logo,
       foundingDate: data.foundedYear ? String(data.foundedYear) : undefined,
@@ -243,7 +249,7 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
           {relatedSuppliers.map((rel) => (
             <li>
               <a
-                href={`/suppliers/${rel.slug}/`}
+                href={`/suppliers/${rel.id}/`}
                 class="flex items-center justify-between gap-3 p-4 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-sky-600 transition-colors"
               >
                 <div class="min-w-0">
@@ -267,7 +273,7 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
           {relatedComparisons.map((rel) => (
             <li>
               <a
-                href={`/compare/${rel.slug}/`}
+                href={`/compare/${rel.id}/`}
                 class="block p-4 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-sky-600 transition-colors"
               >
                 <div class="text-zinc-100 font-medium">{rel.data.title}</div>

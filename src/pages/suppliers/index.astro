@@ -21,6 +21,12 @@
 // === Tags derivation ===
 // Tags are derived from existing schema fields. To customize per-supplier,
 // the schema would need an explicit `tags` field.
+//
+// === Routing note ===
+// Astro 6 Content Layer API exposes `entry.id` (filename-stem) at the top
+// level; the legacy `entry.slug` is no longer auto-populated. The Zod schema
+// still requires a `slug` frontmatter field for SEO / canonical purposes, but
+// routing must use `entry.id` to match the dynamic route file name.
 
 import HubPageLayout from '../../layouts/HubPageLayout.astro';
 import SupplierCard from '../../components/SupplierCard.astro';
@@ -73,7 +79,7 @@ const sortedItems = items.sort((a, b) => {
       <SupplierCard
         name={supplier.data.name}
         tagline={supplier.data.tagline}
-        href={`/suppliers/${supplier.slug}/`}
+        href={`/suppliers/${supplier.id}/`}
         marker={deriveMarker(supplier)}
         tags={deriveTags(supplier)}
       />
