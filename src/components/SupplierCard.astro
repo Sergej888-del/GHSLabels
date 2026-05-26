@@ -1,24 +1,20 @@
 ---
 // Supplier card — THE signature component of ghslabels.com.
 //
-// === v2 visual hierarchy (26 May 2026) ===
-// All three variants now use zinc-800 as their base (was zinc-900) — this
-// gives elevation contrast against the new body bg of zinc-900. Without this,
-// neutral cards would visually disappear into the background.
+// === v3 visual hierarchy (26 May 2026) ===
+// Cards are no longer flat. Each variant has a visible color accent at the
+// top that fades into a zinc-800 base. This produces real depth on the body
+// zinc-900 page surface, not just a barely-visible border.
 //
-// Neutral variant gains a subtle Phthalo gradient fade at the top, giving
-// even unmarked suppliers a sense of life and depth. It's quieter than
-// featured (brass) or recommended (phthalo with glow) — but no longer flat.
+// Featured (brass) gets the strongest gradient (70% opacity from top stop)
+// plus its glow halo. Recommended (phthalo) gets a 50% phthalo gradient plus
+// phthalo glow. Neutral (no marker) still gets a 50% phthalo gradient — not
+// as strong as recommended, but clearly visible.
 //
 // === Variant semantics ===
-// Featured (brass) = top-tier with active affiliate, brass gradient + brass glow halo.
-// Recommended (phthalo) = editorial pick, phthalo border + phthalo glow halo.
-// Neutral = generic listing, subtle phthalo fade + zinc border, no glow.
-//
-// Glow halos are semantic, not decorative:
-//   - Brass glow signals "premium / certified" (warm coal-glow)
-//   - Phthalo glow signals "editorial recommendation" (cool brand-glow)
-//   - Hover intensifies the glow to invite interaction
+// Featured (brass)     = active affiliate, top-tier — warm coal glow
+// Recommended (phthalo) = editorial pick — cool brand glow
+// Neutral              = generic listing — subtle phthalo accent, no glow
 //
 // Usage:
 //   <SupplierCard
@@ -40,13 +36,14 @@ export interface Props {
 const { name, tagline, href, marker = null, tags = [] } = Astro.props;
 
 // Card container styles per marker variant.
-// All variants base on zinc-800 (elevated above body zinc-900).
+// All variants use zinc-800 base (elevated above body zinc-900) with visible
+// color accent gradient at top.
 const cardClasses =
   marker === 'featured'
-    ? 'border border-amber-900 bg-gradient-to-b from-amber-950/70 from-0% via-zinc-800 via-40% to-zinc-800 to-100% hover:border-amber-700 glow-brass hover:glow-brass-strong'
+    ? 'border border-amber-800 bg-gradient-to-b from-amber-950/80 from-0% via-zinc-800 via-45% to-zinc-800 to-100% hover:border-amber-600 glow-brass hover:glow-brass-strong'
     : marker === 'recommended'
-    ? 'border border-sky-800 bg-zinc-800 hover:border-sky-600 glow-phthalo hover:glow-phthalo-strong'
-    : 'border border-zinc-700 bg-gradient-to-b from-sky-950/40 from-0% via-zinc-800 via-35% to-zinc-800 to-100% hover:border-sky-800';
+    ? 'border border-sky-800 bg-gradient-to-b from-sky-950/70 from-0% via-zinc-800 via-45% to-zinc-800 to-100% hover:border-sky-500 glow-phthalo hover:glow-phthalo-strong'
+    : 'border border-sky-900/60 bg-gradient-to-b from-sky-950/55 from-0% via-zinc-800 via-40% to-zinc-800 to-100% hover:border-sky-700 hover:from-sky-950/70';
 
 const markerLabel =
   marker === 'featured' ? 'Featured' : marker === 'recommended' ? 'Recommended' : null;
@@ -76,14 +73,14 @@ const linkColor =
         </span>
       )}
       {tags.map((tag) => (
-        <span class="inline-block px-2.5 py-0.5 rounded bg-zinc-800/80 text-zinc-400 text-[10px] font-mono uppercase tracking-wider border border-zinc-700">
+        <span class="inline-block px-2.5 py-0.5 rounded bg-zinc-900/80 text-zinc-300 text-[10px] font-mono uppercase tracking-wider border border-zinc-700">
           {tag}
         </span>
       ))}
     </div>
   )}
   <h3 class="text-xl font-semibold text-zinc-50 mb-2 tracking-tight">{name}</h3>
-  <p class="text-sm text-zinc-400 leading-relaxed mb-6">{tagline}</p>
+  <p class="text-sm text-zinc-300 leading-relaxed mb-6">{tagline}</p>
   <span class={`inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider font-medium transition-colors ${linkColor}`}>
     View profile <span aria-hidden="true">&rarr;</span>
   </span>

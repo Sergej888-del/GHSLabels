@@ -2,39 +2,27 @@
 // src/pages/suppliers/[slug].astro
 //
 // Supplier profile detail page.
-// Activates: Layout → Breadcrumbs → SchemaOrg(Organization) chain.
 //
-// Sections (per ghslabels-architecture.md §5.3):
-//   1. Hero (full-width, zinc-950 + phthalo radial backdrop)
-//      └─ Breadcrumbs + optional AffiliateDisclosure + name/tagline/chips
-//   2. Quick facts (elevated card on body)
-//   3. MDX body (<Content />)
-//   4. Strengths / Limitations two-column block
-//   5. Best for list
-//   6. Primary CTA — affiliate URL with rel="sponsored nofollow" if active,
-//      else plain websiteUrl. target="_blank" + noopener always.
-//   7. Related suppliers
-//   8. Related comparisons
-//   9. AffiliateDisclosure inline footer (if active)
+// === v4 visual hierarchy (26 May 2026) ===
+// Real warmth, not just lighter black. Each section uses semantic color tint:
 //
-// === v3 visual hierarchy (26 May 2026) ===
-// - Hero broken out of narrow container into full-width section with
-//   bg-zinc-950 + phthalo radial gradient backdrop (focal depth).
-// - Rest of content lives in narrow max-w-4xl on body bg-zinc-900.
-// - All elevated panels (Quick facts, Strengths, Limitations, Related cards,
-//   CTA divider) shift from bg-zinc-900/border-zinc-800 to
-//   bg-zinc-800/60 + border-zinc-700 — visible on the new body bg.
-// - prose-supplier headings soften from #fafafa to #f4f4f5 (zinc-50 → zinc-100).
+//   - Hero: double radial gradient (phthalo top-right + amber bottom-left)
+//     for cool/warm balance under the headline.
+//   - Quick facts: phthalo-tinted panel (info = brand color).
+//   - Strengths: phthalo-tinted panel (positive = cool brand).
+//   - Limitations: amber/brass-tinted panel (caution = warm, not red).
+//   - CTA: orange radial glow behind the button (commerce focal moment).
+//   - Related cards: phthalo hover glow.
+//
+// The cool/warm pairing of Strengths (phthalo) vs Limitations (brass) is
+// editorial: positive things lean toward the cool brand identity, cautionary
+// things lean toward the warm-but-not-red attention tone. Red is reserved
+// for actual hazards.
 //
 // === Astro 6 Content Layer API notes ===
 // - entry.id (filename-stem) is used for routing params, not entry.slug.
 // - render() is imported from astro:content and called as render(entry);
 //   the legacy entry.render() method is removed in Astro 6.
-//
-// === TODO (post-P1-E) ===
-// AffiliateDisclosure top variant uses light bg-orange-50 from v1 H-eco
-// palette. On Phthalo Night dark surfaces it stands out — which is correct
-// for FTC prominence — but a dark-theme variant could be added later.
 
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
@@ -66,16 +54,12 @@ const { Content } = await render(supplier);
 const data = supplier.data;
 const hasActiveAffiliate = data.affiliateProgram === 'active';
 
-// CTA URL: affiliate link if active and present, otherwise plain website.
-// rel attribute: 'sponsored nofollow noopener' satisfies FTC + Google guidance
-// for paid links; 'noopener' alone for editorial outbound.
 const ctaUrl =
   hasActiveAffiliate && data.affiliateUrl ? data.affiliateUrl : data.websiteUrl;
 const ctaRel = hasActiveAffiliate
   ? 'sponsored nofollow noopener'
   : 'noopener';
 
-// Resolve related entries with draft + missing filtering.
 async function resolveRelated<C extends 'suppliers' | 'comparisons'>(
   collection: C,
   slugs: string[] | undefined
@@ -95,7 +79,6 @@ const relatedComparisons = await resolveRelated(
   data.relatedComparisons
 );
 
-// Human-readable pricing label.
 const pricingLabel: Record<typeof data.pricingModel, string> = {
   retail: 'Retail / online catalog',
   enterprise: 'Enterprise / contract pricing',
@@ -122,11 +105,11 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     }}
   />
 
-  <!-- Hero: full-width, bg-zinc-950, phthalo radial backdrop -->
+  <!-- Hero: full-width zinc-950 + double radial gradient -->
   <section class="relative bg-zinc-950 overflow-hidden">
     <div
       class="absolute inset-0 pointer-events-none"
-      style="background: radial-gradient(ellipse at top right, rgba(56, 189, 248, 0.10) 0%, transparent 60%);"
+      style="background: radial-gradient(ellipse 70% 60% at top right, rgba(56, 189, 248, 0.22) 0%, transparent 65%), radial-gradient(ellipse 55% 45% at bottom left, rgba(252, 211, 77, 0.10) 0%, transparent 60%);"
       aria-hidden="true"
     ></div>
 
@@ -167,31 +150,31 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
   <!-- Body content: inherits body bg-zinc-900 -->
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    <!-- Quick facts (elevated panel on body) -->
-    <section class="bg-zinc-800/60 border border-zinc-700 rounded-lg p-6 mb-10">
+    <!-- Quick facts: phthalo-tinted info panel -->
+    <section class="bg-gradient-to-br from-sky-950/30 via-zinc-800 to-zinc-800 border border-sky-900/50 rounded-lg p-6 mb-10">
       <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-4">
         Quick facts
       </h2>
       <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
         {data.headquarters && (
           <div>
-            <dt class="text-zinc-500 mb-1">Headquarters</dt>
-            <dd class="text-zinc-200">{data.headquarters}</dd>
+            <dt class="text-zinc-400 mb-1">Headquarters</dt>
+            <dd class="text-zinc-100">{data.headquarters}</dd>
           </div>
         )}
         {data.foundedYear && (
           <div>
-            <dt class="text-zinc-500 mb-1">Founded</dt>
-            <dd class="text-zinc-200">{data.foundedYear}</dd>
+            <dt class="text-zinc-400 mb-1">Founded</dt>
+            <dd class="text-zinc-100">{data.foundedYear}</dd>
           </div>
         )}
         <div>
-          <dt class="text-zinc-500 mb-1">Pricing model</dt>
-          <dd class="text-zinc-200">{pricingLabel[data.pricingModel]}</dd>
+          <dt class="text-zinc-400 mb-1">Pricing model</dt>
+          <dd class="text-zinc-100">{pricingLabel[data.pricingModel]}</dd>
         </div>
         <div>
-          <dt class="text-zinc-500 mb-1">Product categories</dt>
-          <dd class="text-zinc-200">{data.productCategories.join(', ')}</dd>
+          <dt class="text-zinc-400 mb-1">Product categories</dt>
+          <dd class="text-zinc-100">{data.productCategories.join(', ')}</dd>
         </div>
       </dl>
     </section>
@@ -201,13 +184,13 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
       <Content />
     </div>
 
-    <!-- Strengths / Limitations (elevated panels) -->
+    <!-- Strengths (phthalo cool) / Limitations (brass warm) — paired contrast -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
-      <div class="bg-zinc-800/60 border border-zinc-700 rounded-lg p-6">
+      <div class="bg-gradient-to-br from-sky-950/25 via-zinc-800 to-zinc-800 border border-sky-900/50 rounded-lg p-6">
         <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
           Strengths
         </h2>
-        <ul class="space-y-2 text-sm text-zinc-300">
+        <ul class="space-y-2 text-sm text-zinc-200">
           {data.strengths.map((item) => (
             <li class="flex gap-2">
               <span class="text-sky-400 shrink-0 font-mono">+</span>
@@ -216,11 +199,11 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
           ))}
         </ul>
       </div>
-      <div class="bg-zinc-800/60 border border-zinc-700 rounded-lg p-6">
+      <div class="bg-gradient-to-br from-amber-950/25 via-zinc-800 to-zinc-800 border border-amber-900/50 rounded-lg p-6">
         <h2 class="text-xs text-amber-300 font-mono uppercase tracking-wider mb-3">
           Limitations
         </h2>
-        <ul class="space-y-2 text-sm text-zinc-300">
+        <ul class="space-y-2 text-sm text-zinc-200">
           {data.weaknesses.map((item) => (
             <li class="flex gap-2">
               <span class="text-amber-400 shrink-0 font-mono">−</span>
@@ -236,7 +219,7 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
       <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
         Best for
       </h2>
-      <ul class="space-y-1.5 text-zinc-300 text-sm">
+      <ul class="space-y-1.5 text-zinc-200 text-sm">
         {data.bestFor.map((item) => (
           <li class="flex gap-2">
             <span class="text-sky-400 shrink-0">→</span>
@@ -246,22 +229,29 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
       </ul>
     </section>
 
-    <!-- Primary CTA -->
-    <section class="mb-10 text-center py-8 border-y border-zinc-700">
-      <a
-        href={ctaUrl}
-        rel={ctaRel}
-        target="_blank"
-        class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-7 py-3 rounded-lg font-medium transition-colors"
-      >
-        Visit {data.name}
-        <span aria-hidden="true">↗</span>
-      </a>
-      <p class="text-xs text-zinc-500 mt-3">
-        {hasActiveAffiliate
-          ? 'Opens supplier website · affiliate link'
-          : 'Opens supplier website'}
-      </p>
+    <!-- Primary CTA: orange radial glow backdrop -->
+    <section class="relative mb-10 py-10 border-y border-zinc-700 overflow-hidden">
+      <div
+        class="absolute inset-0 pointer-events-none"
+        style="background: radial-gradient(ellipse 60% 80% at center, rgba(249, 115, 22, 0.14) 0%, transparent 65%);"
+        aria-hidden="true"
+      ></div>
+      <div class="relative text-center">
+        <a
+          href={ctaUrl}
+          rel={ctaRel}
+          target="_blank"
+          class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3.5 rounded-lg font-medium transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30"
+        >
+          Visit {data.name}
+          <span aria-hidden="true">↗</span>
+        </a>
+        <p class="text-xs text-zinc-400 mt-3">
+          {hasActiveAffiliate
+            ? 'Opens supplier website · affiliate link'
+            : 'Opens supplier website'}
+        </p>
+      </div>
     </section>
 
     {relatedSuppliers.length > 0 && (
@@ -274,11 +264,11 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
             <li>
               <a
                 href={`/suppliers/${rel.id}/`}
-                class="flex items-center justify-between gap-3 p-4 bg-zinc-800/60 border border-zinc-700 rounded-lg hover:border-sky-600 transition-colors"
+                class="flex items-center justify-between gap-3 p-4 bg-gradient-to-br from-sky-950/20 via-zinc-800 to-zinc-800 border border-sky-900/40 rounded-lg hover:border-sky-600 hover:from-sky-950/40 transition-all"
               >
                 <div class="min-w-0">
                   <div class="text-zinc-100 font-medium truncate">{rel.data.name}</div>
-                  <div class="text-xs text-zinc-500 mt-1 line-clamp-2">{rel.data.tagline}</div>
+                  <div class="text-xs text-zinc-400 mt-1 line-clamp-2">{rel.data.tagline}</div>
                 </div>
                 <span class="text-sky-400 text-sm shrink-0" aria-hidden="true">→</span>
               </a>
@@ -298,10 +288,10 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
             <li>
               <a
                 href={`/compare/${rel.id}/`}
-                class="block p-4 bg-zinc-800/60 border border-zinc-700 rounded-lg hover:border-sky-600 transition-colors"
+                class="block p-4 bg-gradient-to-br from-sky-950/20 via-zinc-800 to-zinc-800 border border-sky-900/40 rounded-lg hover:border-sky-600 hover:from-sky-950/40 transition-all"
               >
                 <div class="text-zinc-100 font-medium">{rel.data.title}</div>
-                <div class="text-xs text-zinc-500 mt-1">{rel.data.verdict}</div>
+                <div class="text-xs text-zinc-400 mt-1">{rel.data.verdict}</div>
               </a>
             </li>
           ))}
@@ -314,11 +304,9 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
 </Layout>
 
 <style>
-  /* MDX body typography — Phthalo Night v2 palette.
-     Uses :global() because <Content /> renders user MDX which isn't
-     reachable by scoped class selectors.
-     Softened headings from zinc-50 (#fafafa) to zinc-100 (#f4f4f5) to
-     reduce harshness on long-form reading. */
+  /* MDX body typography — Phthalo Night v3 palette.
+     Headings zinc-100 (#f4f4f5), body text zinc-200 (#e4e4e7) for softer
+     long-form reading. */
   .prose-supplier :global(h2) {
     color: #f4f4f5;
     font-size: 1.5rem;

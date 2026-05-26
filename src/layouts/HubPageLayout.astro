@@ -5,18 +5,16 @@
 // /industries/, /kits/, /services/, /guides/). Wraps the base Layout.astro
 // with a hero section, optional filter chips, and a slot for the items grid.
 //
-// === v2 visual hierarchy (26 May 2026) ===
-// Hero now uses bg-zinc-950 (deeper than body zinc-900) + subtle Phthalo
-// radial gradient at top-right for focal anchoring. Filter chips bar uses
-// zinc-800 instead of zinc-900 (which now equals body). Items section drops
-// explicit bg-zinc-950 — naturally inherits zinc-900 from body.
+// === v3 visual hierarchy (26 May 2026) ===
+// Hero gets DOUBLE radial gradient for cool/warm balance:
+//   - Phthalo sky-400 at top-right (22% opacity) — brand identity
+//   - Brass amber-300 at bottom-left (10% opacity) — warmth balance
+// This prevents the page from feeling monolithic black. The cool/warm pairing
+// is a classic editorial layout trick: cool draws attention to the headline,
+// warm grounds the reading area below.
 //
-// Cards are rendered by the consumer via the default <slot />. This keeps
-// HubPageLayout decoupled from each collection's shape — suppliers/index.astro
-// renders SupplierCards, compare/index.astro renders ComparisonCards, etc.
-//
-// Empty state is handled automatically: if itemCount === 0, the slot is
-// hidden and a "Coming soon" placeholder shows the hub's 3-letter abbr.
+// Filter chips bar: zinc-800/50 with border-zinc-700 (visible against body
+// zinc-900). Items section drops explicit bg — naturally inherits body.
 
 import Layout from './Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
@@ -24,21 +22,19 @@ import type { Hub } from '../lib/hubs';
 
 export interface FilterChip {
   label: string;
-  href?: string;     // omit for static (non-clickable) chips
+  href?: string;
   count?: number;
   active?: boolean;
 }
 
 export interface Props {
   hub: Hub;
-  itemCount: number;            // typically items.length from the consumer
-  filterChips?: FilterChip[];   // optional facet filters under the hero
-  noindex?: boolean;            // forwards to Layout
+  itemCount: number;
+  filterChips?: FilterChip[];
+  noindex?: boolean;
 }
 
 const { hub, itemCount, filterChips, noindex = false } = Astro.props;
-
-// Padded eyebrow number: order=1 → "01", order=7 → "07".
 const eyebrowNumber = String(hub.order).padStart(2, '0');
 ---
 
@@ -48,11 +44,11 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
   pathname={`/${hub.slug}/`}
   noindex={noindex}
 >
-  <!-- Hero — deeper than body, with phthalo radial backdrop -->
-  <section class="relative bg-zinc-950 overflow-hidden pt-10 sm:pt-14 lg:pt-16 pb-10 sm:pb-14">
+  <!-- Hero: deep zinc-950 + double radial gradient (cool + warm balance) -->
+  <section class="relative bg-zinc-950 overflow-hidden pt-10 sm:pt-14 lg:pt-16 pb-12 sm:pb-16">
     <div
       class="absolute inset-0 pointer-events-none"
-      style="background: radial-gradient(ellipse at top right, rgba(56, 189, 248, 0.10) 0%, transparent 60%);"
+      style="background: radial-gradient(ellipse 70% 60% at top right, rgba(56, 189, 248, 0.22) 0%, transparent 65%), radial-gradient(ellipse 55% 45% at bottom left, rgba(252, 211, 77, 0.10) 0%, transparent 60%);"
       aria-hidden="true"
     ></div>
 
@@ -70,13 +66,13 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
         {hub.label}
       </h1>
 
-      <p class="text-lg text-zinc-400 max-w-2xl leading-relaxed">
+      <p class="text-lg text-zinc-300 max-w-2xl leading-relaxed">
         {hub.description}
       </p>
 
       <div class="mt-6 flex items-center gap-2 text-sm">
         <span class="font-mono text-sky-400 tabular-nums">{itemCount}</span>
-        <span class="text-zinc-500">{hub.countLabel}</span>
+        <span class="text-zinc-400">{hub.countLabel}</span>
       </div>
     </div>
   </section>
@@ -92,7 +88,7 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
                 class={
                   chip.active
                     ? 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-950 border border-sky-400 text-sky-200 text-xs rounded transition-colors'
-                    : 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs rounded hover:bg-zinc-700 hover:text-zinc-200 transition-colors'
+                    : 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs rounded hover:bg-zinc-700 hover:text-zinc-100 transition-colors'
                 }
               >
                 <span>{chip.label}</span>
@@ -105,7 +101,7 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
                 class={
                   chip.active
                     ? 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-950 border border-sky-400 text-sky-200 text-xs rounded'
-                    : 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs rounded'
+                    : 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs rounded'
                 }
               >
                 <span>{chip.label}</span>
