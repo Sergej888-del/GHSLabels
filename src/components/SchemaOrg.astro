@@ -1,0 +1,193 @@
+---
+// src/components/SchemaOrg.astro
+//
+// Polymorphic schema.org JSON-LD emitter for the PRIMARY entity of a page.
+// One instance per page. Use Breadcrumbs.astro separately for BreadcrumbList.
+//
+// Supported types (4 cover all 7 content collections):
+//   'Organization' → suppliers
+//   'Article'      → comparisons, materials, industries, guides
+//   'Product'      → kits
+//   'Service'      → services
+//
+// Discriminated union props enforce type-safety: TypeScript will error if you
+// pass Article fields when type='Organization' or vice versa.
+//
+// URLs in `data` may be relative (e.g. '/suppliers/avery/') or absolute.
+// Relative paths are auto-prefixed with Astro.site origin.
+//
+// Example usage in src/pages/suppliers/[slug].astro:
+//   <SchemaOrg
+//     type="Organization"
+//     data={{
+//       name: supplier.data.name,
+//       url: `/suppliers/${supplier.data.slug}/`,
+//       description: supplier.data.description,
+//       logo: supplier.data.logo,
+//       foundingDate: String(supplier.data.foundedYear),
+//       address: supplier.data.headquarters,
+//     }}
+//   />
+
+const siteOrigin = Astro.site?.toString().replace(/\/$/, '') ?? '';
+
+function abs(path: string): string {
+  if (!path) return path;
+  return path.startsWith('http') ? path : `${siteOrigin}${path}`;
+}
+
+const PUBLISHER = {
+  '@type': 'Organization' as const,
+  name: 'GHS Labels',
+  url: siteOrigin,
+  logo: {
+    '@type': 'ImageObject' as const,
+    url: `${siteOrigin}/favicon.svg`,
+  },
+};
+
+// === Type definitions per entity ===
+
+export interface OrganizationData {
+  name: string;
+  url: string;
+  description?: string;
+  logo?: string;
+  foundingDate?: string;       // '1935' or ISO date; both valid per schema.org
+  address?: string;            // free-form locality, e.g. 'Brea, California, USA'
+  sameAs?: string[];           // canonical references (Wikipedia, LinkedIn, etc.)
+}
+
+export interface ArticleData {
+  headline: string;
+  description: string;
+  url: string;                 // canonical URL of this article page
+  datePublished: string;       // ISO 8601
+  dateModified?: string;       // ISO 8601; defaults to datePublished
+  image?: string;
+  author?: string;             // defaults to 'GHS Labels Editorial'
+  keywords?: string[];
+}
+
+export interface ProductData {
+  name: string;
+  description: string;
+  url: string;
+  image?: string;
+  brand?: string;
+  category?: string;
+  offers?: {
+    price?: string;            // numeric string, e.g. '29.99'
+    priceCurrency?: string;    // ISO 4217 e.g. 'EUR'
+    availability?: 'InStock' | 'OutOfStock' | 'PreOrder';
+    url?: string;
+  };
+}
+
+export interface ServiceData {
+  name: string;
+  description: string;
+  url: string;
+  serviceType?: string;
+  areaServed?: string[];       // e.g. ['EU', 'UK', 'US']
+}
+
+export type Props =
+  | { type: 'Organization'; data: OrganizationData }
+  | { type: 'Article'; data: ArticleData }
+  | { type: 'Product'; data: ProductData }
+  | { type: 'Service'; data: ServiceData };
+
+const props = Astro.props;
+
+let jsonLd: Record<string, unknown>;
+
+if (props.type === 'Organization') {
+  const d = props.data;
+  jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: d.name,
+    url: abs(d.url),
+    ...(d.description ? { description: d.description } : {}),
+    ...(d.logo ? { logo: abs(d.logo) } : {}),
+    ...(d.foundingDate ? { foundingDate: d.foundingDate } : {}),
+    ...(d.address
+      ? { address: { '@type': 'PostalAddress', addressLocality: d.address } }
+      : {}),
+    ...(d.sameAs && d.sameAs.length > 0 ? { sameAs: d.sameAs } : {}),
+  };
+} else if (props.type === 'Article') {
+  const d = props.data;
+  jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: d.headline,
+    description: d.description,
+    datePublished: d.datePublished,
+    dateModified: d.dateModified ?? d.datePublished,
+    ...(d.image ? { image: abs(d.image) } : {}),
+    author: {
+      '@type': 'Organization',
+      name: d.author ?? 'GHS Labels Editorial',
+      url: siteOrigin,
+    },
+    publisher: PUBLISHER,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': abs(d.url) },
+    ...(d.keywords && d.keywords.length > 0
+      ? { keywords: d.keywords.join(', ') }
+      : {}),
+  };
+} else if (props.type === 'Product') {
+  const d = props.data;
+  jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: d.name,
+    description: d.description,
+    url: abs(d.url),
+    ...(d.image ? { image: abs(d.image) } : {}),
+    ...(d.brand ? { brand: { '@type': 'Brand', name: d.brand } } : {}),
+    ...(d.category ? { category: d.category } : {}),
+    ...(d.offers
+      ? {
+          offers: {
+            '@type': 'Offer',
+            ...(d.offers.price ? { price: d.offers.price } : {}),
+            ...(d.offers.priceCurrency
+              ? { priceCurrency: d.offers.priceCurrency }
+              : {}),
+            ...(d.offers.availability
+              ? { availability: `https://schema.org/${d.offers.availability}` }
+              : {}),
+            ...(d.offers.url ? { url: abs(d.offers.url) } : {}),
+          },
+        }
+      : {}),
+  };
+} else if (props.type === 'Service') {
+  const d = props.data;
+  jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: d.name,
+    description: d.description,
+    url: abs(d.url),
+    provider: PUBLISHER,
+    ...(d.serviceType ? { serviceType: d.serviceType } : {}),
+    ...(d.areaServed && d.areaServed.length > 0
+      ? { areaServed: d.areaServed }
+      : {}),
+  };
+} else {
+  // Exhaustiveness check: if a new `type` is added to Props without a
+  // corresponding branch above, TypeScript will fail this assertion.
+  props satisfies never;
+  jsonLd = {};
+}
+
+// Defend against script-tag injection inside any string field by escaping `</`.
+const jsonLdSafe = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" set:html={jsonLdSafe} />
