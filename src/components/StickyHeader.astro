@@ -1,0 +1,664 @@
+---
+// src/components/StickyHeader.astro
+//
+// The sticky site header. Replaces the v2 navless layout. Three mega-menu
+// categories — Procurement, Resources, Tools — open as full-width panels
+// attached to the header's bottom edge. Click toggles a panel; clicking
+// outside or pressing ESC closes any open panel.
+//
+// === Data sources (single source of truth) ===
+// - src/lib/hubs.ts → procurement + resources entries (via getEntriesByGroup)
+// - src/lib/tools.ts → TOOLS array for the Tools panel
+//
+// Adding a new pillar/page: edit hubs.ts. Adding a new tool: edit tools.ts.
+// This component picks them up automatically — no markup changes needed.
+//
+// === A11y ===
+// - Triggers are <button>s (not anchors) because they toggle, not navigate
+// - aria-expanded reflects open/closed state
+// - aria-controls points to the panel id
+// - ESC closes the open panel
+// - Click outside closes the open panel
+// - Focus is not trapped inside the panel (single anchor list inside, tab works naturally)
+//
+// === v3 Phase B.2 (27 May 2026) ===
+// - Initial introduction. Body bg stays zinc-900 (not zinc-950) in this phase;
+//   body bg change is deferred to Phase D when supplier detail components refactor.
+
+import { getEntriesByGroup, type Hub } from '../lib/hubs';
+import { TOOLS } from '../lib/tools';
+
+const procurementEntries = getEntriesByGroup('procurement');
+const resourcesEntries = getEntriesByGroup('resources');
+
+/**
+ * Derive a tone for the chip color from the Hub entry shape.
+ * Pages carry an explicit `tone` field; hubs derive it from their `intent`.
+ */
+function getTone(entry: Hub): 'commerce' | 'ecosystem' | 'neutral' {
+  if (entry.type === 'page') {
+    // HubPage shape — tone is explicit
+    return entry.tone;
+  }
+  // HubCollection shape — derive from intent
+  switch (entry.intent) {
+    case 'directory':
+    case 'commerce':
+      return 'commerce';
+    case 'comparison':
+    case 'reference':
+      return 'ecosystem';
+    case 'editorial':
+    default:
+      return 'neutral';
+  }
+}
+
+/**
+ * Check whether a hub entry is published.
+ * Pages are always "published" (they exist as standalone routes).
+ * Hubs respect their `enabled` flag.
+ */
+function isPublished(entry: Hub): boolean {
+  if (entry.type === 'page') return true;
+  return entry.enabled === true;
+}
+---
+
+<header class="site-header" data-site-header>
+
+  <!-- Header inner row (max-w container) -->
+  <div class="header-inner">
+
+    <!-- LOGO -->
+    <a href="/" class="logo-mark" aria-label="ghslabels.com — home">
+      <span class="logo-dot" aria-hidden="true"></span>
+      <span class="logo-word">ghslabels<span class="logo-tld">.com</span></span>
+    </a>
+
+    <!-- NAV: 3 mega-menu triggers + Compare standalone... wait, Compare is in Procurement now.
+         So only 3 triggers, no standalone link. -->
+    <nav class="header-nav" aria-label="Main">
+      <button
+        type="button"
+        class="nav-trigger"
+        data-mega-trigger="procurement"
+        aria-expanded="false"
+        aria-controls="mega-procurement"
+      >
+        Procurement <span class="nav-arrow" aria-hidden="true">▾</span>
+      </button>
+      <button
+        type="button"
+        class="nav-trigger"
+        data-mega-trigger="resources"
+        aria-expanded="false"
+        aria-controls="mega-resources"
+      >
+        Resources <span class="nav-arrow" aria-hidden="true">▾</span>
+      </button>
+      <button
+        type="button"
+        class="nav-trigger"
+        data-mega-trigger="tools"
+        aria-expanded="false"
+        aria-controls="mega-tools"
+      >
+        Tools <span class="nav-arrow" aria-hidden="true">▾</span>
+      </button>
+    </nav>
+
+    <!-- SEARCH (decorative, ⌘K palette is backlog) -->
+    <div class="header-search" aria-hidden="true">
+      Search <kbd>⌘K</kbd>
+    </div>
+  </div>
+
+  <!-- ============== MEGA PANEL: PROCUREMENT ============== -->
+  <div
+    class="mega-panel"
+    id="mega-procurement"
+    data-mega-panel="procurement"
+    role="region"
+    aria-label="Procurement menu"
+    hidden
+  >
+    <div class="mega-panel-bg" aria-hidden="true"></div>
+    <div class="mega-panel-inner">
+      <div class="mega-panel-eyebrow">PROCUREMENT</div>
+      <div class="mega-panel-tagline">
+        Source GHS labels from vetted suppliers — materials, kits, services.
+      </div>
+      <div class="mega-grid mega-grid-4">
+        {procurementEntries.map((entry) => {
+          const tone = getTone(entry);
+          const published = isPublished(entry);
+          const href = `/${entry.slug}/`;
+          return (
+            <a
+              href={published ? href : undefined}
+              class:list={[
+                'mega-tile',
+                `mega-tile-${tone}`,
+                !published && 'is-soon',
+              ]}
+              aria-disabled={!published}
+              tabindex={published ? 0 : -1}
+            >
+              <div class:list={['mega-tag', `mega-tag-${tone}`]}>{entry.abbr}</div>
+              <div class="mega-tile-body">
+                <div class="mega-tile-name">{entry.label}</div>
+                <div class="mega-tile-desc">{entry.description}</div>
+                {!published && <div class="mega-tile-soon">Coming soon</div>}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== MEGA PANEL: RESOURCES ============== -->
+  <div
+    class="mega-panel"
+    id="mega-resources"
+    data-mega-panel="resources"
+    role="region"
+    aria-label="Resources menu"
+    hidden
+  >
+    <div class="mega-panel-bg" aria-hidden="true"></div>
+    <div class="mega-panel-inner">
+      <div class="mega-panel-eyebrow">RESOURCES</div>
+      <div class="mega-panel-tagline">
+        Reference content, editorial guides, and information about the editorial team.
+      </div>
+      <div class="mega-grid mega-grid-3">
+        {resourcesEntries.map((entry) => {
+          const tone = getTone(entry);
+          const published = isPublished(entry);
+          const href = `/${entry.slug}/`;
+          return (
+            <a
+              href={published ? href : undefined}
+              class:list={[
+                'mega-tile',
+                `mega-tile-${tone}`,
+                !published && 'is-soon',
+              ]}
+              aria-disabled={!published}
+              tabindex={published ? 0 : -1}
+            >
+              <div class:list={['mega-tag', `mega-tag-${tone}`]}>{entry.abbr}</div>
+              <div class="mega-tile-body">
+                <div class="mega-tile-name">{entry.label}</div>
+                <div class="mega-tile-desc">{entry.description}</div>
+                {!published && entry.type === 'hub' && (
+                  <div class="mega-tile-soon">Coming soon</div>
+                )}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== MEGA PANEL: TOOLS ============== -->
+  <div
+    class="mega-panel"
+    id="mega-tools"
+    data-mega-panel="tools"
+    role="region"
+    aria-label="Tools menu"
+    hidden
+  >
+    <div class="mega-panel-bg" aria-hidden="true"></div>
+    <div class="mega-panel-inner">
+      <div class="mega-panel-eyebrow">FREE TOOLS</div>
+      <div class="mega-panel-tagline">
+        Five interactive utilities for procurement teams — no signup, no email gate.
+      </div>
+      <div class="mega-tools-grid">
+        {TOOLS.map((tool) => {
+          const isLive = tool.status === 'live' || tool.status === 'beta';
+          const href = `/tools/${tool.slug}/`;
+          return (
+            <a
+              href={isLive ? href : undefined}
+              class:list={['mega-tool-item', !isLive && 'is-soon']}
+              aria-disabled={!isLive}
+              tabindex={isLive ? 0 : -1}
+            >
+              <div class="mega-tool-tag">{tool.code}</div>
+              <div class="mega-tool-body">
+                <div class="mega-tool-name">{tool.name}</div>
+                <div class="mega-tool-desc">{tool.shortDesc}</div>
+              </div>
+              {!isLive && <span class="mega-tool-soon">Soon</span>}
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+
+</header>
+
+<style>
+  /* ============================================================
+     STICKY HEADER
+     ============================================================ */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(9, 9, 11, 0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  /* ---- Logo ---- */
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+    font-weight: 700;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .logo-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent-ecosystem);
+    box-shadow: 0 0 12px rgba(14, 165, 233, 0.75);
+    flex-shrink: 0;
+  }
+
+  .logo-word {
+    font: 700 17px/1 var(--font-sans);
+    letter-spacing: -0.02em;
+  }
+
+  .logo-tld {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* ---- Nav triggers ---- */
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-trigger {
+    background: transparent;
+    border: none;
+    color: var(--zinc-300);
+    font: 500 14px/1 var(--font-sans);
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: color 200ms ease, background 200ms ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .nav-trigger:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .nav-trigger[aria-expanded="true"] {
+    color: var(--text-primary);
+    background: rgba(56, 189, 248, 0.08);
+  }
+
+  .nav-arrow {
+    font-size: 10px;
+    opacity: 0.6;
+    transition: transform 200ms ease;
+  }
+
+  .nav-trigger[aria-expanded="true"] .nav-arrow {
+    transform: rotate(180deg);
+    opacity: 1;
+  }
+
+  /* ---- Search ---- */
+  .header-search {
+    font: 500 12px/1 var(--font-mono);
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .header-search kbd {
+    font-family: inherit;
+    padding: 2px 6px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  /* ============================================================
+     MEGA PANELS — full-width, attached to header bottom
+     ============================================================ */
+  .mega-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(9, 9, 11, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-default);
+    overflow: hidden;
+    z-index: 49;
+    animation: mega-fade-in 200ms ease-out;
+  }
+
+  .mega-panel[hidden] { display: none; }
+
+  @keyframes mega-fade-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .mega-panel-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 60% 80% at top right,
+      rgba(56, 189, 248, 0.10) 0%,
+      transparent 60%
+    );
+    pointer-events: none;
+  }
+
+  .mega-panel-inner {
+    position: relative;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 28px 32px 32px;
+  }
+
+  .mega-panel-eyebrow {
+    font: 500 10px/1.4 var(--font-mono);
+    letter-spacing: 0.14em;
+    color: var(--accent-ecosystem);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .mega-panel-tagline {
+    font: 400 13px/1.5 var(--font-sans);
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    max-width: 460px;
+  }
+
+  /* ---- Grids ---- */
+  .mega-grid {
+    display: grid;
+    gap: 10px;
+  }
+
+  .mega-grid-4 { grid-template-columns: repeat(4, 1fr); }
+  .mega-grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+  @media (max-width: 1024px) {
+    .mega-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .mega-grid-3 { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    .mega-grid-4, .mega-grid-3 { grid-template-columns: 1fr; }
+  }
+
+  /* ---- Mega tiles (used by Procurement and Resources panels) ---- */
+  .mega-tile {
+    position: relative;
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-card);
+    padding: 14px;
+    min-height: 106px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: var(--inset-top), 0 4px 12px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    transition: transform 200ms ease, border-color 200ms ease;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .mega-tile::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--top-light-gradient);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  .mega-tile:hover { transform: translateY(-2px); }
+
+  .mega-tile.is-soon {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .mega-tile.is-soon:hover { transform: none; }
+
+  .mega-tile-commerce { border-color: rgba(217, 119, 6, 0.4); }
+  .mega-tile-commerce:hover:not(.is-soon) { border-color: rgba(217, 119, 6, 0.7); }
+
+  .mega-tile-ecosystem:hover:not(.is-soon) { border-color: rgba(14, 165, 233, 0.5); }
+
+  /* Tile tag (SUP, CMP, MAT, etc.) */
+  .mega-tag {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-tile);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 700 10px/1 var(--font-mono);
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+    box-shadow: var(--inset-top);
+  }
+
+  .mega-tag-commerce {
+    background: var(--accent-commerce-soft);
+    color: #FEF3C7;
+  }
+
+  .mega-tag-ecosystem {
+    background: rgba(14, 165, 233, 0.15);
+    color: var(--accent-ecosystem-glow);
+    border: 1px solid rgba(14, 165, 233, 0.4);
+  }
+
+  .mega-tag-neutral {
+    background: var(--surface-inner);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+  }
+
+  .mega-tile-body {
+    position: relative;
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .mega-tile-name {
+    font: 600 13px/1.2 var(--font-sans);
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+
+  .mega-tile-desc {
+    font: 400 11px/1.5 var(--font-sans);
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .mega-tile-soon {
+    margin-top: 6px;
+    font: 500 9px/1 var(--font-mono);
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  /* ---- Tools panel — list pattern (2 cols, full row for T5) ---- */
+  .mega-tools-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  @media (max-width: 768px) {
+    .mega-tools-grid { grid-template-columns: 1fr; }
+  }
+
+  .mega-tool-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-card);
+    background: rgba(39, 39, 42, 0.4);
+    transition: background 200ms ease;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .mega-tool-item:hover { background: rgba(39, 39, 42, 0.7); }
+
+  .mega-tool-item.is-soon {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .mega-tool-item.is-soon:hover { background: rgba(39, 39, 42, 0.4); }
+
+  .mega-tool-tag {
+    width: 28px;
+    height: 28px;
+    background: rgba(14, 165, 233, 0.15);
+    color: var(--accent-ecosystem-glow);
+    border: 1px solid rgba(14, 165, 233, 0.4);
+    border-radius: var(--radius-tile);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 700 10px/1 var(--font-mono);
+    flex-shrink: 0;
+  }
+
+  .mega-tool-body {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .mega-tool-name {
+    font: 600 12px/1.2 var(--font-sans);
+    color: var(--text-primary);
+    letter-spacing: -0.005em;
+  }
+
+  .mega-tool-desc {
+    font: 400 10px/1.4 var(--font-sans);
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .mega-tool-soon {
+    font: 500 9px/1 var(--font-mono);
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  /* ============================================================
+     MOBILE — collapse nav and search; reveal hamburger (TBD Phase B.3+)
+     ============================================================ */
+  @media (max-width: 768px) {
+    .header-inner { padding: 0 16px; gap: 12px; }
+    .header-nav { display: none; }
+    .header-search { display: none; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    'use strict';
+
+    const header = document.querySelector('[data-site-header]');
+    if (!header) return;
+
+    const triggers = header.querySelectorAll('[data-mega-trigger]');
+    const panels = header.querySelectorAll('[data-mega-panel]');
+
+    function closeAll() {
+      panels.forEach(function (p) { p.setAttribute('hidden', ''); });
+      triggers.forEach(function (t) { t.setAttribute('aria-expanded', 'false'); });
+    }
+
+    triggers.forEach(function (trigger) {
+      trigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const name = trigger.getAttribute('data-mega-trigger');
+        const panel = header.querySelector('[data-mega-panel="' + name + '"]');
+        if (!panel) return;
+        const wasOpen = !panel.hasAttribute('hidden');
+        closeAll();
+        if (!wasOpen) {
+          panel.removeAttribute('hidden');
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    // Click outside closes any open panel.
+    document.addEventListener('click', function (e) {
+      if (!header.contains(e.target)) closeAll();
+    });
+
+    // Escape closes.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeAll();
+    });
+  })();
+</script>

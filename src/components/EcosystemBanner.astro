@@ -1,56 +1,125 @@
 ---
-// Cross-domain ecosystem banner — appears at the top of every page.
-// CRITICAL: Pattern must remain identical to siblings (ghssymbols.com, ghspictograms.com)
-// for visual family resemblance. See ghslabels-design-system.md §9.5.
+// src/components/EcosystemBanner.astro
+//
+// Ecosystem cross-site banner. Appears at the top of every page on every
+// site in the GHS ecosystem (ghslabels, ghssymbols, ghspictograms).
+//
+// === v3 changes (Phase B.2, 27 May 2026) ===
+// - Solid blue-800 background → sky gradient (deep → mid → deep)
+// - Slightly shorter (24px instead of v2 32px) for a tighter top edge
+// - Mono uppercase typography, white text with reduced opacity on
+//   inactive site links; current site rendered bold
 
 export interface Props {
-  /**
-   * Which site this banner is on. Determines which label is highlighted as "You are on".
-   * For ghslabels.com, this should always be 'labels'.
-   */
-  currentSite?: 'symbols' | 'pictograms' | 'labels';
+  /** Which site is the user currently on. Used to highlight "You are here". */
+  currentSite: 'labels' | 'symbols' | 'pictograms';
 }
 
-const { currentSite = 'labels' } = Astro.props;
+const { currentSite } = Astro.props;
+
+interface SiteRef {
+  key: Props['currentSite'];
+  url: string;
+  label: string;
+}
+
+const SITES: SiteRef[] = [
+  { key: 'symbols',    url: 'https://ghssymbols.com',    label: 'GHSSYMBOLS.COM' },
+  { key: 'pictograms', url: 'https://ghspictograms.com', label: 'GHSPICTOGRAMS.COM' },
+  { key: 'labels',     url: 'https://ghslabels.com',     label: 'GHSLABELS.COM' },
+];
+
+const currentLabel = SITES.find(s => s.key === currentSite)?.label ?? '';
 ---
 
-<div class="bg-blue-800 text-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
-    <span class="text-blue-200 font-mono uppercase tracking-wider text-[10px]">
-      GHS Ecosystem:
+<div class="ecosystem-banner">
+  <div class="ecosystem-inner">
+    <span class="ecosystem-label">
+      GHS ECOSYSTEM · <strong class="ecosystem-here">YOU ARE ON {currentLabel}</strong>
     </span>
-
-    {currentSite === 'symbols' ? (
-      <span class="text-amber-300 font-medium">▶ You are on GHS Symbols</span>
-    ) : (
-      <a
-        href="https://ghssymbols.com/"
-        class="text-blue-300 hover:text-white transition-colors"
-      >
-        GHS Symbols → Hazard Database
-      </a>
-    )}
-
-    {currentSite === 'pictograms' ? (
-      <span class="text-amber-300 font-medium">▶ You are on GHS Pictograms</span>
-    ) : (
-      <a
-        href="https://ghspictograms.com/"
-        class="text-blue-300 hover:text-white transition-colors"
-      >
-        GHS Pictograms → Label Constructor
-      </a>
-    )}
-
-    {currentSite === 'labels' ? (
-      <span class="text-amber-300 font-medium">▶ You are on GHS Labels</span>
-    ) : (
-      <a
-        href="https://ghslabels.com/"
-        class="text-blue-300 hover:text-white transition-colors"
-      >
-        GHS Labels → Procurement Hub
-      </a>
-    )}
+    <nav class="ecosystem-links" aria-label="Sibling sites in the GHS ecosystem">
+      {SITES.map((site, i) => (
+        <>
+          {i > 0 && <span class="ecosystem-pipe" aria-hidden="true">|</span>}
+          {site.key === currentSite ? (
+            <span class="ecosystem-active">{site.label}</span>
+          ) : (
+            <a href={site.url}>{site.label}</a>
+          )}
+        </>
+      ))}
+    </nav>
   </div>
 </div>
+
+<style>
+  .ecosystem-banner {
+    height: 24px;
+    background: linear-gradient(
+      90deg,
+      var(--accent-ecosystem-deep) 0%,
+      var(--accent-ecosystem) 50%,
+      var(--accent-ecosystem-deep) 100%
+    );
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+  }
+
+  .ecosystem-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    font: 500 10px/1 var(--font-mono);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+  }
+
+  .ecosystem-here {
+    font-weight: 700;
+  }
+
+  .ecosystem-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ecosystem-links a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+
+  .ecosystem-links a:hover {
+    color: #ffffff;
+  }
+
+  .ecosystem-active {
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .ecosystem-pipe {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .ecosystem-inner {
+      padding: 0 16px;
+      gap: 8px;
+    }
+    .ecosystem-label,
+    .ecosystem-links {
+      font-size: 9px;
+    }
+    .ecosystem-links {
+      gap: 6px;
+    }
+  }
+</style>

@@ -1,23 +1,23 @@
 ---
-// Base layout for ghslabels.com - Phthalo Night v3 (Phase A).
+// Base layout for ghslabels.com - Phthalo Night v3 (Phase B.2).
 //
-// === v3 changes (27 May 2026) ===
-// - Font swap: Inter → Geist (via @fontsource-variable/geist + geist-mono)
-// - Imports updated; body bg/text utility classes unchanged from v2
-//   (Phase B will introduce StickyHeader + body bg adjustments)
-// - No visual structure changes in this phase beyond typeface
+// === v3 changes (Phase B.2, 27 May 2026) ===
+// - Add <StickyHeader /> between top Spectrum Mark and <main>
+// - EcosystemBanner now renders sky gradient (component update separate file)
+// - Body bg stays bg-zinc-900 in this phase (defer to Phase D when supplier
+//   detail components refactor to consume tokens directly)
 //
-// === Preserved from v2 (fea669a) ===
-// - Body bg-zinc-900 + footer zinc-950 hierarchy
-// - SEO meta, EcosystemBanner, Spectrum Mark placement
+// === Preserved from Phase A (64b31ea) ===
+// - Geist + Geist Mono font imports
+// - All SEO meta, OG, JSON-LD
 // - Footer 4-column grid with ecosystem links
-//
-// All per-page SEO meta requirements: ghslabels-architecture.md §5.
+// - Spectrum Mark above + below main content
 
 import '@fontsource-variable/geist';
 import '@fontsource-variable/geist-mono';
 import '../styles/global.css';
 import EcosystemBanner from '../components/EcosystemBanner.astro';
+import StickyHeader from '../components/StickyHeader.astro';
 
 export interface Props {
   title: string;
@@ -93,6 +93,7 @@ const fullTitle = title.includes('GHS Labels') ? title : `${title} | GHS Labels`
   <body class="min-h-screen flex flex-col bg-zinc-900 text-zinc-100">
     <EcosystemBanner currentSite="labels" />
     <div class="spectrum-mark"></div>
+    <StickyHeader />
     <main class="flex-1">
       <slot />
     </main>
