@@ -1,18 +1,21 @@
 ---
-// Base layout for ghslabels.com - Phthalo Night direction.
-// SEO meta, fonts, ecosystem banner, Spectrum Mark, footer.
-// All pages MUST use this layout (or an extension of it).
-// See ghslabels-architecture.md §5 for per-page SEO requirements.
+// Base layout for ghslabels.com - Phthalo Night v3 (Phase A).
 //
-// === v2 visual hierarchy (26 May 2026) ===
-// Body bg softened from zinc-950 to zinc-900 to reduce text contrast harshness
-// on long-form content. Hero sections in child layouts still use zinc-950
-// (deeper than body) for focal anchoring — they appear darker than the page.
-// Footer remains zinc-950 by explicit request — keeps the bottom edge anchored
-// at the deepest tone while content surfaces breathe slightly lighter.
+// === v3 changes (27 May 2026) ===
+// - Font swap: Inter → Geist (via @fontsource-variable/geist + geist-mono)
+// - Imports updated; body bg/text utility classes unchanged from v2
+//   (Phase B will introduce StickyHeader + body bg adjustments)
+// - No visual structure changes in this phase beyond typeface
+//
+// === Preserved from v2 (fea669a) ===
+// - Body bg-zinc-900 + footer zinc-950 hierarchy
+// - SEO meta, EcosystemBanner, Spectrum Mark placement
+// - Footer 4-column grid with ecosystem links
+//
+// All per-page SEO meta requirements: ghslabels-architecture.md §5.
 
-import '@fontsource-variable/inter';
-import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
 import '../styles/global.css';
 import EcosystemBanner from '../components/EcosystemBanner.astro';
 

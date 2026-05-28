@@ -1,159 +1,315 @@
-@import "tailwindcss";
-
 /* ============================================================
-   ghslabels.com — Phthalo Night design tokens
-   Direction: committed dark + light as precious accent.
-   Reference: Refactoring UI (Wathan/Schoger), Material Design 3
-   dark theme, Linear marketing, Albers' "Interaction of Color".
+   ghslabels.com — global.css v3 (Phthalo Night)
+   Foundation tokens — single source of truth for all design.
+   See ghslabels-style.md and ghslabels-design.md (Project Knowledge).
+
+   Phase A (27 May 2026): tokens + type primitives + glow halos +
+   Spectrum Mark. Components in Phases B-G consume these tokens but
+   are not modified by this file.
    ============================================================ */
 
-@theme {
-  /* Font families */
-  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
-
-  /* Zinc — foundation, tonal surfaces for dark elevation */
-  --color-zinc-50:  #fafafa;
-  --color-zinc-100: #f4f4f5;
-  --color-zinc-200: #e4e4e7;
-  --color-zinc-300: #d4d4d8;
-  --color-zinc-400: #a1a1aa;
-  --color-zinc-500: #71717a;
-  --color-zinc-600: #52525b;
-  --color-zinc-700: #3f3f46;
-  --color-zinc-800: #27272a;
-  --color-zinc-900: #18181b;
-  --color-zinc-950: #09090b;
-
-  /* Navy — family ecosystem signal (matches siblings exactly) */
-  --color-blue-100: #dbeafe;
-  --color-blue-300: #93c5fd;
-  --color-blue-500: #3b82f6;
-  --color-blue-700: #1d4ed8;
-  --color-blue-800: #1e3a8a;
-  --color-blue-950: #172554;
-
-  /* Phthalo (sky family) — brand identity.
-     On dark we use 300/400 for visibility; deep 950 for tinted bg blocks. */
-  --color-sky-50:  #f0f9ff;
-  --color-sky-100: #e0f2fe;
-  --color-sky-200: #bae6fd;
-  --color-sky-300: #7dd3fc;
-  --color-sky-400: #38bdf8;
-  --color-sky-500: #0ea5e9;
-  --color-sky-700: #0369a1;
-  --color-sky-800: #075985;
-  --color-sky-900: #0c4a6e;
-  --color-sky-950: #082f49;
-
-  /* Brass (amber family) — premium / certified semantic accent.
-     amber-300 glows on dark; amber-950 is subtle gold-tinted bg. */
-  --color-amber-100: #fef3c7;
-  --color-amber-200: #fde68a;
-  --color-amber-300: #fcd34d;
-  --color-amber-400: #fbbf24;
-  --color-amber-700: #b45309;
-  --color-amber-800: #92400e;
-  --color-amber-900: #78350f;
-  --color-amber-950: #451a03;
-
-  /* Commerce — orange CTA, stays vibrant on dark */
-  --color-orange-200: #fed7aa;
-  --color-orange-400: #fb923c;
-  --color-orange-500: #f97316;
-  --color-orange-600: #ea580c;
-  --color-orange-900: #9a3412;
-
-  /* Hazard — red for substance warnings, danger states */
-  --color-red-50:  #fef2f2;
-  --color-red-300: #fca5a5;
-  --color-red-400: #f87171;
-  --color-red-600: #dc2626;
-  --color-red-800: #991b1b;
-  --color-red-900: #7f1d1d;
-  --color-red-950: #450a0a;
-}
+@import 'tailwindcss';
 
 /* ============================================================
-   Semantic surface tokens (Material Design 3 tonal elevation)
+   TOKENS — :root
    ============================================================ */
 :root {
-  --surface-page:       var(--color-zinc-950);  /* #09090b — base layer */
-  --surface-section:    var(--color-zinc-900);  /* #18181b — content sections */
-  --surface-card:       #1f1f22;                /* between zinc-900/800 */
-  --surface-card-hover: var(--color-zinc-800);  /* #27272a */
-  --surface-elevated:   var(--color-zinc-700);  /* #3f3f46, rare */
+  /* ---- font families ---- */
+  --font-sans: 'Geist Variable', 'Geist', 'Inter Variable', 'Inter',
+               system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Geist Mono', 'JetBrains Mono Variable',
+               'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
 
-  /* The Spectrum Mark — signature gradient.
-     Passes through #3b82f6 (bright navy) at midpoint for family bridge. */
+  /* ---- foundation: zinc ---- */
+  --zinc-50:  #fafafa;
+  --zinc-100: #f4f4f5;
+  --zinc-200: #e4e4e7;
+  --zinc-300: #d4d4d8;
+  --zinc-400: #a1a1aa;
+  --zinc-500: #71717a;
+  --zinc-600: #52525b;
+  --zinc-700: #3f3f46;
+  --zinc-800: #27272a;
+  --zinc-900: #18181b;
+  --zinc-950: #09090b;
+
+  /* ---- phthalo (sky family) — brand ---- */
+  --sky-50:  #f0f9ff;
+  --sky-100: #e0f2fe;
+  --sky-200: #bae6fd;
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
+  --sky-500: #0ea5e9;
+  --sky-700: #0369a1;
+  --sky-800: #075985;
+  --sky-900: #0c4a6e;
+  --sky-950: #082f49;
+
+  /* ---- brass (amber family) — premium / certified ---- */
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+  --amber-900: #78350f;
+  --amber-950: #451a03;
+
+  /* ---- orange — primary commerce CTA only ---- */
+  --orange-400: #fb923c;
+  --orange-500: #f97316;
+  --orange-600: #ea580c;
+
+  /* ---- red — hazard only ---- */
+  --red-300: #fca5a5;
+  --red-400: #f87171;
+  --red-600: #dc2626;
+  --red-900: #7f1d1d;
+  --red-950: #450a0a;
+  --ghs-red: #ED1C24;
+
+  /* ---- navy — ecosystem banner only ---- */
+  --blue-300: #93c5fd;
+  --blue-500: #3b82f6;
+  --blue-800: #1e3a8a;
+
+  /* ============================================================
+     SEMANTIC SURFACE TOKENS — MD3 tonal model
+     ============================================================ */
+  --surface-page:       var(--zinc-950);
+  --surface-section:    var(--zinc-900);
+  --surface-card:       var(--zinc-800);
+  --surface-card-hover: #2f2f33;
+  --surface-inner:      var(--zinc-700);
+
+  --border-subtle:  var(--zinc-800);
+  --border-default: var(--zinc-700);
+  --border-strong:  var(--zinc-600);
+
+  --text-strong:    #ffffff;
+  --text-primary:   var(--zinc-100);
+  --text-secondary: var(--zinc-300);
+  --text-muted:     var(--zinc-400);
+  --text-faint:     var(--zinc-500);
+  --text-disabled:  var(--zinc-600);
+
+  /* ============================================================
+     ACCENT TOKENS — semantic groups
+     ============================================================ */
+  --accent-commerce:        #D97706;
+  --accent-commerce-soft:   #B45309;
+  --accent-commerce-glow:   #FBBF24;
+  --accent-commerce-tint:   #78350F;
+  --accent-commerce-shadow: #1F1407;
+
+  --accent-ecosystem:        #0EA5E9;
+  --accent-ecosystem-deep:   #0284C7;
+  --accent-ecosystem-glow:   #38BDF8;
+  --accent-ecosystem-tint:   #082F49;
+  --accent-ecosystem-shadow: #082030;
+
+  --pictogram-red: #ED1C24;
+
+  /* ============================================================
+     SHADOWS & DEPTH
+     ============================================================ */
+  --shadow-card:
+    0 8px 24px rgba(0, 0, 0, 0.50),
+    0 2px 4px rgba(0, 0, 0, 0.60);
+
+  --shadow-card-strong:
+    0 18px 40px rgba(0, 0, 0, 0.65),
+    0 4px 8px rgba(0, 0, 0, 0.55);
+
+  --inset-top:        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --inset-top-strong: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  --top-light-gradient:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0.00) 30%);
+
+  /* ============================================================
+     RADII
+     ============================================================ */
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-tile: 6px;
+  --radius-card: 8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  20px;
+
+  /* ============================================================
+     SPACING (4px base)
+     ============================================================ */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+  --space-10: 128px;
+
+  /* ============================================================
+     MOTION
+     ============================================================ */
+  --transition-fast:     200ms ease-out;
+  --transition-med:      400ms ease-out;
+  --transition-standard: 500ms ease-out;
+  --transition-slow:     600ms ease-out;
+
+  /* ============================================================
+     SPECTRUM MARK gradient
+     ============================================================ */
   --spectrum-mark: linear-gradient(
     90deg,
-    var(--color-blue-800)  0%,    /* navy — family kinship */
-    var(--color-blue-500)  50%,   /* bright bridge */
-    var(--color-sky-500)   100%   /* phthalo industrial — ghslabels own */
+    transparent 0%,
+    var(--accent-ecosystem)      20%,
+    var(--accent-ecosystem-glow) 50%,
+    var(--accent-ecosystem)      80%,
+    transparent 100%
   );
 }
 
 /* ============================================================
-   Base typography & body
+   BODY BASELINE
+   Note: Layout.astro sets body bg/color via Tailwind utility classes
+   in Phase B. global.css here only defines tokens; Layout owns body.
    ============================================================ */
-html {
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+html { background: var(--surface-page); }
+
+body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+  font-variant-numeric: tabular-nums;
 }
 
-body {
-  background: var(--surface-page);
-  color: var(--color-zinc-50);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.6;
-}
+a { color: inherit; text-decoration: none; }
 
 ::selection {
-  background: var(--color-sky-950);
-  color: var(--color-sky-200);
+  background: var(--accent-ecosystem-tint);
+  color: var(--accent-ecosystem-glow);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-sky-400);
-  outline-offset: 2px;
+  outline: 2px solid var(--accent-ecosystem);
+  outline-offset: 3px;
   border-radius: 2px;
 }
 
 /* ============================================================
-   Spectrum Mark — signature gradient strip under EcosystemBanner
-   and above the footer. Dual-layer glow on dark.
+   TYPE SCALE — .t-* primitives
+   Components use these classes instead of repeating Tailwind utilities.
    ============================================================ */
-.spectrum-mark {
-  height: 3px;
-  background: var(--spectrum-mark);
-  box-shadow:
-    0 0 12px rgba(56, 189, 248, 0.45),
-    0 0 24px rgba(56, 189, 248, 0.18);
+.t-hero {
+  font: 800 80px/0.98 var(--font-sans);
+  letter-spacing: -0.04em;
+  color: var(--text-strong);
+}
+
+.t-h1 {
+  font: 800 48px/1.10 var(--font-sans);
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+.t-h2 {
+  font: 700 36px/1.15 var(--font-sans);
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+.t-h3 {
+  font: 600 20px/1.20 var(--font-sans);
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+}
+
+.t-body {
+  font: 400 17px/1.65 var(--font-sans);
+  color: var(--text-secondary);
+}
+
+.t-body-sm {
+  font: 400 15px/1.55 var(--font-sans);
+  color: var(--text-secondary);
+}
+
+.t-caption {
+  font: 400 13px/1.5 var(--font-sans);
+  color: var(--text-muted);
+}
+
+.t-eyebrow {
+  font: 500 12px/1.40 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.t-eyebrow-commerce  { color: var(--accent-commerce); }
+.t-eyebrow-ecosystem { color: var(--accent-ecosystem); }
+
+.t-mono-tag {
+  font: 500 11px/1.40 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--zinc-300);
+}
+
+.t-mono-link {
+  font: 600 12px/1.40 var(--font-mono);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.t-mono-link-commerce  { color: var(--accent-commerce); }
+.t-mono-link-ecosystem { color: var(--accent-ecosystem); }
+.t-mono-link-commerce:hover  { color: var(--accent-commerce-glow); }
+.t-mono-link-ecosystem:hover { color: var(--accent-ecosystem-glow); }
+
+/* mobile type step-down */
+@media (max-width: 768px) {
+  .t-hero { font-size: 48px; }
+  .t-h1   { font-size: 36px; }
+  .t-h2   { font-size: 28px; }
 }
 
 /* ============================================================
-   Glow halos — semantic emphasis for premium / featured elements.
-   NOT decorative drop shadows. These are coloured halos that signal:
-     - Brass glow = premium / certified (warm coal-glow)
-     - Phthalo glow = editorial / brand (cool brand-glow)
-   The .strong variants are used on hover to invite interaction.
+   SPECTRUM MARK — 1px glow thread
+   ============================================================ */
+.spectrum-mark {
+  height: 1px;
+  background: var(--spectrum-mark);
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
+}
+
+/* ============================================================
+   GLOW HALOS — brass (premium) / phthalo (editorial)
    ============================================================ */
 .glow-brass {
   box-shadow:
     0 0 0 1px rgba(120, 53, 15, 0.15),
     0 8px 24px -4px rgba(217, 119, 6, 0.18),
     0 0 16px -2px rgba(251, 191, 36, 0.10);
-  transition: box-shadow 250ms ease;
+  transition: box-shadow var(--transition-med);
 }
 
 .glow-brass-strong {
   box-shadow:
-    0 0 0 1px rgba(146, 64, 14, 0.25),
-    0 12px 32px -4px rgba(217, 119, 6, 0.32),
-    0 0 28px -2px rgba(251, 191, 36, 0.20);
+    0 0 0 1px rgba(146, 64, 14, 0.30),
+    0 14px 36px -4px rgba(217, 119, 6, 0.38),
+    0 0 32px -2px rgba(251, 191, 36, 0.24);
 }
 
 .glow-phthalo {
@@ -161,12 +317,56 @@ body {
     0 0 0 1px rgba(7, 89, 133, 0.15),
     0 8px 24px -4px rgba(14, 165, 233, 0.16),
     0 0 16px -2px rgba(56, 189, 248, 0.10);
-  transition: box-shadow 250ms ease;
+  transition: box-shadow var(--transition-med);
 }
 
 .glow-phthalo-strong {
   box-shadow:
-    0 0 0 1px rgba(3, 105, 161, 0.25),
-    0 12px 32px -4px rgba(14, 165, 233, 0.30),
-    0 0 28px -2px rgba(56, 189, 248, 0.20);
+    0 0 0 1px rgba(3, 105, 161, 0.30),
+    0 14px 36px -4px rgba(14, 165, 233, 0.34),
+    0 0 32px -2px rgba(56, 189, 248, 0.22);
+}
+
+/* ============================================================
+   CARD LIGHT — top-light overlay primitive
+   Apply as a child element on every elevated card:
+     <div class="card-light" aria-hidden="true"></div>
+   ============================================================ */
+.card-light {
+  position: absolute;
+  inset: 0;
+  background: var(--top-light-gradient);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ============================================================
+   AMBER PULSE — single-use animation for the page-defining CTA
+   ============================================================ */
+@keyframes amber-pulse {
+  0%, 100% {
+    box-shadow:
+      var(--inset-top-strong),
+      0 6px 18px -4px rgba(217, 119, 6, 0.45),
+      0 0 0 0 rgba(251, 191, 36, 0.30);
+  }
+  50% {
+    box-shadow:
+      var(--inset-top-strong),
+      0 6px 18px -4px rgba(217, 119, 6, 0.55),
+      0 0 0 16px rgba(251, 191, 36, 0.00);
+  }
+}
+
+.btn-pulse { animation: amber-pulse 3s ease-in-out infinite; }
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
