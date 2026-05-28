@@ -25,21 +25,44 @@ export type HubIntent =
   | 'commerce'
   | 'editorial';
 
-export interface Hub {
-  slug: string;        // URL segment → /<slug>/
-  collection: string;  // content collection key (may differ from slug)
-  label: string;       // display name, H1, nav label
-  abbr: string;        // 3-letter mono icon (uppercase, no spaces)
+/** Content-collection hub (has MDX collection + intent). */
+export interface HubCollection {
+  slug: string;
+  /** Mega-menu category. 'procurement' = commerce intent, 'resources' = reference. */
+  group: 'procurement' | 'resources';
+  /** Whether this entry has a content collection ('hub') or is a standalone page ('page'). */
+  type: 'hub';
+  collection: string;
+  label: string;
+  abbr: string;
   intent: HubIntent;
-  description: string; // 1-sentence subtitle for hub card
-  countLabel: string;  // plural noun: '12 profiles', '5 comparisons'
-  enabled: boolean;    // false → registered but hidden from grids
-  order: number;       // ascending sort in HubGrid
+  description: string;
+  countLabel: string;
+  enabled: boolean;
+  order: number;
 }
+
+/** Standalone site page (no content collection). */
+export interface HubPage {
+  slug: string;
+  /** Mega-menu category. 'procurement' = commerce intent, 'resources' = reference. */
+  group: 'procurement' | 'resources';
+  /** Whether this entry has a content collection ('hub') or is a standalone page ('page'). */
+  type: 'page';
+  label: string;
+  abbr: string;
+  tone: 'ecosystem' | 'neutral';
+  description: string;
+  order: number;
+}
+
+export type Hub = HubCollection | HubPage;
 
 export const HUBS: Hub[] = [
   {
     slug: 'suppliers',
+    group: 'procurement',
+    type: 'hub',
     collection: 'suppliers',
     label: 'Suppliers',
     abbr: 'SUP',
@@ -52,6 +75,8 @@ export const HUBS: Hub[] = [
   },
   {
     slug: 'compare',
+    group: 'procurement',
+    type: 'hub',
     collection: 'comparisons',
     label: 'Compare',
     abbr: 'CMP',
@@ -64,6 +89,8 @@ export const HUBS: Hub[] = [
   },
   {
     slug: 'materials',
+    group: 'resources',
+    type: 'hub',
     collection: 'materials',
     label: 'Materials',
     abbr: 'MAT',
@@ -76,6 +103,8 @@ export const HUBS: Hub[] = [
   },
   {
     slug: 'industries',
+    group: 'resources',
+    type: 'hub',
     collection: 'industries',
     label: 'Industries',
     abbr: 'IND',
@@ -88,6 +117,8 @@ export const HUBS: Hub[] = [
   },
   {
     slug: 'kits',
+    group: 'procurement',
+    type: 'hub',
     collection: 'kits',
     label: 'Kits',
     abbr: 'KIT',
@@ -100,6 +131,8 @@ export const HUBS: Hub[] = [
   },
   {
     slug: 'services',
+    group: 'procurement',
+    type: 'hub',
     collection: 'services',
     label: 'Services',
     abbr: 'SVC',
@@ -112,6 +145,8 @@ export const HUBS: Hub[] = [
   },
   {
     slug: 'guides',
+    group: 'resources',
+    type: 'hub',
     collection: 'guides',
     label: 'Guides',
     abbr: 'GDE',
@@ -121,6 +156,36 @@ export const HUBS: Hub[] = [
     countLabel: 'guides',
     enabled: true,
     order: 7,
+  },
+  {
+    slug: 'methodology',
+    label: 'Methodology',
+    abbr: 'MTH',
+    group: 'resources',
+    type: 'page',
+    tone: 'ecosystem',
+    description: 'How we vet suppliers, evaluate materials, and write comparisons. Editorial standards and conflict-of-interest disclosures.',
+    order: 8,
+  },
+  {
+    slug: 'about',
+    label: 'About',
+    abbr: 'ABT',
+    group: 'resources',
+    type: 'page',
+    tone: 'neutral',
+    description: 'About ghslabels.com — an independent procurement reference for GHS chemical labels.',
+    order: 9,
+  },
+  {
+    slug: 'contact',
+    label: 'Contact',
+    abbr: 'CNT',
+    group: 'resources',
+    type: 'page',
+    tone: 'neutral',
+    description: 'Contact the editorial team. Questions, corrections, supplier outreach.',
+    order: 10,
   },
 ];
 
@@ -145,4 +210,12 @@ export function getHubByCollection(collection: string): Hub | undefined {
 /** Canonical URL for a hub home page. Always trailing-slashed. */
 export function getHubUrl(hub: Hub): string {
   return `/${hub.slug}/`;
+}
+
+/**
+ * Get all hub/page entries belonging to a mega-menu group,
+ * sorted by their order field ascending.
+ */
+export function getEntriesByGroup(group: 'procurement' | 'resources'): Hub[] {
+  return HUBS.filter((h) => h.group === group).sort((a, b) => a.order - b.order);
 }
