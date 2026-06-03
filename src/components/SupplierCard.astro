@@ -1,29 +1,31 @@
 ---
+// src/components/SupplierCard.astro
+//
 // Supplier card — THE signature component of ghslabels.com.
 //
-// === v3 visual hierarchy (26 May 2026) ===
-// Cards are no longer flat. Each variant has a visible color accent at the
-// top that fades into a zinc-800 base. This produces real depth on the body
-// zinc-900 page surface, not just a barely-visible border.
+// === v4 (Phase C, 27 May 2026) ===
+// Token-driven three-tier design. All three variants use the mandatory
+// 3D depth primitive (inset-top + shadow-card + ::before light overlay).
+// Featured and Recommended get semantic glow halos PLUS an inner radial
+// gradient via the .supplier-glow child element. Neutral is intentionally
+// flat — no gradient, no glow — because neutral semantically means "no
+// special signal". This is the version that matches the v3 mockup output.
 //
-// Featured (brass) gets the strongest gradient (70% opacity from top stop)
-// plus its glow halo. Recommended (phthalo) gets a 50% phthalo gradient plus
-// phthalo glow. Neutral (no marker) still gets a 50% phthalo gradient — not
-// as strong as recommended, but clearly visible.
+// === Variant semantics (locked) ===
+// featured (brass)     = active affiliate, top tier — warm coal glow
+// recommended (phthalo) = editorial pick — cool brand glow
+// neutral              = generic listing — no glow, no gradient
 //
-// === Variant semantics ===
-// Featured (brass)     = active affiliate, top-tier — warm coal glow
-// Recommended (phthalo) = editorial pick — cool brand glow
-// Neutral              = generic listing — subtle phthalo accent, no glow
+// === Markup contract ===
+// <SupplierCard
+//   name="DuraLabel"
+//   tagline="BS5609-certified marine-grade specialists."
+//   href="/suppliers/duralabel/"
+//   marker="featured"          // or "recommended" or null
+//   tags={['EU/US', 'BS5609']}
+// />
 //
-// Usage:
-//   <SupplierCard
-//     name="DuraLabel"
-//     tagline="BS5609-certified marine-grade specialists."
-//     href="/suppliers/duralabel/"
-//     marker="featured"
-//     tags={['EU/US', 'BS5609', 'Enterprise']}
-//   />
+// Props unchanged from v2 — drop-in replacement for any caller.
 
 export interface Props {
   name: string;
@@ -35,53 +37,262 @@ export interface Props {
 
 const { name, tagline, href, marker = null, tags = [] } = Astro.props;
 
-// Card container styles per marker variant.
-// All variants use zinc-800 base (elevated above body zinc-900) with visible
-// color accent gradient at top.
-const cardClasses =
-  marker === 'featured'
-    ? 'border border-amber-800 bg-gradient-to-b from-amber-950/80 from-0% via-zinc-800 via-45% to-zinc-800 to-100% hover:border-amber-600 glow-brass hover:glow-brass-strong'
-    : marker === 'recommended'
-    ? 'border border-sky-800 bg-gradient-to-b from-sky-950/70 from-0% via-zinc-800 via-45% to-zinc-800 to-100% hover:border-sky-500 glow-phthalo hover:glow-phthalo-strong'
-    : 'border border-sky-900/60 bg-gradient-to-b from-sky-950/55 from-0% via-zinc-800 via-40% to-zinc-800 to-100% hover:border-sky-700 hover:from-sky-950/70';
+// Map nullable marker to non-null tier for class names.
+const tier: 'featured' | 'recommended' | 'neutral' = marker ?? 'neutral';
 
 const markerLabel =
-  marker === 'featured' ? 'Featured' : marker === 'recommended' ? 'Recommended' : null;
+  tier === 'featured' ? 'Featured' :
+  tier === 'recommended' ? 'Recommended' :
+  null;
 
-const markerClasses =
-  marker === 'featured'
-    ? 'bg-amber-950/80 text-amber-300 border-amber-900'
-    : marker === 'recommended'
-    ? 'bg-sky-950/80 text-sky-300 border-sky-900'
-    : '';
-
-const linkColor =
-  marker === 'featured'
-    ? 'text-amber-300 group-hover:text-amber-200'
-    : 'text-sky-400 group-hover:text-sky-300';
+// Whether to render the inner radial-glow overlay element.
+const hasInnerGlow = tier === 'featured' || tier === 'recommended';
 ---
 
 <a
   href={href}
-  class={`group block rounded-xl p-7 transition-all duration-200 ${cardClasses}`}
+  class:list={['supplier-card', `supplier-${tier}`]}
 >
-  {(markerLabel || tags.length > 0) && (
-    <div class="flex flex-wrap gap-2 mb-5">
-      {markerLabel && (
-        <span class={`inline-block px-2.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider font-semibold border ${markerClasses}`}>
-          {markerLabel}
-        </span>
-      )}
-      {tags.map((tag) => (
-        <span class="inline-block px-2.5 py-0.5 rounded bg-zinc-900/80 text-zinc-300 text-[10px] font-mono uppercase tracking-wider border border-zinc-700">
-          {tag}
-        </span>
-      ))}
-    </div>
-  )}
-  <h3 class="text-xl font-semibold text-zinc-50 mb-2 tracking-tight">{name}</h3>
-  <p class="text-sm text-zinc-300 leading-relaxed mb-6">{tagline}</p>
-  <span class={`inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider font-medium transition-colors ${linkColor}`}>
-    View profile <span aria-hidden="true">&rarr;</span>
-  </span>
+  <div class="card-light" aria-hidden="true"></div>
+  {hasInnerGlow && <div class="supplier-glow" aria-hidden="true"></div>}
+
+  <div class="supplier-body">
+    {(markerLabel || tags.length > 0) && (
+      <div class="supplier-badges">
+        {markerLabel && (
+          <span class:list={['chip', `chip-${tier}-filled`]}>{markerLabel}</span>
+        )}
+        {tags.map((tag) => (
+          <span class="chip chip-neutral">{tag}</span>
+        ))}
+      </div>
+    )}
+
+    <h3 class="supplier-brand">{name}</h3>
+    <p class="supplier-desc">{tagline}</p>
+
+    <span class:list={['supplier-link', `supplier-link-${tier}`]}>
+      View profile <span aria-hidden="true">&rarr;</span>
+    </span>
+  </div>
 </a>
+
+<style>
+  /* ============================================================
+     SUPPLIER CARD — shared structure
+     ============================================================ */
+  .supplier-card {
+    position: relative;
+    border-radius: var(--radius-card);
+    padding: 24px;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform 500ms ease-out,
+      border-color 500ms ease-out,
+      box-shadow 500ms ease-out;
+  }
+
+  .supplier-card:hover { transform: translateY(-4px); }
+
+  /* Top-light overlay primitive — overhead ambient catch */
+  .supplier-card .card-light {
+    position: absolute;
+    inset: 0;
+    background: var(--top-light-gradient);
+    pointer-events: none;
+    border-radius: inherit;
+    z-index: 1;
+  }
+
+  /* Body content sits above the overlays */
+  .supplier-body {
+    position: relative;
+    z-index: 2;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ============================================================
+     FEATURED — brass tier
+     ============================================================ */
+  .supplier-featured {
+    background: linear-gradient(
+      180deg,
+      var(--accent-commerce-shadow) 0%,
+      var(--surface-card) 60%
+    );
+    border: 1px solid rgba(217, 119, 6, 0.50);
+    box-shadow:
+      var(--inset-top-strong),
+      var(--shadow-card),
+      0 0 0 1px rgba(120, 53, 15, 0.15),
+      0 8px 24px -4px rgba(217, 119, 6, 0.18),
+      0 0 16px -2px rgba(251, 191, 36, 0.10);
+  }
+
+  .supplier-featured:hover {
+    border-color: rgba(217, 119, 6, 0.75);
+    box-shadow:
+      var(--inset-top-strong),
+      var(--shadow-card-strong),
+      0 0 0 1px rgba(146, 64, 14, 0.30),
+      0 14px 36px -4px rgba(217, 119, 6, 0.38),
+      0 0 32px -2px rgba(251, 191, 36, 0.24);
+  }
+
+  .supplier-featured .supplier-glow {
+    position: absolute;
+    inset: -40px;
+    background: radial-gradient(
+      ellipse 70% 80% at 50% 30%,
+      rgba(217, 119, 6, 0.20) 0%,
+      transparent 65%
+    );
+    pointer-events: none;
+    transition: filter 500ms ease-out;
+  }
+
+  .supplier-featured:hover .supplier-glow { filter: brightness(1.6); }
+
+  /* ============================================================
+     RECOMMENDED — phthalo tier
+     ============================================================ */
+  .supplier-recommended {
+    background: linear-gradient(
+      180deg,
+      var(--accent-ecosystem-shadow) 0%,
+      var(--surface-card) 60%
+    );
+    border: 1px solid rgba(14, 165, 233, 0.45);
+    box-shadow:
+      var(--inset-top-strong),
+      var(--shadow-card),
+      0 0 0 1px rgba(7, 89, 133, 0.15),
+      0 8px 24px -4px rgba(14, 165, 233, 0.16),
+      0 0 16px -2px rgba(56, 189, 248, 0.10);
+  }
+
+  .supplier-recommended:hover {
+    border-color: rgba(14, 165, 233, 0.70);
+    box-shadow:
+      var(--inset-top-strong),
+      var(--shadow-card-strong),
+      0 0 0 1px rgba(3, 105, 161, 0.30),
+      0 14px 36px -4px rgba(14, 165, 233, 0.34),
+      0 0 32px -2px rgba(56, 189, 248, 0.22);
+  }
+
+  .supplier-recommended .supplier-glow {
+    position: absolute;
+    inset: -40px;
+    background: radial-gradient(
+      ellipse 70% 80% at 50% 30%,
+      rgba(14, 165, 233, 0.18) 0%,
+      transparent 65%
+    );
+    pointer-events: none;
+    transition: filter 500ms ease-out;
+  }
+
+  .supplier-recommended:hover .supplier-glow { filter: brightness(1.6); }
+
+  /* ============================================================
+     NEUTRAL — flat, no glow, no gradient (semantic clarity)
+     ============================================================ */
+  .supplier-neutral {
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--inset-top), var(--shadow-card);
+  }
+
+  .supplier-neutral:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--inset-top), var(--shadow-card-strong);
+  }
+
+  /* ============================================================
+     BADGES (chip system)
+     ============================================================ */
+  .supplier-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border-radius: var(--radius-sm);
+    font: 500 10px/1.4 var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1px solid;
+    background: transparent;
+    color: var(--text-muted);
+    border-color: var(--border-default);
+  }
+
+  .chip-featured-filled {
+    background: var(--accent-commerce-soft);
+    color: var(--amber-200);
+    border-color: var(--accent-commerce);
+  }
+
+  .chip-recommended-filled {
+    background: var(--accent-ecosystem-tint);
+    color: var(--accent-ecosystem-glow);
+    border-color: var(--accent-ecosystem);
+  }
+
+  /* neutral chip variant: uses default styling above */
+
+  /* ============================================================
+     TYPOGRAPHY
+     ============================================================ */
+  .supplier-brand {
+    font: 700 22px/1.2 var(--font-sans);
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin: 0 0 10px;
+  }
+
+  .supplier-desc {
+    font: 400 13px/1.55 var(--font-sans);
+    color: var(--text-secondary);
+    margin: 0 0 18px;
+    flex-grow: 1;
+  }
+
+  /* ============================================================
+     CTA LINK
+     ============================================================ */
+  .supplier-link {
+    font: 600 11px/1 var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 500ms ease-out, color 500ms ease-out;
+    align-self: flex-start;
+  }
+
+  .supplier-card:hover .supplier-link { gap: 12px; }
+
+  .supplier-link-featured    { color: var(--accent-commerce); }
+  .supplier-link-recommended { color: var(--accent-ecosystem); }
+  .supplier-link-neutral     { color: var(--zinc-300); }
+
+  .supplier-card:hover .supplier-link-featured    { color: var(--accent-commerce-glow); }
+  .supplier-card:hover .supplier-link-recommended { color: var(--accent-ecosystem-glow); }
+  .supplier-card:hover .supplier-link-neutral     { color: var(--text-primary); }
+</style>
