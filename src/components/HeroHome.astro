@@ -1,0 +1,426 @@
+---
+// src/components/HeroHome.astro
+//
+// Home page hero — the most visually intensive single component on the site.
+// Combines:
+//   1. Full-width zinc-950 background
+//   2. DotField canvas (animated dot grid with diagonal sweep wave)
+//   3. HeroCluster — 5 drifting/rotating GHS pictograms (inline SVG)
+//   4. Hero vignette (radial darkening at edges)
+//   5. Inner content layer: eyebrow + H1 + subhead + dual CTA + trust strip
+//
+// === v5 (Phase E.1 + E.2, 27 May 2026) ===
+// First production introduction. All animations honor prefers-reduced-motion.
+// Pictograms are inline SVG (not external PNG) for zero asset dependency
+// and crisp rendering at all densities.
+//
+// === Props (all optional, fall back to defaults) ===
+// Default copy mirrors what is currently on production. Override from
+// /pages/index.astro if needed for A/B testing.
+
+export interface CtaProps {
+  href: string;
+  label: string;
+}
+
+export interface Props {
+  eyebrow?: string;
+  headline?: string;
+  subhead?: string;
+  primaryCta?: CtaProps;
+  secondaryCta?: CtaProps;
+}
+
+const {
+  eyebrow = 'B2B PROCUREMENT · INDEPENDENT REFERENCE',
+  headline = 'Certified GHS labels. Compared. Sourced.',
+  subhead = 'An independent procurement reference for EHS professionals. Compare BS5609-certified suppliers, browse chemical-resistant materials, choose vetted printers for your operation.',
+  primaryCta = { href: '/suppliers/', label: 'Browse vetted suppliers' },
+  secondaryCta = { href: '/methodology/', label: 'How we vet vendors' },
+} = Astro.props;
+
+// HeroCluster — pictogram positions inside the 500x490 bounding box.
+// Each entry encodes static base rotation, drift delay (negative offset
+// into the 14s cycle), rotation animation duration, and stacking z-index.
+const CLUSTER = [
+  { id: 'env', size: 240, left: 200, top:   0, baseRot:  '12deg', driftDelay: '-3.2s', rotDur: '24s', z: 1 },
+  { id: 'cor', size: 240, left: 340, top:  80, baseRot:  '-8deg', driftDelay: '-1.4s', rotDur: '20s', z: 3 },
+  { id: 'fla', size: 240, left: 130, top: 130, baseRot:   '6deg', driftDelay:    '0s', rotDur: '22s', z: 2 },
+  { id: 'tox', size: 240, left:   0, top: 250, baseRot: '-11deg', driftDelay: '-2.4s', rotDur: '26s', z: 5 },
+  { id: 'irr', size: 240, left: 260, top: 250, baseRot:  '-4deg', driftDelay: '-0.9s', rotDur: '18s', z: 4 },
+] as const;
+---
+
+<section class="hero-home" data-hero-home>
+  <h2 class="visually-hidden">Hero — GHS labels, procurement-grade</h2>
+
+  <!-- DotField canvas — animated background -->
+  <canvas class="hero-dot-field" aria-hidden="true"></canvas>
+
+  <!-- HeroCluster — drifting/rotating GHS pictograms -->
+  <div class="hero-cluster" aria-hidden="true">
+    {CLUSTER.map((p) => (
+      <div
+        class="picto"
+        data-picto-id={p.id}
+        style={`
+          width: ${p.size}px;
+          height: ${p.size}px;
+          left: ${p.left}px;
+          top: ${p.top}px;
+          z-index: ${p.z};
+          animation-delay: ${p.driftDelay};
+        `}
+      >
+        <div
+          class="picto-rot"
+          style={`
+            --base-rot: ${p.baseRot};
+            animation-duration: ${p.rotDur};
+          `}
+        >
+          {p.id === 'env' && (
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="14" width="72" height="72" transform="rotate(45 50 50)" fill="#f5f5f5" stroke="#ED1C24" stroke-width="6" />
+              <path d="M 32 62 Q 36 38, 50 38 Q 64 38, 60 52 L 56 64 Z" fill="#0a0a0a" />
+              <path d="M 26 72 Q 42 76, 56 72 Q 70 67, 74 76 L 70 80 Q 50 82, 32 78 Z" fill="#0a0a0a" />
+              <line x1="50" y1="38" x2="50" y2="62" stroke="#0a0a0a" stroke-width="2" />
+            </svg>
+          )}
+          {p.id === 'cor' && (
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="14" width="72" height="72" transform="rotate(45 50 50)" fill="#f5f5f5" stroke="#ED1C24" stroke-width="6" />
+              <path d="M 24 34 L 44 50 L 24 66 Z" fill="#0a0a0a" />
+              <path d="M 76 34 L 56 50 L 76 66 Z" fill="#0a0a0a" />
+              <line x1="48" y1="30" x2="52" y2="44" stroke="#0a0a0a" stroke-width="2" />
+              <line x1="48" y1="56" x2="52" y2="70" stroke="#0a0a0a" stroke-width="2" />
+              <circle cx="50" cy="78" r="3" fill="#0a0a0a" />
+            </svg>
+          )}
+          {p.id === 'fla' && (
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="14" width="72" height="72" transform="rotate(45 50 50)" fill="#f5f5f5" stroke="#ED1C24" stroke-width="6" />
+              <path d="M 50 22 C 44 34, 36 42, 36 56 C 36 70, 44 78, 50 78 C 56 78, 64 70, 64 56 C 64 46, 56 44, 56 36 C 56 30, 53 26, 50 22 Z" fill="#0a0a0a" />
+              <path d="M 44 80 L 56 80 L 60 84 L 40 84 Z" fill="#0a0a0a" />
+            </svg>
+          )}
+          {p.id === 'tox' && (
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="14" width="72" height="72" transform="rotate(45 50 50)" fill="#f5f5f5" stroke="#ED1C24" stroke-width="6" />
+              <ellipse cx="50" cy="44" rx="14" ry="15" fill="#0a0a0a" />
+              <circle cx="44" cy="43" r="2.5" fill="#f5f5f5" />
+              <circle cx="56" cy="43" r="2.5" fill="#f5f5f5" />
+              <rect x="48" y="55" width="4" height="4" fill="#f5f5f5" />
+              <path d="M 28 70 L 50 60 L 72 70" stroke="#0a0a0a" stroke-width="3" fill="none" stroke-linecap="round" />
+              <path d="M 28 76 L 72 64" stroke="#0a0a0a" stroke-width="3" fill="none" stroke-linecap="round" />
+              <circle cx="28" cy="70" r="2.5" fill="#0a0a0a" />
+              <circle cx="72" cy="70" r="2.5" fill="#0a0a0a" />
+              <circle cx="28" cy="76" r="2.5" fill="#0a0a0a" />
+              <circle cx="72" cy="64" r="2.5" fill="#0a0a0a" />
+            </svg>
+          )}
+          {p.id === 'irr' && (
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="14" width="72" height="72" transform="rotate(45 50 50)" fill="#f5f5f5" stroke="#ED1C24" stroke-width="6" />
+              <rect x="46" y="28" width="8" height="32" fill="#0a0a0a" />
+              <circle cx="50" cy="70" r="5" fill="#0a0a0a" />
+            </svg>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Vignette — radial edge darkening -->
+  <div class="hero-vignette" aria-hidden="true"></div>
+
+  <!-- Inner content -->
+  <div class="hero-inner">
+    <div class="hero-eyebrow">— {eyebrow}</div>
+    <h1 class="hero-headline">{headline}</h1>
+    <p class="hero-subhead">{subhead}</p>
+    <div class="hero-ctas">
+      <a href={primaryCta.href} class="btn-cta-primary">
+        {primaryCta.label} <span aria-hidden="true">→</span>
+      </a>
+      <a href={secondaryCta.href} class="btn-cta-ghost">
+        {secondaryCta.label} <span aria-hidden="true">→</span>
+      </a>
+    </div>
+    <div class="hero-trust">
+      <span class="trust-dot" aria-hidden="true">·</span>
+      <span>INDEPENDENT</span>
+      <span class="trust-sep" aria-hidden="true">·</span>
+      <span>VENDOR-NEUTRAL METHODOLOGY</span>
+      <span class="trust-sep" aria-hidden="true">·</span>
+      <span>BS5609 EXPERTISE</span>
+      <span class="trust-sep" aria-hidden="true">·</span>
+      <span>EU · UK · US COVERAGE</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ============================================================
+     HERO CONTAINER
+     ============================================================ */
+  .hero-home {
+    position: relative;
+    min-height: calc(100vh - 88px); /* viewport minus ecosystem banner (24px) + sticky header (64px) */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    background: var(--surface-page);
+  }
+
+  @media (max-width: 1024px) {
+    .hero-home { min-height: auto; padding: 60px 0 80px; }
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ============================================================
+     DOT FIELD CANVAS
+     ============================================================ */
+  .hero-dot-field {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ============================================================
+     HERO CLUSTER — drifting + rotating GHS pictograms
+     ============================================================ */
+  .hero-cluster {
+    position: absolute;
+    top: 50%;
+    right: 40px;
+    width: 500px;
+    height: 490px;
+    transform: translateY(-50%);
+    opacity: 0.65;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @media (max-width: 1400px) { .hero-cluster { transform: translateY(-50%) scale(0.88); transform-origin: right center; } }
+  @media (max-width: 1200px) { .hero-cluster { transform: translateY(-50%) scale(0.70); transform-origin: right center; } }
+  @media (max-width: 1024px) { .hero-cluster { transform: translateY(-50%) scale(0.55); transform-origin: right center; opacity: 0.5; } }
+  @media (max-width: 768px)  { .hero-cluster { display: none; } }
+
+  .picto {
+    position: absolute;
+    animation: picto-drift 14s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .picto-rot {
+    width: 100%;
+    height: 100%;
+    animation: picto-rotate 22s ease-in-out infinite;
+    transform-origin: 50% 50%;
+  }
+
+  .picto-rot svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  @keyframes picto-drift {
+    0%, 100% { transform: translateY(-10px); }
+    50%      { transform: translateY( 10px); }
+  }
+
+  @keyframes picto-rotate {
+    0%, 100% { transform: rotate(calc(var(--base-rot, 0deg) - 0.6deg)); }
+    50%      { transform: rotate(calc(var(--base-rot, 0deg) + 0.6deg)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .picto, .picto-rot { animation: none; }
+    .picto-rot { transform: rotate(var(--base-rot, 0deg)); }
+  }
+
+  /* ============================================================
+     VIGNETTE — radial edge darkening
+     ============================================================ */
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center,
+      transparent 30%,
+      rgba(0, 0, 0, 0.35) 75%,
+      rgba(0, 0, 0, 0.55) 100%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ============================================================
+     INNER CONTENT
+     ============================================================ */
+  .hero-inner {
+    position: relative;
+    z-index: 3;
+    padding: 64px 80px 80px;
+    max-width: 720px;
+    width: 100%;
+  }
+
+  @media (max-width: 1024px) {
+    .hero-inner { padding: 40px 32px 32px; max-width: 100%; }
+  }
+
+  @media (max-width: 640px) {
+    .hero-inner { padding: 32px 20px 24px; }
+  }
+
+  .hero-eyebrow {
+    font: 500 11px/1.4 var(--font-mono);
+    letter-spacing: 0.14em;
+    color: var(--accent-ecosystem);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero-headline {
+    font: 700 80px/1.0 var(--font-sans);
+    letter-spacing: -0.035em;
+    color: var(--text-strong);
+    margin: 0 0 22px;
+  }
+
+  @media (max-width: 1200px) { .hero-headline { font-size: 64px; } }
+  @media (max-width: 768px)  { .hero-headline { font-size: 44px; line-height: 1.05; } }
+  @media (max-width: 480px)  { .hero-headline { font-size: 36px; } }
+
+  .hero-subhead {
+    font: 400 17px/1.55 var(--font-sans);
+    color: var(--text-secondary);
+    max-width: 480px;
+    margin: 0 0 36px;
+  }
+
+  @media (max-width: 640px) { .hero-subhead { font-size: 15px; margin-bottom: 28px; } }
+
+  /* ============================================================
+     CTA BUTTONS
+     ============================================================ */
+  .hero-ctas {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 56px;
+  }
+
+  .btn-cta-primary,
+  .btn-cta-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    border-radius: var(--radius-card);
+    font: 600 14px/1 var(--font-sans);
+    letter-spacing: -0.005em;
+    text-decoration: none;
+    transition:
+      transform 500ms ease-out,
+      background 500ms ease-out,
+      border-color 500ms ease-out,
+      box-shadow 500ms ease-out,
+      color 500ms ease-out;
+  }
+
+  .btn-cta-primary {
+    background: var(--orange-500);
+    color: #ffffff;
+    border: 1px solid var(--orange-500);
+    box-shadow:
+      var(--inset-top-strong),
+      0 6px 18px -4px rgba(249, 115, 22, 0.55),
+      0 0 0 6px rgba(251, 191, 36, 0.10);
+    animation: amber-pulse 3s ease-in-out infinite;
+  }
+
+  .btn-cta-primary:hover {
+    background: var(--orange-600);
+    transform: translateY(-1px);
+    box-shadow:
+      var(--inset-top-strong),
+      0 10px 28px -4px rgba(249, 115, 22, 0.65),
+      0 0 0 10px rgba(251, 191, 36, 0.14);
+  }
+
+  .btn-cta-ghost {
+    background: transparent;
+    color: var(--zinc-200);
+    border: 1px solid var(--border-default);
+  }
+
+  .btn-cta-ghost:hover {
+    border-color: var(--zinc-500);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+  }
+
+  /* ============================================================
+     TRUST STRIP
+     ============================================================ */
+  .hero-trust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-subtle);
+    max-width: 720px;
+    font: 500 10px/1.4 var(--font-mono);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .trust-dot {
+    color: var(--accent-ecosystem);
+    font-weight: 700;
+  }
+
+  .trust-sep {
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 640px) {
+    .hero-trust { font-size: 9px; gap: 6px 8px; }
+  }
+</style>
+
+<script>
+  import { initDotField } from '../scripts/dotField';
+
+  function init() {
+    const canvas = document.querySelector('.hero-dot-field');
+    if (canvas instanceof HTMLCanvasElement) {
+      initDotField(canvas, 1);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>
