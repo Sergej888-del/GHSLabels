@@ -1,0 +1,278 @@
+---
+// src/components/FreeTools.astro
+// Home Section 5 — Free Tools preview grid.
+// Consumes TOOLS registry from tools.ts (single source of truth).
+// Honors coming-soon status exactly like StickyHeader: non-linked, is-soon,
+// aria-disabled, "Soon" badge. No tool is currently live — the section is
+// honest about that rather than faking clickable links.
+//
+// Design: v3 indigo, commerce-genre. 3-layer shadow stack on cards.
+// Indigo glow halo on the first card (the "lead" tool) for visual anchor;
+// remaining cards neutral-flat (no glow) — same semantic logic as SupplierCard.
+import { TOOLS } from '../lib/tools';
+
+const tools = TOOLS;
+---
+
+<section class="free-tools" aria-labelledby="ft-heading">
+  <div class="ft-container">
+    <!-- Section header -->
+    <div class="ft-header">
+      <p class="ft-eyebrow">04 — Free tools</p>
+      <h2 id="ft-heading">Interactive utilities for procurement teams</h2>
+      <p class="ft-lead">
+        Five focused tools for label compliance work — material verification,
+        SDS parsing, hazard lookup, sizing, and country-by-country requirements.
+        No signup, no email gate. Rolling out soon.
+      </p>
+    </div>
+
+    <!-- Tools grid -->
+    <ul class="ft-grid">
+      {
+        tools.map((tool, i) => {
+          const isLive = tool.status === 'live' || tool.status === 'beta';
+          const href = isLive ? `/tools/${tool.slug}/` : undefined;
+          const isLead = i === 0;
+
+          const cardClass = [
+            'ft-card',
+            isLead ? 'ft-card--lead' : 'ft-card--neutral',
+            isLive ? 'is-live' : 'is-soon',
+          ].join(' ');
+
+          return (
+            <li>
+              <a
+                class={cardClass}
+                href={href}
+                aria-disabled={isLive ? undefined : 'true'}
+                tabindex={isLive ? undefined : -1}
+              >
+                {/* 3-layer shadow stack: top-light overlay div */}
+                <span class="card-light" aria-hidden="true" />
+
+                <span class="ft-card-top">
+                  <span class="ft-code">{tool.code}</span>
+                  {isLive ? (
+                    <span class="ft-badge ft-badge--live">
+                      {tool.status === 'beta' ? 'Beta' : 'Live'}
+                    </span>
+                  ) : (
+                    <span class="ft-badge ft-badge--soon">Soon</span>
+                  )}
+                </span>
+
+                <span class="ft-name">{tool.name}</span>
+                <span class="ft-desc">{tool.longDesc}</span>
+
+                <span class="ft-arrow" aria-hidden="true">
+                  {isLive ? 'Open tool →' : 'Coming soon'}
+                </span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .free-tools {
+    background: var(--surface-page, #09090b);
+    padding: 5rem 0 6rem;
+  }
+  .ft-container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  @media (min-width: 640px) {
+    .ft-container { padding: 0 1.5rem; }
+  }
+  @media (min-width: 1024px) {
+    .ft-container { padding: 0 2rem; }
+  }
+
+  /* Header */
+  .ft-header { max-width: 42rem; margin-bottom: 3rem; }
+  .ft-eyebrow {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ecosystem-glow, #818cf8);
+    margin: 0 0 0.75rem;
+  }
+  .ft-header h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text-primary, #f4f4f5);
+    margin: 0 0 1rem;
+  }
+  .ft-lead {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-muted, #a1a1aa);
+    margin: 0;
+  }
+
+  /* Grid */
+  .ft-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .ft-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .ft-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Card */
+  .ft-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem;
+    border-radius: 0.875rem;
+    text-decoration: none;
+    overflow: hidden;
+    /* 3-layer shadow stack */
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
+      var(--shadow-card, 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3));
+    transition:
+      transform 500ms ease-out,
+      box-shadow 500ms ease-out,
+      filter 500ms ease-out;
+  }
+  .card-light {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(
+      --top-light-gradient,
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05), transparent 40%)
+    );
+    pointer-events: none;
+  }
+
+  /* Lead card — indigo glow + gradient */
+  .ft-card--lead {
+    background: linear-gradient(
+      145deg,
+      #161347 0%,
+      var(--surface-card, #18181b) 60%
+    );
+    border: 1px solid rgba(99, 102, 241, 0.45);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+      0 0 0 1px rgba(99, 102, 241, 0.10),
+      0 0 32px -4px rgba(99, 102, 241, 0.30),
+      var(--shadow-card, 0 8px 24px rgba(0, 0, 0, 0.3));
+  }
+
+  /* Neutral cards — flat, no glow */
+  .ft-card--neutral {
+    background: var(--surface-card, #18181b);
+    border: 1px solid var(--border-default, #27272a);
+  }
+
+  /* Card internals */
+  .ft-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .ft-code {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--accent-ecosystem-glow, #818cf8);
+    padding: 0.125rem 0.5rem;
+    border: 1px solid rgba(99, 102, 241, 0.30);
+    border-radius: 0.375rem;
+  }
+  .ft-badge {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.375rem;
+  }
+  .ft-badge--soon {
+    color: var(--text-muted, #71717a);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-default, #27272a);
+  }
+  .ft-badge--live {
+    color: #34d399;
+    background: rgba(52, 211, 153, 0.08);
+    border: 1px solid rgba(52, 211, 153, 0.30);
+  }
+  .ft-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary, #f4f4f5);
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+  .ft-desc {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--text-muted, #a1a1aa);
+    flex-grow: 1;
+    position: relative;
+    z-index: 1;
+  }
+  .ft-arrow {
+    margin-top: 1.25rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.8125rem;
+    color: var(--text-muted, #71717a);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Live card hover — only live/beta cards lift */
+  .ft-card.is-live:hover {
+    transform: translateY(-4px);
+    filter: brightness(1.05);
+  }
+  .ft-card.is-live.ft-card--lead:hover {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+      0 0 0 1px rgba(99, 102, 241, 0.16),
+      0 0 48px -2px rgba(99, 102, 241, 0.48),
+      var(--shadow-card-strong, 0 12px 32px rgba(0, 0, 0, 0.45));
+  }
+  .ft-card.is-live .ft-arrow {
+    color: var(--accent-ecosystem-glow, #818cf8);
+  }
+
+  /* coming-soon — non-interactive */
+  .ft-card.is-soon {
+    cursor: default;
+  }
+  .ft-card.is-soon:hover {
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ft-card { transition: none; }
+    .ft-card.is-live:hover { transform: none; }
+  }
+</style>

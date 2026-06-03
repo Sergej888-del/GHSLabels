@@ -1,0 +1,196 @@
+---
+// src/components/EcosystemCross.astro
+// Home Section 5 (lower) — cross-ecosystem links to the two sibling sites.
+// Mirrors the SITES shape from EcosystemBanner.astro. Kept as a local constant
+// rather than a shared module — only two entries, and a shared abstraction for
+// two URLs isn't worth it yet. If the sibling list grows, extract then.
+//
+// Editorial copy (taglines) is written here, NOT pulled from data — EcosystemBanner
+// v3 carries no taglines, only domain labels. These descriptions are section copy.
+//
+// Design: v3 indigo, commerce-genre. 3-layer shadow stack on cards, no glow
+// (neutral-cool — these are cross-references, not a tier signal).
+
+interface SiblingSite {
+  url: string;
+  label: string;
+  name: string;
+  tagline: string;
+}
+
+const SIBLINGS: SiblingSite[] = [
+  {
+    url: 'https://ghssymbols.com',
+    label: 'GHSSYMBOLS.COM',
+    name: 'GHS Symbols',
+    tagline:
+      'Hazard classification reference — pictogram meanings, hazard classes, and the toxicology behind the labels.',
+  },
+  {
+    url: 'https://ghspictograms.com',
+    label: 'GHSPICTOGRAMS.COM',
+    name: 'GHS Pictograms',
+    tagline:
+      'B2B compliance hub — label constructor, pictogram library, and a Compliance Hub covering UN GHS, OSHA HCS, CLP, SDS, REACH, and SVHC.',
+  },
+];
+---
+
+<section class="eco-cross" aria-labelledby="ec-heading">
+  <div class="ec-container">
+    <div class="ec-header">
+      <p class="ec-eyebrow">05 — The GHS ecosystem</p>
+      <h2 id="ec-heading">Three sites, one chemical-safety toolkit</h2>
+      <p class="ec-lead">
+        GHS Labels is the procurement layer. Its sibling sites cover the
+        reference and design sides of GHS compliance — all drawing from the same
+        substance database.
+      </p>
+    </div>
+
+    <ul class="ec-grid">
+      {
+        SIBLINGS.map((site) => (
+          <li>
+            <a class="ec-card" href={site.url} rel="noopener">
+              <span class="card-light" aria-hidden="true" />
+              <span class="ec-domain">{site.label}</span>
+              <span class="ec-name">{site.name}</span>
+              <span class="ec-tagline">{site.tagline}</span>
+              <span class="ec-arrow" aria-hidden="true">Visit site →</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .eco-cross {
+    background: var(--surface-section, #18181b);
+    padding: 5rem 0 6rem;
+  }
+  .ec-container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  @media (min-width: 640px) {
+    .ec-container { padding: 0 1.5rem; }
+  }
+  @media (min-width: 1024px) {
+    .ec-container { padding: 0 2rem; }
+  }
+
+  .ec-header { max-width: 42rem; margin-bottom: 3rem; }
+  .ec-eyebrow {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ecosystem-glow, #818cf8);
+    margin: 0 0 0.75rem;
+  }
+  .ec-header h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text-primary, #f4f4f5);
+    margin: 0 0 1rem;
+  }
+  .ec-lead {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-muted, #a1a1aa);
+    margin: 0;
+  }
+
+  .ec-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .ec-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .ec-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.75rem;
+    border-radius: 0.875rem;
+    text-decoration: none;
+    overflow: hidden;
+    background: var(--surface-card, #27272a);
+    border: 1px solid var(--border-default, #3f3f46);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
+      var(--shadow-card, 0 8px 24px rgba(0, 0, 0, 0.3));
+    transition:
+      transform 500ms ease-out,
+      box-shadow 500ms ease-out;
+  }
+  .card-light {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(
+      --top-light-gradient,
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05), transparent 40%)
+    );
+    pointer-events: none;
+  }
+
+  .ec-domain {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--accent-ecosystem-glow, #818cf8);
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+  }
+  .ec-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary, #f4f4f5);
+    margin-bottom: 0.625rem;
+    position: relative;
+    z-index: 1;
+  }
+  .ec-tagline {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--text-muted, #a1a1aa);
+    flex-grow: 1;
+    position: relative;
+    z-index: 1;
+  }
+  .ec-arrow {
+    margin-top: 1.5rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.8125rem;
+    color: var(--accent-ecosystem-glow, #818cf8);
+    position: relative;
+    z-index: 1;
+    transition: gap 200ms ease-out;
+  }
+
+  .ec-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+      var(--shadow-card-strong, 0 12px 32px rgba(0, 0, 0, 0.45));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ec-card { transition: none; }
+    .ec-card:hover { transform: none; }
+  }
+</style>
