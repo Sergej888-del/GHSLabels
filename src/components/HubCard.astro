@@ -1,4 +1,4 @@
----
+﻿---
 // src/components/HubCard.astro
 //
 // One hub card. Variants depend on `intent` field of the Hub (set in src/lib/hubs.ts)
@@ -16,7 +16,7 @@
 //
 // === Permanent glow halo + inner radial gradient ===
 // Populated cards have permanent visual character (not hover-only):
-//   phthalo intents → sky-400 halo + gradient
+//   phthalo intents → indigo-400 halo + gradient
 //   commerce intent → amber-500 halo + gradient
 //   featured (any intent) → STRONGER amber-500 halo + gradient
 //   editorial intent → no glow (intentional neutral)
@@ -45,17 +45,17 @@ const effectiveIntent: Hub['intent'] =
   size === 'featured' ? 'commerce' : hub.intent;
 
 const abbrPalette: Record<Hub['intent'], string> = {
-  directory:  'bg-sky-950 text-sky-400',
-  comparison: 'bg-sky-950 text-sky-400',
-  reference:  'bg-sky-950 text-sky-400',
+  directory:  'bg-indigo-950 text-indigo-400',
+  comparison: 'bg-indigo-950 text-indigo-400',
+  reference:  'bg-indigo-950 text-indigo-400',
   commerce:   'bg-amber-950 text-amber-300',
   editorial:  'bg-zinc-800 text-zinc-300',
 };
 
 const explorePalette: Record<Hub['intent'], string> = {
-  directory:  'text-sky-400 group-hover:text-sky-300',
-  comparison: 'text-sky-400 group-hover:text-sky-300',
-  reference:  'text-sky-400 group-hover:text-sky-300',
+  directory:  'text-indigo-400 group-hover:text-indigo-300',
+  comparison: 'text-indigo-400 group-hover:text-indigo-300',
+  reference:  'text-indigo-400 group-hover:text-indigo-300',
   commerce:   'text-amber-300 group-hover:text-amber-200',
   editorial:  'text-zinc-400 group-hover:text-zinc-300',
 };
@@ -196,22 +196,22 @@ const linkProps = isPopulated ? { href: url } : {};
     background-color: #18181b;
     background-image: radial-gradient(
       ellipse 80% 60% at top right,
-      rgba(56, 189, 248, 0.10) 0%,
+      rgba(129, 140, 248, 0.10) 0%,
       transparent 60%
     );
-    border-color: rgba(56, 189, 248, 0.20);
+    border-color: rgba(129, 140, 248, 0.20);
     box-shadow:
-      0 0 18px -3px rgba(56, 189, 248, 0.22),
-      0 0 44px -12px rgba(56, 189, 248, 0.14);
+      0 0 18px -3px rgba(129, 140, 248, 0.22),
+      0 0 44px -12px rgba(129, 140, 248, 0.14);
   }
 
   .hub-card-populated[data-intent='directory']:hover,
   .hub-card-populated[data-intent='comparison']:hover,
   .hub-card-populated[data-intent='reference']:hover {
-    border-color: rgba(56, 189, 248, 0.42);
+    border-color: rgba(129, 140, 248, 0.42);
     box-shadow:
-      0 0 28px -3px rgba(56, 189, 248, 0.40),
-      0 0 64px -12px rgba(56, 189, 248, 0.24);
+      0 0 28px -3px rgba(129, 140, 248, 0.40),
+      0 0 64px -12px rgba(129, 140, 248, 0.24);
   }
 
   .hub-card-populated[data-intent='commerce'] {

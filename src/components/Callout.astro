@@ -1,4 +1,4 @@
----
+﻿---
 // Inline callout block — Phthalo (regulatory/info) or Brass (editor's note/premium).
 // Usage:
 //   <Callout variant="phthalo" title="Regulatory note">
@@ -17,11 +17,11 @@ const { variant = 'phthalo', title } = Astro.props;
 
 const containerClasses = variant === 'brass'
   ? 'bg-amber-950/30 border-l-2 border-amber-700'
-  : 'bg-sky-950/30 border-l-2 border-sky-700';
+  : 'bg-indigo-950/30 border-l-2 border-indigo-700';
 
 const titleClasses = variant === 'brass'
   ? 'text-amber-300'
-  : 'text-sky-300';
+  : 'text-indigo-300';
 ---
 
 <div class={`${containerClasses} rounded-r-lg px-5 py-4 my-6`}>
