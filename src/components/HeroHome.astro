@@ -1,22 +1,23 @@
 ---
 // src/components/HeroHome.astro
 //
-// Home page hero — the most visually intensive single component on the site.
-// Combines:
-//   1. Full-width zinc-950 background
-//   2. DotField canvas (animated dot grid with diagonal sweep wave)
-//   3. HeroCluster — 5 drifting/rotating GHS pictograms (inline SVG)
-//   4. Hero vignette (radial darkening at edges)
-//   5. Inner content layer: eyebrow + H1 + subhead + dual CTA + trust strip
+// Home page hero — animated dot field + radial backdrop + content.
 //
-// === v5 (Phase E.1 + E.2, 27 May 2026) ===
-// First production introduction. All animations honor prefers-reduced-motion.
-// Pictograms are inline SVG (not external PNG) for zero asset dependency
-// and crisp rendering at all densities.
+// === v2 (Phase E.3, 27 May 2026) ===
+// Pictogram cluster removed. The inline SVG approximations were not crisp
+// enough to compete with the dot field, and visually crowded the headline.
+// The hero now combines:
+//   1. zinc-950 base canvas
+//   2. .hero-radial-bg overlay (smooth cool/warm dual radial)
+//   3. Animated DotField (diagonal sweep wave + per-dot oscillation)
+//   4. Inner content (eyebrow + H1 80px + subhead + dual CTA + trust strip)
 //
-// === Props (all optional, fall back to defaults) ===
-// Default copy mirrors what is currently on production. Override from
-// /pages/index.astro if needed for A/B testing.
+// Vignette also removed — without pictograms competing for attention, the
+// radial backdrop alone provides enough edge softening.
+//
+// === Props (all optional) ===
+// Default copy mirrors current production. Override from /pages/index.astro
+// for A/B testing.
 
 export interface CtaProps {
   href: string;
@@ -38,101 +39,16 @@ const {
   primaryCta = { href: '/suppliers/', label: 'Browse vetted suppliers' },
   secondaryCta = { href: '/methodology/', label: 'How we vet vendors' },
 } = Astro.props;
-
-// HeroCluster — pictogram positions inside the 500x490 bounding box.
-// Each entry encodes static base rotation, drift delay (negative offset
-// into the 14s cycle), rotation animation duration, and stacking z-index.
-const CLUSTER = [
-  { id: 'env', size: 240, left: 200, top:   0, baseRot:  '12deg', driftDelay: '-3.2s', rotDur: '24s', z: 1 },
-  { id: 'cor', size: 240, left: 340, top:  80, baseRot:  '-8deg', driftDelay: '-1.4s', rotDur: '20s', z: 3 },
-  { id: 'fla', size: 240, left: 130, top: 130, baseRot:   '6deg', driftDelay:    '0s', rotDur: '22s', z: 2 },
-  { id: 'tox', size: 240, left:   0, top: 250, baseRot: '-11deg', driftDelay: '-2.4s', rotDur: '26s', z: 5 },
-  { id: 'irr', size: 240, left: 260, top: 250, baseRot:  '-4deg', driftDelay: '-0.9s', rotDur: '18s', z: 4 },
-] as const;
 ---
 
 <section class="hero-home" data-hero-home>
   <h2 class="visually-hidden">Hero — GHS labels, procurement-grade</h2>
 
-  <!-- DotField canvas — animated background -->
+  <!-- Cool/warm radial backdrop (matches supplier detail + hub pages for consistency) -->
+  <div class="hero-radial-bg-overlay" aria-hidden="true"></div>
+
+  <!-- Animated dot field canvas -->
   <canvas class="hero-dot-field" aria-hidden="true"></canvas>
-
-  <!-- HeroCluster — drifting/rotating GHS pictograms -->
-  <div class="hero-cluster" aria-hidden="true">
-    {CLUSTER.map((p) => (
-      <div
-        class="picto"
-        data-picto-id={p.id}
-        style={`
-          width: ${p.size}px;
-          height: ${p.size}px;
-          left: ${p.left}px;
-          top: ${p.top}px;
-          z-index: ${p.z};
-          animation-delay: ${p.driftDelay};
-        `}
-      >
-        <div
-          class="picto-rot"
-          style={`
-            --base-rot: ${p.baseRot};
-            animation-duration: ${p.rotDur};
-          `}
-        >
-          {p.id === 'env' && (
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <rect x="14" y="14" width="72" height="72" transform="rotate(45 50 50)" fill="#f5f5f5" stroke="#ED1C24" stroke-width="6" />
-              <path d="M 32 62 Q 36 38, 50 38 Q 64 38, 60 52 L 56 64 Z" fill="#0a0a0a" />
-              <path d="M 26 72 Q 42 76, 56 72 Q 70 67, 74 76 L 70 80 Q 50 82, 32 78 Z" fill="#0a0a0a" />
-              <line x1="50" y1="38" x2="50" y2="62" stroke="#0a0a0a" stroke-width="2" />
-            </svg>
-          )}
-          {p.id === 'cor' && (
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <rect x="14" y="14" width="72" height="72" transform="rotate(45 50 50)" fill="#f5f5f5" stroke="#ED1C24" stroke-width="6" />
-              <path d="M 24 34 L 44 50 L 24 66 Z" fill="#0a0a0a" />
-              <path d="M 76 34 L 56 50 L 76 66 Z" fill="#0a0a0a" />
-              <line x1="48" y1="30" x2="52" y2="44" stroke="#0a0a0a" stroke-width="2" />
-              <line x1="48" y1="56" x2="52" y2="70" stroke="#0a0a0a" stroke-width="2" />
-              <circle cx="50" cy="78" r="3" fill="#0a0a0a" />
-            </svg>
-          )}
-          {p.id === 'fla' && (
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <rect x="14" y="14" width="72" height="72" transform="rotate(45 50 50)" fill="#f5f5f5" stroke="#ED1C24" stroke-width="6" />
-              <path d="M 50 22 C 44 34, 36 42, 36 56 C 36 70, 44 78, 50 78 C 56 78, 64 70, 64 56 C 64 46, 56 44, 56 36 C 56 30, 53 26, 50 22 Z" fill="#0a0a0a" />
-              <path d="M 44 80 L 56 80 L 60 84 L 40 84 Z" fill="#0a0a0a" />
-            </svg>
-          )}
-          {p.id === 'tox' && (
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <rect x="14" y="14" width="72" height="72" transform="rotate(45 50 50)" fill="#f5f5f5" stroke="#ED1C24" stroke-width="6" />
-              <ellipse cx="50" cy="44" rx="14" ry="15" fill="#0a0a0a" />
-              <circle cx="44" cy="43" r="2.5" fill="#f5f5f5" />
-              <circle cx="56" cy="43" r="2.5" fill="#f5f5f5" />
-              <rect x="48" y="55" width="4" height="4" fill="#f5f5f5" />
-              <path d="M 28 70 L 50 60 L 72 70" stroke="#0a0a0a" stroke-width="3" fill="none" stroke-linecap="round" />
-              <path d="M 28 76 L 72 64" stroke="#0a0a0a" stroke-width="3" fill="none" stroke-linecap="round" />
-              <circle cx="28" cy="70" r="2.5" fill="#0a0a0a" />
-              <circle cx="72" cy="70" r="2.5" fill="#0a0a0a" />
-              <circle cx="28" cy="76" r="2.5" fill="#0a0a0a" />
-              <circle cx="72" cy="64" r="2.5" fill="#0a0a0a" />
-            </svg>
-          )}
-          {p.id === 'irr' && (
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <rect x="14" y="14" width="72" height="72" transform="rotate(45 50 50)" fill="#f5f5f5" stroke="#ED1C24" stroke-width="6" />
-              <rect x="46" y="28" width="8" height="32" fill="#0a0a0a" />
-              <circle cx="50" cy="70" r="5" fill="#0a0a0a" />
-            </svg>
-          )}
-        </div>
-      </div>
-    ))}
-  </div>
-
-  <!-- Vignette — radial edge darkening -->
-  <div class="hero-vignette" aria-hidden="true"></div>
 
   <!-- Inner content -->
   <div class="hero-inner">
@@ -166,7 +82,7 @@ const CLUSTER = [
      ============================================================ */
   .hero-home {
     position: relative;
-    min-height: calc(100vh - 88px); /* viewport minus ecosystem banner (24px) + sticky header (64px) */
+    min-height: calc(100vh - 88px);
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -188,7 +104,35 @@ const CLUSTER = [
   }
 
   /* ============================================================
-     DOT FIELD CANVAS
+     RADIAL BACKDROP — uses the same hero-radial-bg utility from global.css
+     but as an absolute overlay (since hero-home itself has the canvas).
+     ============================================================ */
+  .hero-radial-bg-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(
+        ellipse 80% 75% at 100% 0%,
+        rgba(56, 189, 248, 0.22) 0%,
+        rgba(56, 189, 248, 0.14) 22%,
+        rgba(56, 189, 248, 0.06) 45%,
+        rgba(56, 189, 248, 0.02) 65%,
+        transparent 85%
+      ),
+      radial-gradient(
+        ellipse 70% 65% at 0% 100%,
+        rgba(252, 211, 77, 0.12) 0%,
+        rgba(252, 211, 77, 0.07) 25%,
+        rgba(252, 211, 77, 0.03) 50%,
+        rgba(252, 211, 77, 0.01) 70%,
+        transparent 90%
+      );
+  }
+
+  /* ============================================================
+     DOT FIELD CANVAS — sits above the radial backdrop
      ============================================================ */
   .hero-dot-field {
     position: absolute;
@@ -196,77 +140,7 @@ const CLUSTER = [
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ============================================================
-     HERO CLUSTER — drifting + rotating GHS pictograms
-     ============================================================ */
-  .hero-cluster {
-    position: absolute;
-    top: 50%;
-    right: 40px;
-    width: 500px;
-    height: 490px;
-    transform: translateY(-50%);
-    opacity: 0.65;
-    pointer-events: none;
     z-index: 1;
-  }
-
-  @media (max-width: 1400px) { .hero-cluster { transform: translateY(-50%) scale(0.88); transform-origin: right center; } }
-  @media (max-width: 1200px) { .hero-cluster { transform: translateY(-50%) scale(0.70); transform-origin: right center; } }
-  @media (max-width: 1024px) { .hero-cluster { transform: translateY(-50%) scale(0.55); transform-origin: right center; opacity: 0.5; } }
-  @media (max-width: 768px)  { .hero-cluster { display: none; } }
-
-  .picto {
-    position: absolute;
-    animation: picto-drift 14s ease-in-out infinite;
-    will-change: transform;
-  }
-
-  .picto-rot {
-    width: 100%;
-    height: 100%;
-    animation: picto-rotate 22s ease-in-out infinite;
-    transform-origin: 50% 50%;
-  }
-
-  .picto-rot svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    user-select: none;
-    -webkit-user-drag: none;
-  }
-
-  @keyframes picto-drift {
-    0%, 100% { transform: translateY(-10px); }
-    50%      { transform: translateY( 10px); }
-  }
-
-  @keyframes picto-rotate {
-    0%, 100% { transform: rotate(calc(var(--base-rot, 0deg) - 0.6deg)); }
-    50%      { transform: rotate(calc(var(--base-rot, 0deg) + 0.6deg)); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .picto, .picto-rot { animation: none; }
-    .picto-rot { transform: rotate(var(--base-rot, 0deg)); }
-  }
-
-  /* ============================================================
-     VIGNETTE — radial edge darkening
-     ============================================================ */
-  .hero-vignette {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center,
-      transparent 30%,
-      rgba(0, 0, 0, 0.35) 75%,
-      rgba(0, 0, 0, 0.55) 100%);
-    pointer-events: none;
-    z-index: 2;
   }
 
   /* ============================================================
@@ -274,18 +148,18 @@ const CLUSTER = [
      ============================================================ */
   .hero-inner {
     position: relative;
-    z-index: 3;
-    padding: 64px 80px 80px;
-    max-width: 720px;
+    z-index: 2;
+    padding: 80px 80px 96px;
+    max-width: 760px;
     width: 100%;
   }
 
   @media (max-width: 1024px) {
-    .hero-inner { padding: 40px 32px 32px; max-width: 100%; }
+    .hero-inner { padding: 48px 32px 40px; max-width: 100%; }
   }
 
   @media (max-width: 640px) {
-    .hero-inner { padding: 32px 20px 24px; }
+    .hero-inner { padding: 36px 20px 32px; }
   }
 
   .hero-eyebrow {
@@ -310,7 +184,7 @@ const CLUSTER = [
   .hero-subhead {
     font: 400 17px/1.55 var(--font-sans);
     color: var(--text-secondary);
-    max-width: 480px;
+    max-width: 520px;
     margin: 0 0 36px;
   }
 
@@ -387,7 +261,7 @@ const CLUSTER = [
     gap: 8px 12px;
     padding-top: 24px;
     border-top: 1px solid var(--border-subtle);
-    max-width: 720px;
+    max-width: 760px;
     font: 500 10px/1.4 var(--font-mono);
     letter-spacing: 0.10em;
     text-transform: uppercase;
