@@ -1,0 +1,309 @@
+---
+// src/pages/methodology/index.astro
+// Quiet-genre standalone page. WebPage JSON-LD. Self-contained — does NOT
+// depend on SchemaOrg.astro / Breadcrumbs.astro prop signatures (avoids guesswork).
+// If you later want to swap the inline JSON-LD / breadcrumb for the shared
+// components, that's a separate refactor — this version is safe to ship now.
+
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = 'Methodology — How We Vet Vendors';
+const pageDescription =
+  'Our editorial standards, vendor evaluation criteria, conflict-of-interest policy, and how we version this methodology over time.';
+const canonical = 'https://ghslabels.com/methodology/';
+const lastUpdated = 'June 3, 2026';
+const version = '1.0';
+
+// WebPage JSON-LD (matches architecture.md §5.3: Methodology = WebPage)
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: pageTitle,
+  description: pageDescription,
+  url: canonical,
+  dateModified: '2026-06-03',
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'GHS Labels',
+    url: 'https://ghslabels.com/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'GHS Labels',
+    url: 'https://ghslabels.com/',
+  },
+};
+---
+
+<Layout title={pageTitle} description={pageDescription} pathname="/methodology/">
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <article class="methodology">
+    <!-- Inline breadcrumb (self-contained; matches site trail style) -->
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">Methodology</li>
+      </ol>
+    </nav>
+
+    <header class="m-header">
+      <h1>How we vet vendors</h1>
+      <p class="lede">
+        GHS Labels is a procurement reference, not a marketplace. We don't sell
+        labels — we help buyers compare the companies that do. This page explains
+        how we research suppliers, what standards our content meets, how we handle
+        the commercial relationships that fund this work, and how this document
+        changes over time.
+      </p>
+      <p class="meta">
+        Version {version} · Last updated {lastUpdated}
+      </p>
+    </header>
+
+    <!-- ───────────────────────── Section 1 ───────────────────────── -->
+    <section id="editorial-standards" aria-labelledby="h-editorial">
+      <h2 id="h-editorial">Editorial standards</h2>
+      <p>
+        Every supplier profile, comparison, and guide on this site is written
+        independently of any commercial arrangement. We research a vendor's
+        certifications, product range, manufacturing capabilities, and regional
+        availability from primary sources — the vendor's own technical
+        documentation, published certification records (BS5609, ISO, GHS/CLP
+        conformity statements), and direct product specifications — before any
+        editorial judgment is formed.
+      </p>
+      <p>
+        Regulatory claims are verified against current authority sources at time
+        of writing, not from memory. GHS, CLP, and OSHA HCS requirements change,
+        and a label that was compliant last year may not be today. Where a
+        compliance deadline or rule is cited, it reflects the most recent
+        published guidance we could confirm. When a regulation is in transition,
+        we say so rather than presenting a moving target as settled.
+      </p>
+      <p>
+        Content is published <strong>independently of affiliate status</strong>.
+        A supplier profile exists because the vendor is relevant to GHS label
+        procurement — not because a commercial agreement is in place. A profile
+        for a vendor we have no relationship with reads exactly the same as one
+        for a partner, and links directly to the vendor's own site.
+      </p>
+    </section>
+
+    <!-- ───────────────────────── Section 2 ───────────────────────── -->
+    <section id="vendor-criteria" aria-labelledby="h-vendor">
+      <h2 id="h-vendor">Vendor evaluation criteria</h2>
+      <p>
+        We assess every label supplier against the same fixed set of dimensions.
+        No single factor decides placement; the picture is cumulative.
+      </p>
+      <ul class="criteria">
+        <li>
+          <strong>GHS/CLP specialization</strong> — whether the vendor genuinely
+          understands hazard-label requirements, or treats them as a generic
+          print job. Specialists who speak to pictogram placement, signal words,
+          and durability standards score higher than general label printers.
+        </li>
+        <li>
+          <strong>Certification &amp; durability</strong> — verifiable standards
+          such as BS5609 (marine/chemical-drum durability), and substrate/adhesive
+          performance under abrasion, UV, and chemical exposure. Certification
+          must be documented, not merely claimed.
+        </li>
+        <li>
+          <strong>Product range &amp; format coverage</strong> — sheet, roll,
+          pre-printed, blank, and on-demand formats; the breadth of sizes and
+          substrates relevant to chemical labeling.
+        </li>
+        <li>
+          <strong>Regional availability</strong> — which markets the vendor
+          actually ships to and supports, since GHS implementation and label
+          language requirements differ by jurisdiction.
+        </li>
+        <li>
+          <strong>Pricing transparency</strong> — whether pricing is published,
+          quote-only, or enterprise-negotiated, and how accessible it is to small
+          and mid-size buyers.
+        </li>
+        <li>
+          <strong>Buyer fit</strong> — the use cases a vendor genuinely serves
+          best. We name limitations as plainly as strengths; a vendor that's
+          excellent for marine drums may be a poor fit for low-volume lab use.
+        </li>
+      </ul>
+      <p>
+        Where we recommend or feature a vendor, it reflects this evaluation —
+        not the commercial terms of any relationship.
+      </p>
+    </section>
+
+    <!-- ───────────────────────── Section 3 ───────────────────────── -->
+    <section id="conflict-of-interest" aria-labelledby="h-coi">
+      <h2 id="h-coi">Conflict-of-interest disclosure</h2>
+      <p>
+        This site is supported by affiliate referrals. When a link to a partner
+        vendor leads to a purchase, we may earn a commission at no additional cost
+        to you. That commercial reality creates a potential conflict of interest,
+        and we manage it with two firm rules:
+      </p>
+      <ul class="criteria">
+        <li>
+          <strong>Earnings never influence editorial placement.</strong> A
+          commission relationship does not move a vendor up a comparison, soften
+          a stated limitation, or earn a recommendation. Featured and recommended
+          placement is decided by the evaluation criteria above, applied the same
+          way to partners and non-partners alike.
+        </li>
+        <li>
+          <strong>Relationships are disclosed before they go live.</strong> We do
+          not publish an affiliate link until an agreement is signed and the
+          partner is named in our disclosure. Until then, the vendor's profile
+          links to their own site with no tracking.
+        </li>
+      </ul>
+      <p>
+        The full breakdown of which relationships are commercial, and how the
+        referral model works, lives on our
+        <a href="/affiliate-disclosure/">affiliate disclosure page</a>.
+      </p>
+    </section>
+
+    <!-- ───────────────────────── Section 4 ───────────────────────── -->
+    <section id="versioning" aria-labelledby="h-version">
+      <h2 id="h-version">Methodology versioning</h2>
+      <p>
+        This methodology is a living document. As our coverage grows and the
+        regulatory landscape shifts, the criteria and standards above will be
+        refined. We version this page so changes are transparent rather than
+        silent.
+      </p>
+      <p>
+        Each published version carries a version number and a last-updated date,
+        shown at the top of this page. Substantive changes — new evaluation
+        criteria, revised disclosure rules, or material edits to editorial
+        standards — increment the version. Minor wording fixes do not. The
+        current version is <strong>{version}</strong>, published {lastUpdated}.
+      </p>
+    </section>
+  </article>
+</Layout>
+
+<style>
+  .methodology {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 5rem;
+  }
+
+  /* Breadcrumb */
+  .crumbs {
+    margin-bottom: 2rem;
+    font-size: 0.8125rem;
+  }
+  .crumbs ol {
+    list-style: none;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+    color: var(--color-text-muted, #a1a1aa);
+  }
+  .crumbs li + li::before {
+    content: '/';
+    margin-right: 0.5rem;
+    color: var(--color-border, #3f3f46);
+  }
+  .crumbs a {
+    color: var(--color-accent, #818cf8);
+    text-decoration: none;
+  }
+  .crumbs a:hover {
+    text-decoration: underline;
+  }
+  .crumbs [aria-current='page'] {
+    color: var(--color-text, #e4e4e7);
+  }
+
+  /* Header */
+  .m-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+  .m-header h1 {
+    font-size: clamp(1.875rem, 4vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--color-text, #f4f4f5);
+    margin: 0 0 1rem;
+  }
+  .lede {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--color-text-muted, #a1a1aa);
+    margin: 0 0 1.25rem;
+  }
+  .meta {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted, #71717a);
+    margin: 0;
+  }
+
+  /* Sections */
+  section {
+    margin-bottom: 3rem;
+  }
+  section h2 {
+    font-size: 1.375rem;
+    letter-spacing: -0.01em;
+    color: var(--color-text, #f4f4f5);
+    margin: 0 0 1rem;
+  }
+  section p {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--color-text-muted, #d4d4d8);
+    margin: 0 0 1rem;
+  }
+  section p strong {
+    color: var(--color-text, #f4f4f5);
+    font-weight: 600;
+  }
+  section a {
+    color: var(--color-accent, #818cf8);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Criteria lists */
+  .criteria {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .criteria li {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-text-muted, #d4d4d8);
+    padding-left: 1.25rem;
+    position: relative;
+  }
+  .criteria li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 1px;
+    background: var(--color-accent, #818cf8);
+  }
+  .criteria li strong {
+    color: var(--color-text, #f4f4f5);
+    font-weight: 600;
+  }
+</style>
