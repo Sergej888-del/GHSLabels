@@ -547,6 +547,10 @@ function isPublished(entry: Hub): boolean {
     gap: 6px;
   }
 
+  .mega-tools-grid > .mega-tool-item:last-child:nth-child(odd) {
+    grid-column: span 2;
+  }
+
   @media (max-width: 768px) {
     .mega-tools-grid { grid-template-columns: 1fr; }
   }
