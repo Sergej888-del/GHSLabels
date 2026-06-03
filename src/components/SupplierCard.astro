@@ -1,4 +1,4 @@
----
+﻿---
 // src/components/SupplierCard.astro
 //
 // Supplier card — THE signature component of ghslabels.com.
@@ -170,23 +170,23 @@ const hasInnerGlow = tier === 'featured' || tier === 'recommended';
       var(--accent-ecosystem-shadow) 0%,
       var(--surface-card) 60%
     );
-    border: 1px solid rgba(14, 165, 233, 0.45);
+    border: 1px solid rgba(99, 102, 241, 0.45);
     box-shadow:
       var(--inset-top-strong),
       var(--shadow-card),
-      0 0 0 1px rgba(7, 89, 133, 0.15),
-      0 8px 24px -4px rgba(14, 165, 233, 0.16),
-      0 0 16px -2px rgba(56, 189, 248, 0.10);
+      0 0 0 1px rgba(55, 48, 163, 0.15),
+      0 8px 24px -4px rgba(99, 102, 241, 0.16),
+      0 0 16px -2px rgba(129, 140, 248, 0.10);
   }
 
   .supplier-recommended:hover {
-    border-color: rgba(14, 165, 233, 0.70);
+    border-color: rgba(99, 102, 241, 0.70);
     box-shadow:
       var(--inset-top-strong),
       var(--shadow-card-strong),
-      0 0 0 1px rgba(3, 105, 161, 0.30),
-      0 14px 36px -4px rgba(14, 165, 233, 0.34),
-      0 0 32px -2px rgba(56, 189, 248, 0.22);
+      0 0 0 1px rgba(67, 56, 202, 0.30),
+      0 14px 36px -4px rgba(99, 102, 241, 0.34),
+      0 0 32px -2px rgba(129, 140, 248, 0.22);
   }
 
   .supplier-recommended .supplier-glow {
@@ -194,7 +194,7 @@ const hasInnerGlow = tier === 'featured' || tier === 'recommended';
     inset: -40px;
     background: radial-gradient(
       ellipse 70% 80% at 50% 30%,
-      rgba(14, 165, 233, 0.18) 0%,
+      rgba(99, 102, 241, 0.18) 0%,
       transparent 65%
     );
     pointer-events: none;

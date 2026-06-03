@@ -1,4 +1,4 @@
----
+﻿---
 // src/components/StickyHeader.astro
 //
 // The sticky site header. Replaces the v2 navless layout. Three mega-menu
@@ -286,7 +286,7 @@ function isPublished(entry: Hub): boolean {
     height: 10px;
     border-radius: 50%;
     background: var(--accent-ecosystem);
-    box-shadow: 0 0 12px rgba(14, 165, 233, 0.75);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.75);
     flex-shrink: 0;
   }
 
@@ -328,7 +328,7 @@ function isPublished(entry: Hub): boolean {
 
   .nav-trigger[aria-expanded="true"] {
     color: var(--text-primary);
-    background: rgba(56, 189, 248, 0.08);
+    background: rgba(129, 140, 248, 0.08);
   }
 
   .nav-arrow {
@@ -391,7 +391,7 @@ function isPublished(entry: Hub): boolean {
     inset: 0;
     background: radial-gradient(
       ellipse 60% 80% at top right,
-      rgba(56, 189, 248, 0.10) 0%,
+      rgba(129, 140, 248, 0.10) 0%,
       transparent 60%
     );
     pointer-events: none;
@@ -476,7 +476,7 @@ function isPublished(entry: Hub): boolean {
   .mega-tile-commerce { border-color: rgba(217, 119, 6, 0.4); }
   .mega-tile-commerce:hover:not(.is-soon) { border-color: rgba(217, 119, 6, 0.7); }
 
-  .mega-tile-ecosystem:hover:not(.is-soon) { border-color: rgba(14, 165, 233, 0.5); }
+  .mega-tile-ecosystem:hover:not(.is-soon) { border-color: rgba(99, 102, 241, 0.5); }
 
   /* Tile tag (SUP, CMP, MAT, etc.) */
   .mega-tag {
@@ -499,9 +499,9 @@ function isPublished(entry: Hub): boolean {
   }
 
   .mega-tag-ecosystem {
-    background: rgba(14, 165, 233, 0.15);
+    background: rgba(99, 102, 241, 0.15);
     color: var(--accent-ecosystem-glow);
-    border: 1px solid rgba(14, 165, 233, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.4);
   }
 
   .mega-tag-neutral {
@@ -579,9 +579,9 @@ function isPublished(entry: Hub): boolean {
   .mega-tool-tag {
     width: 28px;
     height: 28px;
-    background: rgba(14, 165, 233, 0.15);
+    background: rgba(99, 102, 241, 0.15);
     color: var(--accent-ecosystem-glow);
-    border: 1px solid rgba(14, 165, 233, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.4);
     border-radius: var(--radius-tile);
     display: flex;
     align-items: center;

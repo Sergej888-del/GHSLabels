@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    ghslabels.com — global.css v3 (Phthalo Night)
    Foundation tokens — single source of truth for all design.
    See ghslabels-style.md and ghslabels-design.md (Project Knowledge).
@@ -34,16 +34,16 @@
   --zinc-950: #09090b;
 
   /* ---- phthalo (sky family) — brand ---- */
-  --sky-50:  #f0f9ff;
-  --sky-100: #e0f2fe;
-  --sky-200: #bae6fd;
-  --sky-300: #7dd3fc;
-  --sky-400: #38bdf8;
-  --sky-500: #0ea5e9;
-  --sky-700: #0369a1;
-  --sky-800: #075985;
-  --sky-900: #0c4a6e;
-  --sky-950: #082f49;
+  --indigo-50:  #eef2ff;
+  --indigo-100: #e0e7ff;
+  --indigo-200: #c7d2fe;
+  --indigo-300: #a5b4fc;
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1;
+  --indigo-700: #4338ca;
+  --indigo-800: #3730a3;
+  --indigo-900: #312e81;
+  --indigo-950: #1e1b4b;
 
   /* ---- brass (amber family) — premium / certified ---- */
   --amber-100: #fef3c7;
@@ -102,11 +102,11 @@
   --accent-commerce-tint:   #78350F;
   --accent-commerce-shadow: #1F1407;
 
-  --accent-ecosystem:        #0EA5E9;
-  --accent-ecosystem-deep:   #0284C7;
-  --accent-ecosystem-glow:   #38BDF8;
-  --accent-ecosystem-tint:   #082F49;
-  --accent-ecosystem-shadow: #082030;
+  --accent-ecosystem:        #6366F1;
+  --accent-ecosystem-deep:   #4F46E5;
+  --accent-ecosystem-glow:   #818CF8;
+  --accent-ecosystem-tint:   #1E1B4B;
+  --accent-ecosystem-shadow: #161347;
 
   --pictogram-red: #ED1C24;
 
@@ -291,7 +291,7 @@ a { color: inherit; text-decoration: none; }
 .spectrum-mark {
   height: 1px;
   background: var(--spectrum-mark);
-  box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
 }
 
 /* ============================================================
@@ -312,19 +312,19 @@ a { color: inherit; text-decoration: none; }
     0 0 32px -2px rgba(251, 191, 36, 0.24);
 }
 
-.glow-phthalo {
+.glow-indigo {
   box-shadow:
-    0 0 0 1px rgba(7, 89, 133, 0.15),
-    0 8px 24px -4px rgba(14, 165, 233, 0.16),
-    0 0 16px -2px rgba(56, 189, 248, 0.10);
+    0 0 0 1px rgba(55, 48, 163, 0.15),
+    0 8px 24px -4px rgba(99, 102, 241, 0.16),
+    0 0 16px -2px rgba(129, 140, 248, 0.10);
   transition: box-shadow var(--transition-med);
 }
 
-.glow-phthalo-strong {
+.glow-indigo-strong {
   box-shadow:
-    0 0 0 1px rgba(3, 105, 161, 0.30),
-    0 14px 36px -4px rgba(14, 165, 233, 0.34),
-    0 0 32px -2px rgba(56, 189, 248, 0.22);
+    0 0 0 1px rgba(67, 56, 202, 0.30),
+    0 14px 36px -4px rgba(99, 102, 241, 0.34),
+    0 0 32px -2px rgba(129, 140, 248, 0.22);
 }
 
 /* ============================================================
@@ -371,10 +371,10 @@ a { color: inherit; text-decoration: none; }
     /* Cool phthalo — top-right corner */
     radial-gradient(
       ellipse 80% 75% at 100% 0%,
-      rgba(56, 189, 248, 0.22) 0%,
-      rgba(56, 189, 248, 0.14) 22%,
-      rgba(56, 189, 248, 0.06) 45%,
-      rgba(56, 189, 248, 0.02) 65%,
+      rgba(129, 140, 248, 0.22) 0%,
+      rgba(129, 140, 248, 0.14) 22%,
+      rgba(129, 140, 248, 0.06) 45%,
+      rgba(129, 140, 248, 0.02) 65%,
       transparent 85%
     ),
     /* Warm brass — bottom-left corner */

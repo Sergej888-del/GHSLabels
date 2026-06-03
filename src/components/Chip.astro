@@ -1,4 +1,4 @@
----
+﻿---
 // Inline chip badge — used for properties, filters, status markers.
 // Variants encode semantic: phthalo=brand/family, brass=premium/certified,
 // neutral=generic property, hazard=danger.
@@ -16,14 +16,14 @@ export interface Props {
 const { variant = 'neutral', dot = false } = Astro.props;
 
 const containerMap = {
-  phthalo: 'bg-sky-950/60 text-sky-300 border-sky-900',
+  phthalo: 'bg-indigo-950/60 text-indigo-300 border-indigo-900',
   brass:   'bg-amber-950/50 text-amber-300 border-amber-900',
   neutral: 'bg-zinc-800/80 text-zinc-300 border-zinc-700',
   hazard:  'bg-red-950/50 text-red-300 border-red-900',
 };
 
 const dotMap = {
-  phthalo: 'bg-sky-400',
+  phthalo: 'bg-indigo-400',
   brass:   'bg-amber-400',
   neutral: 'bg-zinc-400',
   hazard:  'bg-red-400',

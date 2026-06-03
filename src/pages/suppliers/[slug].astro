@@ -1,4 +1,4 @@
----
+﻿---
 // src/pages/suppliers/[slug].astro
 //
 // Supplier profile detail page.
@@ -121,7 +121,7 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
       {hasActiveAffiliate && <AffiliateDisclosure variant="top" />}
 
       <header class="pt-4">
-        <div class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
+        <div class="text-xs text-indigo-400 font-mono uppercase tracking-wider mb-3">
           Supplier profile
         </div>
         <h1 class="text-4xl sm:text-5xl font-medium text-zinc-50 tracking-tight mb-4 leading-tight">
@@ -283,8 +283,8 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     border-radius: var(--radius-card);
     padding: 22px 24px;
     margin-bottom: 36px;
-    background: linear-gradient(135deg, rgba(8, 47, 73, 0.45) 0%, var(--surface-card) 65%);
-    border: 1px solid rgba(7, 89, 133, 0.55);
+    background: linear-gradient(135deg, rgba(30, 27, 75, 0.45) 0%, var(--surface-card) 65%);
+    border: 1px solid rgba(55, 48, 163, 0.55);
     box-shadow: var(--inset-top), var(--shadow-card);
     overflow: hidden;
   }
@@ -339,12 +339,12 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
   .prose-supplier :global(a) {
     color: var(--accent-ecosystem-glow);
     text-decoration: underline;
-    text-decoration-color: var(--sky-900);
+    text-decoration-color: var(--indigo-900);
     text-underline-offset: 3px;
     transition: color 150ms, text-decoration-color 150ms;
   }
   .prose-supplier :global(a:hover) {
-    color: var(--sky-300);
+    color: var(--indigo-300);
     text-decoration-color: var(--accent-ecosystem-glow);
   }
   .prose-supplier :global(ul),
@@ -392,8 +392,8 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     box-shadow: var(--inset-top), var(--shadow-card);
   }
   .panel-strengths {
-    background: linear-gradient(135deg, rgba(8, 47, 73, 0.4) 0%, var(--surface-card) 65%);
-    border: 1px solid rgba(7, 89, 133, 0.5);
+    background: linear-gradient(135deg, rgba(30, 27, 75, 0.4) 0%, var(--surface-card) 65%);
+    border: 1px solid rgba(55, 48, 163, 0.5);
   }
   .panel-limitations {
     background: linear-gradient(135deg, rgba(69, 26, 3, 0.4) 0%, var(--surface-card) 65%);
@@ -522,8 +522,8 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     justify-content: space-between;
     gap: 12px;
     padding: 14px 18px;
-    background: linear-gradient(135deg, rgba(8, 47, 73, 0.30) 0%, var(--surface-card) 65%);
-    border: 1px solid rgba(7, 89, 133, 0.40);
+    background: linear-gradient(135deg, rgba(30, 27, 75, 0.30) 0%, var(--surface-card) 65%);
+    border: 1px solid rgba(55, 48, 163, 0.40);
     border-radius: var(--radius-card);
     box-shadow: var(--inset-top), var(--shadow-card);
     text-decoration: none;
@@ -562,7 +562,7 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
   }
   .related-card:hover {
     transform: translateY(-2px);
-    border-color: rgba(14, 165, 233, 0.6);
+    border-color: rgba(99, 102, 241, 0.6);
     box-shadow: var(--inset-top), var(--shadow-card-strong);
   }
   .related-card:hover .related-card-arrow {

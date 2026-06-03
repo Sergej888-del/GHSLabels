@@ -1,4 +1,4 @@
----
+﻿---
 // src/layouts/HubPageLayout.astro
 //
 // Generic layout for hub INDEX pages (/suppliers/, /compare/, /materials/,
@@ -7,7 +7,7 @@
 //
 // === v3 visual hierarchy (26 May 2026) ===
 // Hero gets DOUBLE radial gradient for cool/warm balance:
-//   - Phthalo sky-400 at top-right (22% opacity) — brand identity
+//   - Phthalo indigo-400 at top-right (22% opacity) — brand identity
 //   - Brass amber-300 at bottom-left (10% opacity) — warmth balance
 // This prevents the page from feeling monolithic black. The cool/warm pairing
 // is a classic editorial layout trick: cool draws attention to the headline,
@@ -57,7 +57,7 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
         { label: hub.label }
       ]} />
 
-      <div class="mt-2 mb-4 text-xs text-sky-400 font-mono uppercase tracking-wider">
+      <div class="mt-2 mb-4 text-xs text-indigo-400 font-mono uppercase tracking-wider">
         {eyebrowNumber} · {hub.label}
       </div>
 
@@ -70,7 +70,7 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
       </p>
 
       <div class="mt-6 flex items-center gap-2 text-sm">
-        <span class="font-mono text-sky-400 tabular-nums">{itemCount}</span>
+        <span class="font-mono text-indigo-400 tabular-nums">{itemCount}</span>
         <span class="text-zinc-400">{hub.countLabel}</span>
       </div>
     </div>
@@ -86,7 +86,7 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
                 href={chip.href}
                 class={
                   chip.active
-                    ? 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-950 border border-sky-400 text-sky-200 text-xs rounded transition-colors'
+                    ? 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-950 border border-indigo-400 text-indigo-200 text-xs rounded transition-colors'
                     : 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs rounded hover:bg-zinc-700 hover:text-zinc-100 transition-colors'
                 }
               >
@@ -99,7 +99,7 @@ const eyebrowNumber = String(hub.order).padStart(2, '0');
               <span
                 class={
                   chip.active
-                    ? 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-950 border border-sky-400 text-sky-200 text-xs rounded'
+                    ? 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-950 border border-indigo-400 text-indigo-200 text-xs rounded'
                     : 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs rounded'
                 }
               >

@@ -1,4 +1,4 @@
----
+﻿---
 // src/components/Breadcrumbs.astro
 //
 // Breadcrumb navigation with BreadcrumbList JSON-LD.
@@ -71,7 +71,7 @@ const jsonLdSafe = JSON.stringify(breadcrumbJsonLd).replace(/</g, '\\u003c');
           {isLink ? (
             <a
               href={item.href}
-              class="text-zinc-400 hover:text-sky-400 transition-colors duration-150"
+              class="text-zinc-400 hover:text-indigo-400 transition-colors duration-150"
             >
               {item.label}
             </a>
