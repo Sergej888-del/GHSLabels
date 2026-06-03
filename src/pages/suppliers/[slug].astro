@@ -3,26 +3,28 @@
 //
 // Supplier profile detail page.
 //
-// === v4 visual hierarchy (26 May 2026) ===
-// Real warmth, not just lighter black. Each section uses semantic color tint:
+// === v5 (Phase D, 27 May 2026) ===
+// Token-driven full visual refactor matching Phthalo Night v3 spec.
 //
-//   - Hero: double radial gradient (phthalo top-right + amber bottom-left)
-//     for cool/warm balance under the headline.
-//   - Quick facts: phthalo-tinted panel (info = brand color).
-//   - Strengths: phthalo-tinted panel (positive = cool brand).
-//   - Limitations: amber/brass-tinted panel (caution = warm, not red).
-//   - CTA: orange radial glow behind the button (commerce focal moment).
-//   - Related cards: phthalo hover glow.
+// Structure:
+//   1. Hero — full-width zinc-950 + .hero-radial-bg (smooth multi-stop)
+//      └─ Breadcrumbs + optional AffiliateDisclosure + name/tagline/chips
+//   2. Quick facts — phthalo-tinted panel with mandatory shadow stack
+//   3. MDX body — softer prose typography
+//   4. Strengths (phthalo cool) / Limitations (brass warm) — paired contrast
+//   5. Best for — bulleted list with sky arrows
+//   6. Primary CTA — orange button + brass radial glow backdrop
+//   7. Related suppliers — phthalo-tinted cards
+//   8. Related comparisons — phthalo-tinted cards
+//   9. Inline AffiliateDisclosure (only if affiliateProgram === 'active')
 //
-// The cool/warm pairing of Strengths (phthalo) vs Limitations (brass) is
-// editorial: positive things lean toward the cool brand identity, cautionary
-// things lean toward the warm-but-not-red attention tone. Red is reserved
-// for actual hazards.
+// The cool/warm pairing of Strengths vs Limitations is editorial:
+// positives lean cool brand identity, cautionary leans warm-but-not-red.
+// Red is reserved exclusively for substance hazards.
 //
-// === Astro 6 Content Layer API notes ===
-// - entry.id (filename-stem) is used for routing params, not entry.slug.
-// - render() is imported from astro:content and called as render(entry);
-//   the legacy entry.render() method is removed in Astro 6.
+// === Astro 6 Content Layer API ===
+// - entry.id (filename-stem) for routing params, NOT entry.slug
+// - render() imported from astro:content, called as render(entry)
 
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
@@ -56,9 +58,7 @@ const hasActiveAffiliate = data.affiliateProgram === 'active';
 
 const ctaUrl =
   hasActiveAffiliate && data.affiliateUrl ? data.affiliateUrl : data.websiteUrl;
-const ctaRel = hasActiveAffiliate
-  ? 'sponsored nofollow noopener'
-  : 'noopener';
+const ctaRel = hasActiveAffiliate ? 'sponsored nofollow noopener' : 'noopener';
 
 async function resolveRelated<C extends 'suppliers' | 'comparisons'>(
   collection: C,
@@ -105,15 +105,11 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     }}
   />
 
-  <!-- Hero: full-width zinc-950 + double radial gradient -->
+  <!-- ============== HERO — full-width zinc-950 + smooth dual radial ============== -->
   <section class="relative bg-zinc-950 overflow-hidden">
-    <div
-      class="absolute inset-0 pointer-events-none"
-      style="background: radial-gradient(ellipse 70% 60% at top right, rgba(56, 189, 248, 0.22) 0%, transparent 65%), radial-gradient(ellipse 55% 45% at bottom left, rgba(252, 211, 77, 0.10) 0%, transparent 60%);"
-      aria-hidden="true"
-    ></div>
+    <div class="absolute inset-0 pointer-events-none hero-radial-bg" aria-hidden="true"></div>
 
-    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-14">
       <Breadcrumbs
         items={[
           { label: 'Home', href: '/' },
@@ -147,106 +143,88 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     </div>
   </section>
 
-  <!-- Body content: inherits body bg-zinc-900 -->
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <!-- ============== BODY — narrow container on body bg ============== -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
-    <!-- Quick facts: phthalo-tinted info panel -->
-    <section class="bg-gradient-to-br from-sky-950/30 via-zinc-800 to-zinc-800 border border-sky-900/50 rounded-lg p-6 mb-10">
-      <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-4">
-        Quick facts
-      </h2>
-      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
-        {data.headquarters && (
+    <!-- Quick facts -->
+    <section class="quick-facts">
+      <div class="card-light" aria-hidden="true"></div>
+      <div class="quick-facts-body">
+        <h2 class="quick-facts-eyebrow">Quick facts</h2>
+        <dl class="quick-facts-grid">
+          {data.headquarters && (
+            <div>
+              <dt>Headquarters</dt>
+              <dd>{data.headquarters}</dd>
+            </div>
+          )}
+          {data.foundedYear && (
+            <div>
+              <dt>Founded</dt>
+              <dd>{data.foundedYear}</dd>
+            </div>
+          )}
           <div>
-            <dt class="text-zinc-400 mb-1">Headquarters</dt>
-            <dd class="text-zinc-100">{data.headquarters}</dd>
+            <dt>Pricing model</dt>
+            <dd>{pricingLabel[data.pricingModel]}</dd>
           </div>
-        )}
-        {data.foundedYear && (
           <div>
-            <dt class="text-zinc-400 mb-1">Founded</dt>
-            <dd class="text-zinc-100">{data.foundedYear}</dd>
+            <dt>Product categories</dt>
+            <dd>{data.productCategories.join(', ')}</dd>
           </div>
-        )}
-        <div>
-          <dt class="text-zinc-400 mb-1">Pricing model</dt>
-          <dd class="text-zinc-100">{pricingLabel[data.pricingModel]}</dd>
-        </div>
-        <div>
-          <dt class="text-zinc-400 mb-1">Product categories</dt>
-          <dd class="text-zinc-100">{data.productCategories.join(', ')}</dd>
-        </div>
-      </dl>
+        </dl>
+      </div>
     </section>
 
     <!-- MDX body -->
-    <div class="prose-supplier mb-10">
+    <div class="prose-supplier">
       <Content />
     </div>
 
-    <!-- Strengths (phthalo cool) / Limitations (brass warm) — paired contrast -->
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
-      <div class="bg-gradient-to-br from-sky-950/25 via-zinc-800 to-zinc-800 border border-sky-900/50 rounded-lg p-6">
-        <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
-          Strengths
-        </h2>
-        <ul class="space-y-2 text-sm text-zinc-200">
-          {data.strengths.map((item) => (
-            <li class="flex gap-2">
-              <span class="text-sky-400 shrink-0 font-mono">+</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+    <!-- Strengths (cool) / Limitations (warm) paired -->
+    <section class="paired-panels">
+      <div class="panel-strengths">
+        <div class="card-light" aria-hidden="true"></div>
+        <div class="panel-body">
+          <h2 class="panel-eyebrow panel-eyebrow-ecosystem">Strengths</h2>
+          <ul class="panel-list">
+            {data.strengths.map((item) => (
+              <li><span class="panel-bullet-plus">+</span><span>{item}</span></li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <div class="bg-gradient-to-br from-amber-950/25 via-zinc-800 to-zinc-800 border border-amber-900/50 rounded-lg p-6">
-        <h2 class="text-xs text-amber-300 font-mono uppercase tracking-wider mb-3">
-          Limitations
-        </h2>
-        <ul class="space-y-2 text-sm text-zinc-200">
-          {data.weaknesses.map((item) => (
-            <li class="flex gap-2">
-              <span class="text-amber-400 shrink-0 font-mono">−</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+      <div class="panel-limitations">
+        <div class="card-light" aria-hidden="true"></div>
+        <div class="panel-body">
+          <h2 class="panel-eyebrow panel-eyebrow-commerce">Limitations</h2>
+          <ul class="panel-list">
+            {data.weaknesses.map((item) => (
+              <li><span class="panel-bullet-minus">−</span><span>{item}</span></li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
 
     <!-- Best for -->
-    <section class="mb-10">
-      <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-3">
-        Best for
-      </h2>
-      <ul class="space-y-1.5 text-zinc-200 text-sm">
+    <section class="best-for">
+      <h2 class="panel-eyebrow panel-eyebrow-ecosystem">Best for</h2>
+      <ul class="best-for-list">
         {data.bestFor.map((item) => (
-          <li class="flex gap-2">
-            <span class="text-sky-400 shrink-0">→</span>
-            <span>{item}</span>
-          </li>
+          <li><span class="best-for-arrow">→</span><span>{item}</span></li>
         ))}
       </ul>
     </section>
 
-    <!-- Primary CTA: orange radial glow backdrop -->
-    <section class="relative mb-10 py-10 border-y border-zinc-700 overflow-hidden">
-      <div
-        class="absolute inset-0 pointer-events-none"
-        style="background: radial-gradient(ellipse 60% 80% at center, rgba(249, 115, 22, 0.14) 0%, transparent 65%);"
-        aria-hidden="true"
-      ></div>
-      <div class="relative text-center">
-        <a
-          href={ctaUrl}
-          rel={ctaRel}
-          target="_blank"
-          class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3.5 rounded-lg font-medium transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30"
-        >
-          Visit {data.name}
-          <span aria-hidden="true">↗</span>
+    <!-- Primary CTA — orange button on brass radial glow -->
+    <section class="cta-section">
+      <div class="cta-glow" aria-hidden="true"></div>
+      <div class="cta-inner">
+        <a href={ctaUrl} rel={ctaRel} target="_blank" class="btn-cta">
+          Visit {data.name} <span aria-hidden="true">↗</span>
         </a>
-        <p class="text-xs text-zinc-400 mt-3">
+        <p class="cta-note">
           {hasActiveAffiliate
             ? 'Opens supplier website · affiliate link'
             : 'Opens supplier website'}
@@ -255,22 +233,18 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     </section>
 
     {relatedSuppliers.length > 0 && (
-      <section class="mb-10">
-        <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-4">
-          Related suppliers
-        </h2>
-        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <section class="related-section">
+        <h2 class="panel-eyebrow panel-eyebrow-ecosystem">Related suppliers</h2>
+        <ul class="related-grid">
           {relatedSuppliers.map((rel) => (
             <li>
-              <a
-                href={`/suppliers/${rel.id}/`}
-                class="flex items-center justify-between gap-3 p-4 bg-gradient-to-br from-sky-950/20 via-zinc-800 to-zinc-800 border border-sky-900/40 rounded-lg hover:border-sky-600 hover:from-sky-950/40 transition-all"
-              >
-                <div class="min-w-0">
-                  <div class="text-zinc-100 font-medium truncate">{rel.data.name}</div>
-                  <div class="text-xs text-zinc-400 mt-1 line-clamp-2">{rel.data.tagline}</div>
+              <a href={`/suppliers/${rel.id}/`} class="related-card">
+                <div class="card-light" aria-hidden="true"></div>
+                <div class="related-card-body">
+                  <div class="related-card-title">{rel.data.name}</div>
+                  <div class="related-card-desc">{rel.data.tagline}</div>
                 </div>
-                <span class="text-sky-400 text-sm shrink-0" aria-hidden="true">→</span>
+                <span class="related-card-arrow" aria-hidden="true">→</span>
               </a>
             </li>
           ))}
@@ -279,19 +253,18 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
     )}
 
     {relatedComparisons.length > 0 && (
-      <section class="mb-10">
-        <h2 class="text-xs text-sky-400 font-mono uppercase tracking-wider mb-4">
-          Comparisons
-        </h2>
-        <ul class="space-y-2">
+      <section class="related-section">
+        <h2 class="panel-eyebrow panel-eyebrow-ecosystem">Comparisons</h2>
+        <ul class="related-list">
           {relatedComparisons.map((rel) => (
             <li>
-              <a
-                href={`/compare/${rel.id}/`}
-                class="block p-4 bg-gradient-to-br from-sky-950/20 via-zinc-800 to-zinc-800 border border-sky-900/40 rounded-lg hover:border-sky-600 hover:from-sky-950/40 transition-all"
-              >
-                <div class="text-zinc-100 font-medium">{rel.data.title}</div>
-                <div class="text-xs text-zinc-400 mt-1">{rel.data.verdict}</div>
+              <a href={`/compare/${rel.id}/`} class="related-card">
+                <div class="card-light" aria-hidden="true"></div>
+                <div class="related-card-body">
+                  <div class="related-card-title">{rel.data.title}</div>
+                  <div class="related-card-desc">{rel.data.verdict}</div>
+                </div>
+                <span class="related-card-arrow" aria-hidden="true">→</span>
               </a>
             </li>
           ))}
@@ -304,71 +277,296 @@ const pricingLabel: Record<typeof data.pricingModel, string> = {
 </Layout>
 
 <style>
-  /* MDX body typography — Phthalo Night v3 palette.
-     Headings zinc-100 (#f4f4f5), body text zinc-200 (#e4e4e7) for softer
-     long-form reading. */
+  /* QUICK FACTS — phthalo-tinted panel */
+  .quick-facts {
+    position: relative;
+    border-radius: var(--radius-card);
+    padding: 22px 24px;
+    margin-bottom: 36px;
+    background: linear-gradient(135deg, rgba(8, 47, 73, 0.45) 0%, var(--surface-card) 65%);
+    border: 1px solid rgba(7, 89, 133, 0.55);
+    box-shadow: var(--inset-top), var(--shadow-card);
+    overflow: hidden;
+  }
+  .quick-facts > .card-light {
+    position: absolute;
+    inset: 0;
+    background: var(--top-light-gradient);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .quick-facts-body { position: relative; }
+  .quick-facts-eyebrow {
+    font: 500 11px/1 var(--font-mono);
+    letter-spacing: 0.14em;
+    color: var(--accent-ecosystem);
+    text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+  .quick-facts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 28px;
+    font: 400 13px/1.4 var(--font-sans);
+    margin: 0;
+  }
+  .quick-facts-grid dt { color: var(--text-muted); margin-bottom: 3px; }
+  .quick-facts-grid dd { color: var(--text-primary); font-weight: 500; margin: 0; }
+  @media (max-width: 640px) {
+    .quick-facts-grid { grid-template-columns: 1fr; gap: 12px; }
+  }
+
+  /* PROSE-SUPPLIER — MDX body */
+  .prose-supplier { margin-bottom: 36px; }
   .prose-supplier :global(h2) {
-    color: #f4f4f5;
-    font-size: 1.5rem;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    margin-top: 2rem;
+    color: var(--text-primary);
+    font: 500 24px/1.2 var(--font-sans);
+    letter-spacing: -0.015em;
+    margin-top: 2.25rem;
     margin-bottom: 1rem;
   }
   .prose-supplier :global(h3) {
-    color: #e4e4e7;
-    font-size: 1.25rem;
-    font-weight: 500;
-    margin-top: 1.5rem;
+    color: var(--zinc-200);
+    font: 500 19px/1.25 var(--font-sans);
+    margin-top: 1.75rem;
     margin-bottom: 0.75rem;
   }
   .prose-supplier :global(p) {
-    color: #d4d4d8;
-    line-height: 1.75;
-    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font: 400 15px/1.75 var(--font-sans);
+    margin-bottom: 1.1rem;
   }
   .prose-supplier :global(a) {
-    color: #38bdf8;
+    color: var(--accent-ecosystem-glow);
     text-decoration: underline;
-    text-decoration-color: #0c4a6e;
+    text-decoration-color: var(--sky-900);
     text-underline-offset: 3px;
     transition: color 150ms, text-decoration-color 150ms;
   }
   .prose-supplier :global(a:hover) {
-    color: #7dd3fc;
-    text-decoration-color: #38bdf8;
+    color: var(--sky-300);
+    text-decoration-color: var(--accent-ecosystem-glow);
   }
-  .prose-supplier :global(ul) {
-    list-style-type: disc;
-    margin-left: 1.5rem;
-    color: #d4d4d8;
-    margin-bottom: 1rem;
-  }
+  .prose-supplier :global(ul),
   .prose-supplier :global(ol) {
-    list-style-type: decimal;
+    color: var(--text-secondary);
     margin-left: 1.5rem;
-    color: #d4d4d8;
-    margin-bottom: 1rem;
+    margin-bottom: 1.1rem;
+    font-size: 15px;
   }
-  .prose-supplier :global(li) {
-    margin-bottom: 0.5rem;
-  }
-  .prose-supplier :global(strong) {
-    color: #f4f4f5;
-    font-weight: 500;
-  }
+  .prose-supplier :global(ul) { list-style: disc; }
+  .prose-supplier :global(ol) { list-style: decimal; }
+  .prose-supplier :global(li) { margin-bottom: 0.4rem; line-height: 1.75; }
+  .prose-supplier :global(strong) { color: var(--text-primary); font-weight: 600; }
   .prose-supplier :global(code) {
-    background: #27272a;
-    color: #fcd34d;
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    font-size: 0.875em;
+    background: var(--surface-card);
+    color: var(--amber-300);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    font: 500 0.88em/1 var(--font-mono);
   }
   .prose-supplier :global(blockquote) {
-    border-left: 2px solid #0369a1;
+    border-left: 2px solid var(--accent-ecosystem);
     padding-left: 1rem;
-    color: #a1a1aa;
+    color: var(--text-muted);
     font-style: italic;
-    margin: 1.5rem 0;
+    margin: 1.75rem 0;
+  }
+
+  /* PAIRED PANELS — Strengths cool / Limitations warm */
+  .paired-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 768px) {
+    .paired-panels { grid-template-columns: 1fr; }
+  }
+  .panel-strengths,
+  .panel-limitations {
+    position: relative;
+    border-radius: var(--radius-card);
+    padding: 20px;
+    overflow: hidden;
+    box-shadow: var(--inset-top), var(--shadow-card);
+  }
+  .panel-strengths {
+    background: linear-gradient(135deg, rgba(8, 47, 73, 0.4) 0%, var(--surface-card) 65%);
+    border: 1px solid rgba(7, 89, 133, 0.5);
+  }
+  .panel-limitations {
+    background: linear-gradient(135deg, rgba(69, 26, 3, 0.4) 0%, var(--surface-card) 65%);
+    border: 1px solid rgba(146, 64, 14, 0.5);
+  }
+  .panel-strengths > .card-light,
+  .panel-limitations > .card-light {
+    position: absolute;
+    inset: 0;
+    background: var(--top-light-gradient);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .panel-body { position: relative; }
+  .panel-eyebrow {
+    font: 500 11px/1 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+  .panel-eyebrow-ecosystem { color: var(--accent-ecosystem); }
+  .panel-eyebrow-commerce  { color: var(--amber-300); }
+  .panel-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font: 400 13px/1.55 var(--font-sans);
+    color: var(--zinc-200);
+  }
+  .panel-list li { display: flex; gap: 9px; }
+  .panel-bullet-plus  { color: var(--accent-ecosystem); font-family: var(--font-mono); font-weight: 600; flex-shrink: 0; }
+  .panel-bullet-minus { color: var(--amber-400); font-family: var(--font-mono); font-weight: 600; flex-shrink: 0; }
+
+  /* BEST FOR */
+  .best-for { margin-bottom: 36px; }
+  .best-for-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    font: 400 14px/1.55 var(--font-sans);
+    color: var(--zinc-200);
+  }
+  .best-for-list li { display: flex; gap: 10px; }
+  .best-for-arrow { color: var(--accent-ecosystem); flex-shrink: 0; font-weight: 600; }
+
+  /* CTA — orange button on brass radial glow */
+  .cta-section {
+    position: relative;
+    padding: 44px 0;
+    margin-bottom: 36px;
+    border-top: 1px solid var(--border-default);
+    border-bottom: 1px solid var(--border-default);
+    overflow: hidden;
+  }
+  .cta-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 60% 90% at 50% 50%,
+      rgba(217, 119, 6, 0.20) 0%,
+      rgba(251, 191, 36, 0.06) 35%,
+      transparent 75%
+    );
+    pointer-events: none;
+    filter: blur(2px);
+  }
+  .cta-inner { position: relative; text-align: center; }
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--orange-500);
+    color: #ffffff;
+    padding: 14px 26px;
+    border-radius: var(--radius-card);
+    font: 600 14px/1 var(--font-sans);
+    border: 1px solid var(--orange-500);
+    text-decoration: none;
+    box-shadow:
+      var(--inset-top-strong),
+      0 6px 18px -4px rgba(249, 115, 22, 0.55),
+      0 0 0 6px rgba(251, 191, 36, 0.08);
+    transition: transform 500ms ease-out, background 500ms ease-out, box-shadow 500ms ease-out;
+  }
+  .btn-cta:hover {
+    background: var(--orange-600);
+    transform: translateY(-1px);
+    box-shadow:
+      var(--inset-top-strong),
+      0 10px 28px -4px rgba(249, 115, 22, 0.65),
+      0 0 0 10px rgba(251, 191, 36, 0.12);
+  }
+  .cta-note { margin: 14px 0 0; font: 400 11px/1.4 var(--font-sans); color: var(--text-muted); }
+
+  /* RELATED — supplier and comparison cards */
+  .related-section { margin-bottom: 36px; }
+  .related-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 640px) {
+    .related-grid { grid-template-columns: 1fr; }
+  }
+  .related-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .related-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(8, 47, 73, 0.30) 0%, var(--surface-card) 65%);
+    border: 1px solid rgba(7, 89, 133, 0.40);
+    border-radius: var(--radius-card);
+    box-shadow: var(--inset-top), var(--shadow-card);
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    transition: transform 400ms ease-out, border-color 400ms ease-out, box-shadow 400ms ease-out;
+  }
+  .related-card > .card-light {
+    position: absolute;
+    inset: 0;
+    background: var(--top-light-gradient);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .related-card-body { position: relative; min-width: 0; flex-grow: 1; }
+  .related-card-title {
+    font: 600 14px/1.2 var(--font-sans);
+    color: var(--text-primary);
+    margin-bottom: 3px;
+    letter-spacing: -0.01em;
+  }
+  .related-card-desc {
+    font: 400 11px/1.4 var(--font-sans);
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .related-card-arrow {
+    position: relative;
+    color: var(--accent-ecosystem);
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: transform 400ms ease-out, color 400ms ease-out;
+  }
+  .related-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(14, 165, 233, 0.6);
+    box-shadow: var(--inset-top), var(--shadow-card-strong);
+  }
+  .related-card:hover .related-card-arrow {
+    transform: translateX(3px);
+    color: var(--accent-ecosystem-glow);
   }
 </style>

@@ -361,6 +361,34 @@ a { color: inherit; text-decoration: none; }
 .btn-pulse { animation: amber-pulse 3s ease-in-out infinite; }
 
 /* ============================================================
+   HERO RADIAL BACKGROUND — smooth dual gradient utility
+   Used by Hub heroes (HubPageLayout) and supplier detail heroes.
+   Multi-stop easing curve eliminates banding between tinted
+   ellipse and dark background.
+   ============================================================ */
+.hero-radial-bg {
+  background:
+    /* Cool phthalo — top-right corner */
+    radial-gradient(
+      ellipse 80% 75% at 100% 0%,
+      rgba(56, 189, 248, 0.22) 0%,
+      rgba(56, 189, 248, 0.14) 22%,
+      rgba(56, 189, 248, 0.06) 45%,
+      rgba(56, 189, 248, 0.02) 65%,
+      transparent 85%
+    ),
+    /* Warm brass — bottom-left corner */
+    radial-gradient(
+      ellipse 70% 65% at 0% 100%,
+      rgba(252, 211, 77, 0.12) 0%,
+      rgba(252, 211, 77, 0.07) 25%,
+      rgba(252, 211, 77, 0.03) 50%,
+      rgba(252, 211, 77, 0.01) 70%,
+      transparent 90%
+    );
+}
+
+/* ============================================================
    REDUCED MOTION
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
