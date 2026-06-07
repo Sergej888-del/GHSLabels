@@ -1,0 +1,375 @@
+---
+// src/pages/guides/[slug].astro
+//
+// Guide article detail page.
+// Mirrors suppliers/[slug].astro structure, adapted for editorial 'guides'.
+//
+// === Astro 6 Content Layer API ===
+// - entry.id (filename-stem) for routing params, NOT entry.slug
+// - render() imported from astro:content, called as render(entry)
+//
+// === Schema strategy (AI-citation channel) ===
+// 1. Primary entity: Article (via shared SchemaOrg.astro component).
+// 2. Secondary entity: FAQPage — emitted as a SEPARATE inline JSON-LD block,
+//    ONLY when data.faq is present. SchemaOrg.astro intentionally handles only
+//    one primary entity per page, so FAQPage lives here. Article + FAQPage on
+//    one page is permitted by Google and is the core AI-citation signal for
+//    the educational cluster (clear Q&A pulled into AI Overviews / ChatGPT).
+//
+// === Visual system ===
+// Reuses Phthalo Night tokens (var(--surface-*), var(--accent-ecosystem*)).
+// NO --color-* naming. Prose styles mirror .prose-supplier exactly.
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import SchemaOrg from '../../components/SchemaOrg.astro';
+import Chip from '../../components/Chip.astro';
+import {
+  getCollection,
+  getEntry,
+  render,
+  type CollectionEntry,
+} from 'astro:content';
+
+export async function getStaticPaths() {
+  const items = await getCollection('guides', ({ data }) => !data.draft);
+  return items.map((item) => ({
+    params: { slug: item.id },
+    props: { guide: item },
+  }));
+}
+
+interface Props {
+  guide: CollectionEntry<'guides'>;
+}
+
+const { guide } = Astro.props;
+const { Content } = await render(guide);
+const data = guide.data;
+const canonical = `/guides/${guide.id}/`;
+
+// Resolve related internal pages (relatedPages are full /path/ URLs as strings;
+// we just render them as links — no collection lookup needed since they may
+// point at any hub). Cross-domain links rendered separately.
+const relatedPages = data.relatedPages ?? [];
+const crossDomainLinks = data.crossDomainLinks ?? [];
+
+// Human-readable guideType label for the eyebrow.
+const guideTypeLabel: Record<typeof data.guideType, string> = {
+  'buyer-guide': 'Buyer&rsquo;s guide',
+  'how-to': 'How-to',
+  'comparison-methodology': 'Methodology',
+  'decision-tree': 'Decision guide',
+  'educational': 'Guide',
+};
+
+// FAQPage JSON-LD — built only if faq entries exist.
+const faqJsonLd =
+  data.faq && data.faq.length > 0
+    ? JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: data.faq.map((item) => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: item.answer,
+          },
+        })),
+      }).replace(/</g, '\\u003c')
+    : null;
+---
+<Layout
+  title={data.title}
+  description={data.description}
+  pathname={canonical}
+>
+  <SchemaOrg
+    type="Article"
+    data={{
+      headline: data.title,
+      description: data.description,
+      url: canonical,
+      datePublished: data.pubDate.toISOString(),
+      dateModified: data.updatedDate?.toISOString(),
+      author: data.author,
+      keywords: data.keywords,
+    }}
+  />
+  {faqJsonLd && (
+    <script type="application/ld+json" set:html={faqJsonLd} />
+  )}
+
+  <!-- ============== HERO ============== -->
+  <section class="relative bg-zinc-950 overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none hero-radial-bg" aria-hidden="true"></div>
+    <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Guides', href: '/guides/' },
+          { label: data.title },
+        ]}
+      />
+      <header class="pt-4">
+        <div class="text-xs text-indigo-400 font-mono uppercase tracking-wider mb-3">
+          <Fragment set:html={guideTypeLabel[data.guideType]} />
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-medium text-zinc-50 tracking-tight mb-4 leading-tight">
+          {data.title}
+        </h1>
+        <p class="text-lg text-zinc-300 leading-relaxed max-w-2xl mb-6">
+          {data.description}
+        </p>
+        <div class="flex flex-wrap gap-2 items-center">
+          <Chip variant="neutral">{data.estimatedReadTime} min read</Chip>
+          {data.updatedDate && (
+            <Chip variant="phthalo" dot>
+              Updated {data.updatedDate.toISOString().slice(0, 10)}
+            </Chip>
+          )}
+        </div>
+      </header>
+    </div>
+  </section>
+
+  <!-- ============== BODY ============== -->
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- MDX body -->
+    <div class="prose-guide">
+      <Content />
+    </div>
+
+    <!-- FAQ section (visible) — renders the same Q&A the FAQPage schema emits -->
+    {data.faq && data.faq.length > 0 && (
+      <section class="faq-section">
+        <h2 class="faq-heading">Frequently asked questions</h2>
+        <div class="faq-list">
+          {data.faq.map((item) => (
+            <div class="faq-item">
+              <div class="card-light" aria-hidden="true"></div>
+              <div class="faq-item-body">
+                <h3 class="faq-question">{item.question}</h3>
+                <p class="faq-answer">{item.answer}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Related pages (internal) -->
+    {relatedPages.length > 0 && (
+      <section class="related-section">
+        <h2 class="panel-eyebrow">Related</h2>
+        <ul class="related-list">
+          {relatedPages.map((href) => (
+            <li>
+              <a href={href} class="related-card">
+                <div class="card-light" aria-hidden="true"></div>
+                <span class="related-card-href">{href}</span>
+                <span class="related-card-arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <!-- Cross-domain links (ecosystem) -->
+    {crossDomainLinks.length > 0 && (
+      <section class="related-section">
+        <h2 class="panel-eyebrow panel-eyebrow-ecosystem">Across the ecosystem</h2>
+        <ul class="related-list">
+          {crossDomainLinks.map((href) => (
+            <li>
+              <a href={href} rel="noopener" class="related-card related-card-ecosystem">
+                <div class="card-light" aria-hidden="true"></div>
+                <span class="related-card-href">{href}</span>
+                <span class="related-card-arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </div>
+</Layout>
+
+<style>
+  /* PROSE-GUIDE — MDX body. Mirrors .prose-supplier. */
+  .prose-guide { margin-bottom: 36px; }
+  .prose-guide :global(h2) {
+    color: var(--text-primary);
+    font: 500 24px/1.2 var(--font-sans);
+    letter-spacing: -0.015em;
+    margin-top: 2.25rem;
+    margin-bottom: 1rem;
+  }
+  .prose-guide :global(h3) {
+    color: var(--zinc-200);
+    font: 500 19px/1.25 var(--font-sans);
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .prose-guide :global(p) {
+    color: var(--text-secondary);
+    font: 400 15px/1.75 var(--font-sans);
+    margin-bottom: 1.1rem;
+  }
+  .prose-guide :global(a) {
+    color: var(--accent-ecosystem-glow);
+    text-decoration: underline;
+    text-decoration-color: var(--indigo-900);
+    text-underline-offset: 3px;
+    transition: color 150ms, text-decoration-color 150ms;
+  }
+  .prose-guide :global(a:hover) {
+    color: var(--indigo-300);
+    text-decoration-color: var(--accent-ecosystem-glow);
+  }
+  .prose-guide :global(ul),
+  .prose-guide :global(ol) {
+    color: var(--text-secondary);
+    margin-left: 1.5rem;
+    margin-bottom: 1.1rem;
+    font-size: 15px;
+  }
+  .prose-guide :global(ul) { list-style: disc; }
+  .prose-guide :global(ol) { list-style: decimal; }
+  .prose-guide :global(li) { margin-bottom: 0.4rem; line-height: 1.75; }
+  .prose-guide :global(strong) { color: var(--text-primary); font-weight: 600; }
+  .prose-guide :global(code) {
+    background: var(--surface-card);
+    color: var(--amber-300);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    font: 500 0.88em/1 var(--font-mono);
+  }
+  .prose-guide :global(blockquote) {
+    border-left: 2px solid var(--accent-ecosystem);
+    padding-left: 1rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin: 1.75rem 0;
+  }
+  .prose-guide :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 14px;
+  }
+  .prose-guide :global(th),
+  .prose-guide :global(td) {
+    border: 1px solid var(--border-default);
+    padding: 8px 12px;
+    text-align: left;
+  }
+  .prose-guide :global(th) {
+    background: var(--surface-card);
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .prose-guide :global(td) { color: var(--text-secondary); }
+
+  /* FAQ */
+  .faq-section { margin-bottom: 36px; }
+  .faq-heading {
+    color: var(--text-primary);
+    font: 500 24px/1.2 var(--font-sans);
+    letter-spacing: -0.015em;
+    margin: 0 0 18px;
+  }
+  .faq-list { display: flex; flex-direction: column; gap: 12px; }
+  .faq-item {
+    position: relative;
+    border-radius: var(--radius-card);
+    padding: 18px 20px;
+    background: linear-gradient(135deg, rgba(30, 27, 75, 0.30) 0%, var(--surface-card) 65%);
+    border: 1px solid rgba(55, 48, 163, 0.40);
+    box-shadow: var(--inset-top), var(--shadow-card);
+    overflow: hidden;
+  }
+  .faq-item > .card-light {
+    position: absolute;
+    inset: 0;
+    background: var(--top-light-gradient);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .faq-item-body { position: relative; }
+  .faq-question {
+    font: 500 16px/1.35 var(--font-sans);
+    color: var(--text-primary);
+    margin: 0 0 8px;
+  }
+  .faq-answer {
+    font: 400 14px/1.6 var(--font-sans);
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* RELATED */
+  .related-section { margin-bottom: 36px; }
+  .panel-eyebrow {
+    font: 500 11px/1 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+  }
+  .panel-eyebrow-ecosystem { color: var(--accent-ecosystem); }
+  .related-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .related-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-card);
+    box-shadow: var(--inset-top), var(--shadow-card);
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    font: 400 13px/1.4 var(--font-mono);
+    transition: transform 400ms ease-out, border-color 400ms ease-out, box-shadow 400ms ease-out;
+  }
+  .related-card-ecosystem {
+    background: linear-gradient(135deg, rgba(30, 27, 75, 0.30) 0%, var(--surface-card) 65%);
+    border: 1px solid rgba(55, 48, 163, 0.40);
+  }
+  .related-card > .card-light {
+    position: absolute;
+    inset: 0;
+    background: var(--top-light-gradient);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .related-card-href { position: relative; color: var(--text-secondary); min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .related-card-arrow {
+    position: relative;
+    color: var(--accent-ecosystem);
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: transform 400ms ease-out, color 400ms ease-out;
+  }
+  .related-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: var(--inset-top), var(--shadow-card-strong);
+  }
+  .related-card:hover .related-card-arrow {
+    transform: translateX(3px);
+    color: var(--accent-ecosystem-glow);
+  }
+</style>

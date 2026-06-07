@@ -198,8 +198,12 @@ const guides = defineCollection({
     slug: z.string(),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
-    guideType: z.enum(['buyer-guide', 'how-to', 'comparison-methodology', 'decision-tree']),
+    guideType: z.enum(['buyer-guide', 'how-to', 'comparison-methodology', 'decision-tree', 'educational']),
     primaryKeyword: z.string(),
+    faq: z.array(z.object({
+      question: z.string(),
+      answer: z.string(),
+    })).optional(),
     keywords: z.array(z.string()),
     estimatedReadTime: z.number(),                    // minutes
     draft: z.boolean().default(false),

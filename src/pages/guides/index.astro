@@ -1,0 +1,120 @@
+---
+// src/pages/guides/index.astro
+//
+// Guides hub index page.
+// Mirrors suppliers/index.astro but for the editorial 'guides' collection.
+// Lists all non-draft guide MDX entries; falls back to "Coming soon" empty
+// state (handled by HubPageLayout) when no MDX exists yet.
+//
+// === Routing note (Astro 6 Content Layer API) ===
+// entry.id (filename-stem) is used for routing, NOT entry.slug.
+// The Zod schema still requires a `slug` frontmatter field for SEO/canonical,
+// but the dynamic route [slug].astro matches on entry.id. Convention:
+// MDX filename === slug frontmatter === URL segment.
+//
+// === Sort order ===
+// 'educational' pillar/reference content first (the SEO priority), then the
+// rest, then alphabetical by title within each group.
+import HubPageLayout from '../../layouts/HubPageLayout.astro';
+import { getHubBySlug } from '../../lib/hubs';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+const hub = getHubBySlug('guides')!;
+const items = await getCollection('guides', ({ data }) => !data.draft);
+
+type GuideEntry = CollectionEntry<'guides'>;
+
+// Educational content ranks first (our SEO priority), then everything else.
+const typeRank = (g: GuideEntry): number =>
+  g.data.guideType === 'educational' ? 0 : 1;
+
+const sortedItems = items.sort((a, b) => {
+  const rankDiff = typeRank(a) - typeRank(b);
+  if (rankDiff !== 0) return rankDiff;
+  return a.data.title.localeCompare(b.data.title);
+});
+
+const readTimeLabel = (mins: number): string =>
+  `${mins} min read`;
+---
+<HubPageLayout hub={hub} itemCount={sortedItems.length}>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    {sortedItems.map((guide) => (
+      <a href={`/guides/${guide.id}/`} class="guide-card">
+        <div class="card-light" aria-hidden="true"></div>
+        <div class="guide-card-body">
+          <div class="guide-card-eyebrow">{readTimeLabel(guide.data.estimatedReadTime)}</div>
+          <h2 class="guide-card-title">{guide.data.title}</h2>
+          <p class="guide-card-desc">{guide.data.description}</p>
+        </div>
+        <span class="guide-card-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    ))}
+  </div>
+</HubPageLayout>
+
+<style>
+  .guide-card {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, rgba(30, 27, 75, 0.30) 0%, var(--surface-card) 65%);
+    border: 1px solid rgba(55, 48, 163, 0.40);
+    border-radius: var(--radius-card);
+    box-shadow: var(--inset-top), var(--shadow-card);
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    transition: transform 400ms ease-out, border-color 400ms ease-out, box-shadow 400ms ease-out;
+  }
+  .guide-card > .card-light {
+    position: absolute;
+    inset: 0;
+    background: var(--top-light-gradient);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .guide-card-body { position: relative; min-width: 0; flex-grow: 1; }
+  .guide-card-eyebrow {
+    font: 500 11px/1 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-ecosystem);
+    margin-bottom: 10px;
+  }
+  .guide-card-title {
+    font: 500 19px/1.25 var(--font-sans);
+    color: var(--text-primary);
+    letter-spacing: -0.015em;
+    margin: 0 0 8px;
+  }
+  .guide-card-desc {
+    font: 400 13px/1.55 var(--font-sans);
+    color: var(--text-muted);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .guide-card-arrow {
+    position: relative;
+    color: var(--accent-ecosystem);
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: transform 400ms ease-out, color 400ms ease-out;
+  }
+  .guide-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: var(--inset-top), var(--shadow-card-strong);
+  }
+  .guide-card:hover .guide-card-arrow {
+    transform: translateX(3px);
+    color: var(--accent-ecosystem-glow);
+  }
+</style>
