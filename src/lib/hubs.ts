@@ -84,7 +84,7 @@ export const HUBS: Hub[] = [
     description:
       'Head-to-head comparisons of label suppliers across 12+ procurement criteria.',
     countLabel: 'comparisons',
-    enabled: true,
+    enabled: false,
     order: 2,
   },
   {

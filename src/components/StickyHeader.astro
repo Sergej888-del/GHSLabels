@@ -28,8 +28,8 @@
 import { getEntriesByGroup, type Hub } from '../lib/hubs';
 import { TOOLS } from '../lib/tools';
 
-const procurementEntries = getEntriesByGroup('procurement');
-const resourcesEntries = getEntriesByGroup('resources');
+const procurementEntries = getEntriesByGroup('procurement').filter(isPublished);
+const resourcesEntries = getEntriesByGroup('resources').filter(isPublished);
 
 /**
  * Derive a tone for the chip color from the Hub entry shape.
@@ -370,12 +370,10 @@ function isPublished(entry: Hub): boolean {
     top: 100%;
     left: 0;
     right: 0;
-    background: rgba(9, 9, 11, 0.94);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: var(--surface-page);
     border-bottom: 1px solid var(--border-default);
     overflow: hidden;
-    z-index: 49;
+    z-index: 60;
     animation: mega-fade-in 200ms ease-out;
   }
 
