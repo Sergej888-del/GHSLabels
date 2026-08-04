@@ -60,19 +60,35 @@ const fullTitle = title.includes('GHS Labels') ? title : `${title} | GHS Labels`
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-    <!-- Favicon -->
+    <!--
+      Значки (session 37). ⚠⚠ public/favicon.ico был дефолтным значком Astro —
+      чёрный квадрат с ракетой; md5 совпадал во всех трёх репозиториях экосистемы.
+      ⚠ .ico несёт три кадра (16, 32, 48), кадр 16 нарисован по пиксельной сетке,
+      а не сжат из 32: при сжатии полосы знака замыливаются.
+      ⚠ apple-touch-icon непрозрачный: iOS подставляет под прозрачность чёрный.
+      ⚠ Акцент знака здесь brass-300 #fcd34d — им ghslabels отличается от
+      ghspictograms (teal-300) и ghssymbols (sky-300).
+    -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Mobile browser chrome - matches dark theme -->
+    {/* ⚠ Здесь #18181b, а не navy: у ghslabels своя тёмная тема. theme_color
+        в site.webmanifest выставлен таким же — они обязаны совпадать. */}
     <meta name="theme-color" content="#18181b" />
 
     <!-- Open Graph -->
+    {/* ⚠⚠ og-default.png на этом домене не было ВОВСЕ: og:image указывал на
+        несуществующий файл, и превью в соцсетях выходило пустым. */}
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={fullOgImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="GHS Labels" />
 
     <!-- Twitter -->
